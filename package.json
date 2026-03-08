@@ -1,7 +1,11 @@
 {
   "name": "@fifthbell/brokaw",
   "version": "0.1.0",
-  "private": true,
+  "files": [
+    "dist",
+    "src/partial-deps.json",
+    "src/styles/compiled.css"
+  ],
   "type": "module",
   "exports": {
     ".": "./dist/renderer.js",
