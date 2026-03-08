@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'brokaw/**'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 jobs:
@@ -29,11 +26,9 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        working-directory: brokaw
         run: pnpm install --frozen-lockfile
 
       - name: Build Storybook
-        working-directory: brokaw
         run: pnpm build-storybook
 
       - name: Configure AWS credentials
@@ -44,7 +39,6 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
 
       - name: Upload to S3
-        working-directory: brokaw
         run: |
           aws s3 rm s3://${{ vars.BROKAW_BUCKET_NAME }} --recursive
           aws s3 sync storybook-static/ s3://${{ vars.BROKAW_BUCKET_NAME }}
