@@ -1,0 +1,94 @@
+    </div>
+    <script>
+      (function () {
+        function setSlideState(slides, dots, index) {
+          slides.forEach(function (slide, slideIndex) {
+            var active = slideIndex === index;
+            slide.classList.toggle('hidden', !active);
+            slide.classList.toggle('opacity-0', !active);
+            slide.classList.toggle('opacity-100', active);
+            slide.classList.toggle('active', active);
+          });
+          dots.forEach(function (dot, dotIndex) {
+            dot.classList.toggle('active', dotIndex === index);
+          });
+        }
+
+        function initCarousels(root) {
+          var scopes = (root || document).querySelectorAll('[data-carousel]');
+          scopes.forEach(function (scope) {
+            if (scope.dataset.carouselBound === 'true') return;
+
+            var slides = Array.prototype.slice.call(scope.querySelectorAll('.carousel-slide'));
+            if (slides.length === 0) {
+              scope.dataset.carouselBound = 'true';
+              return;
+            }
+
+            var dots = Array.prototype.slice.call(scope.querySelectorAll('.carousel-dot'));
+            var nextButton = scope.querySelector('.carousel-next');
+            var activeIndex = slides.findIndex(function (slide) {
+              return slide.classList.contains('active');
+            });
+            var currentIndex = activeIndex >= 0 ? activeIndex : 0;
+            var timer = null;
+
+            function clearTimer() {
+              if (timer === null) return;
+              window.clearInterval(timer);
+              timer = null;
+            }
+
+            function startTimer() {
+              clearTimer();
+              if (slides.length < 2) return;
+
+              timer = window.setInterval(function () {
+                if (!document.contains(scope)) {
+                  clearTimer();
+                  return;
+                }
+                currentIndex = (currentIndex + 1) % slides.length;
+                setSlideState(slides, dots, currentIndex);
+              }, 6000);
+            }
+
+            function goToSlide(nextIndex) {
+              currentIndex = nextIndex;
+              setSlideState(slides, dots, currentIndex);
+              startTimer();
+            }
+
+            dots.forEach(function (dot, dotIndex) {
+              dot.addEventListener('click', function () {
+                goToSlide(dotIndex);
+              });
+            });
+
+            if (nextButton) {
+              nextButton.addEventListener('click', function () {
+                goToSlide((currentIndex + 1) % slides.length);
+              });
+            }
+
+            scope.addEventListener('mouseenter', clearTimer);
+            scope.addEventListener('mouseleave', startTimer);
+
+            setSlideState(slides, dots, currentIndex);
+            startTimer();
+            scope.dataset.carouselBound = 'true';
+          });
+        }
+
+        window.__brokawInitCarousels = initCarousels;
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () {
+            initCarousels(document);
+          });
+        } else {
+          initCarousels(document);
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<div class='grid grid-cols-12 lg:grid-cols-12 gap-6 px-6'>
+  <div class='col-span-12 lg:col-span-12 xl:col-span-9 pt-6 lg:pt-8 space-y-12'>
+    <div class='grid grid-cols-2 gap-6'>
+      <div class='col-span-2'>
+        <div class='flex items-center gap-2 mb-6 border-l-4 border-[#b21100] pl-4'>
+          <h2 class='text-2xl font-bold tracking-tight font-serif'>Must Read</h2>
+        </div>
+        {{#with (lookup articles 13)}}
+          <article class='grid grid-cols-1 md:grid-cols-2 gap-6 items-start'>
+            <a href='{{slug}}' class='block aspect-video overflow-hidden bg-slate-100'>
+              <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 hover:scale-105' />
+            </a>
+            <div class='space-y-3'>
+              <div class='flex items-center text-xs font-bold uppercase tracking-wider text-[#b21100]'>
+                <span>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+              </div>
+              <h3 class='headline text-3xl font-bold font-serif leading-tight'>
+                <a href='{{slug}}' class='hover:underline decoration-[#b21100]'>{{title}}</a>
+              </h3>
+              <p class='text-slate-600 dark:text-slate-400 font-serif leading-relaxed line-clamp-3 text-xl'>{{excerpt}}</p>
+              <span class='text-s text-slate-400 block font-sans'>{{formatDate updatedAt}}</span>
+            </div>
+          </article>
+        {{/with}}
+      </div>
+
+      {{#with (lookup articles 14)}}
+        <div class='col-span-1'>
+          <article class='group'>
+            <a href='{{slug}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
+              <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105' />
+            </a>
+            <div class='space-y-2'>
+              <span class='text-xs font-bold text-[#b21100] uppercase tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+              <h3 class='text-2xl font-bold font-serif leading-tight group-hover:underline'>
+                <a href='{{slug}}'>{{title}}</a>
+              </h3>
+              <p class='text-xl text-slate-500 line-clamp-3 font-serif'>{{excerpt}}</p>
+            </div>
+          </article>
+        </div>
+      {{/with}}
+
+      {{#with (lookup articles 15)}}
+        <div class='col-span-1'>
+          <article class='group'>
+            <a href='{{slug}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
+              <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105' />
+            </a>
+            <div class='space-y-2'>
+              <span class='text-xs font-bold text-[#0066cc] uppercase tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+              <h3 class='text-2xl font-bold font-serif leading-tight group-hover:underline'>
+                <a href='{{slug}}'>{{title}}</a>
+              </h3>
+              <p class='text-xl text-slate-500 line-clamp-3 font-serif'>{{excerpt}}</p>
+            </div>
+          </article>
+        </div>
+      {{/with}}
+    </div>
+  </div>
+
+  <aside class='col-span-12 xl:col-span-3 pt-6'>
+    <div class='space-y-10'>
+      <div class='space-y-6 md:grid grid-cols-2 xl:grid-cols-1 lg:gap-6 lg:space-y-0'>
+        {{#each (slice articles 16 23)}}
+          {{> components/snack
+            slug=slug
+            title=title
+            readTime=(formatDate updatedAt)
+            showImage=false
+            className='pb-4 border-b border-slate-200 dark:border-slate-800 last:border-0'
+          }}
+        {{/each}}
+      </div>
+    </div>
+  </aside>
+</div>

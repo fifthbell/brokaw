@@ -1,0 +1,28 @@
+<main class='flex-1 container mx-auto px-4 py-16'>
+  <div class='max-w-2xl mx-auto text-center'>
+    <div class='mb-8'>
+      <h1 class='text-9xl font-bold text-[#b21100] dark:text-[#ff2e1a]' aria-label='Page not found error'>404</h1>
+    </div>
+
+    <h2 class='text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4'>Page Not Found</h2>
+
+    <p class='text-xl text-slate-600 dark:text-slate-400 mb-8 font-serif leading-relaxed'>
+      We couldn't find the page you're looking for. The article or page you're trying to access may have been moved, deleted, or never existed.
+    </p>
+
+    <a href='{{logoLink}}' class='inline-flex items-center gap-2 bg-[#b21100] hover:bg-[#8a0d00] dark:bg-[#ff2e1a] dark:hover:bg-[#cc2515] text-white font-bold py-3 px-6 rounded transition-colors'>
+      <span>Go to Homepage</span>
+    </a>
+
+    <div class='mt-12 pt-8 border-t border-slate-200 dark:border-slate-800'>
+      <p class='text-sm text-slate-600 dark:text-slate-400 mb-4'>Or explore our categories:</p>
+      <div class='flex flex-wrap justify-center gap-4'>
+        {{#if navigation.categories}}
+          {{#each navigation.categories}}
+            <a href='/{{slug}}' class='text-[#b21100] dark:text-[#ff2e1a] hover:underline font-semibold'>{{name}}</a>
+          {{/each}}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</main>

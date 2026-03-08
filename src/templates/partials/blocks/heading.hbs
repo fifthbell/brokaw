@@ -1,0 +1,9 @@
+{{#if (eq level 3)}}
+  <h3 class='mt-10 mb-4 text-2xl font-bold text-slate-900 dark:text-slate-100 font-serif'>{{text}}</h3>
+{{else}}
+  {{#if (eq level 4)}}
+    <h4 class='mt-8 mb-3 text-xl font-bold text-slate-900 dark:text-slate-100 font-serif'>{{text}}</h4>
+  {{else}}
+    <h2 class='mt-12 mb-4 text-3xl font-bold text-slate-900 dark:text-slate-100 font-serif'>{{text}}</h2>
+  {{/if}}
+{{/if}}
