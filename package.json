@@ -1,0 +1,39 @@
+{
+  "name": "@fifthbell/brokaw",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/renderer.js",
+    "./partial-deps.json": "./src/partial-deps.json"
+  },
+  "scripts": {
+    "build:css": "tailwindcss -i src/styles/global.css -o src/styles/compiled.css --minify",
+    "build": "pnpm build:css && tsc",
+    "storybook": "pnpm build:css && storybook dev -p 6006",
+    "build-storybook": "pnpm build:css && storybook build",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.8",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^5.0.1",
+    "@storybook/addon-a11y": "^10.2.16",
+    "@storybook/addon-docs": "^10.2.16",
+    "@storybook/addon-vitest": "^10.2.16",
+    "@storybook/html-vite": "^10.2.16",
+    "@tailwindcss/cli": "^4.2.1",
+    "@types/handlebars": "^4.1.0",
+    "@types/node": "^20.19.37",
+    "@vitest/browser-playwright": "^4.0.18",
+    "@vitest/coverage-v8": "^4.0.18",
+    "playwright": "^1.58.2",
+    "storybook": "^10.2.16",
+    "tailwindcss": "^4.2.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

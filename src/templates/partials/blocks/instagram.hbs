@@ -1,0 +1,28 @@
+<figure class='my-8 w-full'>
+  <div class='overflow-hidden w-full'>
+    <blockquote
+      class='instagram-media'
+      data-instgrm-captioned
+      data-instgrm-permalink='{{url}}'
+      data-instgrm-version='14'
+      style='background:#FFF; border:0; margin:1px auto; max-width:540px; min-width:326px; width:calc(100% - 2px);'
+    ></blockquote>
+  </div>
+  <script>
+    (function () {
+      if (window.instgrm && window.instgrm.Embeds) {
+        window.instgrm.Embeds.process();
+        return;
+      }
+      const existing = document.querySelector('script[src="https://www.instagram.com/embed.js"]');
+      if (existing) return;
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.instagram.com/embed.js';
+      document.body.appendChild(script);
+    })();
+  </script>
+  <figcaption class='text-sm text-slate-500 dark:text-slate-400 mt-2'>
+    <a href='{{url}}' target='_blank' rel='noopener noreferrer' class='hover:underline'>View post on Instagram</a>
+  </figcaption>
+</figure>

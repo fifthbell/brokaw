@@ -1,0 +1,74 @@
+<figure class='my-8 w-full'>
+  <div class='x-embed-shell overflow-hidden w-full' data-tweet-id='{{xTweetId url}}'>
+    {{#if (xEmbedUrl url)}}
+      <iframe
+        title='Embedded X post'
+        src='{{xEmbedUrl url}}'
+        data-x-embed-frame='true'
+        width='100%'
+        style='border:0; display:block; width:100%; min-height:260px; height:380px;'
+        loading='lazy'
+        referrerpolicy='no-referrer-when-downgrade'
+        allowfullscreen
+      ></iframe>
+    {{else}}
+      <div class='p-4 text-sm text-slate-600 dark:text-slate-300'>
+        Post preview unavailable.
+      </div>
+    {{/if}}
+  </div>
+  <script>
+    (function () {
+      const shell = document.currentScript?.previousElementSibling;
+      if (!shell) return;
+
+      const frame = shell.querySelector('iframe[data-x-embed-frame="true"]');
+      if (!frame) return;
+
+      const setFrameHeight = (target, nextHeight) => {
+        if (!target || !Number.isFinite(nextHeight)) return;
+        const clamped = Math.max(220, Math.min(2200, Math.ceil(nextHeight)));
+        target.style.height = `${clamped}px`;
+        target.height = String(clamped);
+      };
+
+      if (!window.__xEmbedResizeBound) {
+        window.__xEmbedResizeBound = true;
+        window.addEventListener('message', (event) => {
+          if (typeof event.origin !== 'string' || !event.origin.includes('platform.twitter.com')) return;
+
+          let data = event.data;
+          if (typeof data === 'string') {
+            try {
+              data = JSON.parse(data);
+            } catch {
+              return;
+            }
+          }
+
+          if (!data || typeof data !== 'object') return;
+
+          const candidateHeights = [
+            data.height,
+            data?.details?.height,
+            Array.isArray(data?.params) ? data.params[0] : undefined
+          ];
+
+          const nextHeight = candidateHeights.find((value) => typeof value === 'number');
+          if (typeof nextHeight !== 'number') return;
+
+          const allFrames = document.querySelectorAll('iframe[data-x-embed-frame="true"]');
+          for (const candidate of allFrames) {
+            if (candidate.contentWindow === event.source) {
+              setFrameHeight(candidate, nextHeight);
+              break;
+            }
+          }
+        });
+      }
+    })();
+  </script>
+  <figcaption class='text-sm text-slate-500 dark:text-slate-400 mt-2'>
+    <a href='{{url}}' target='_blank' rel='noopener noreferrer' class='hover:underline'>View post on X</a>
+  </figcaption>
+</figure>

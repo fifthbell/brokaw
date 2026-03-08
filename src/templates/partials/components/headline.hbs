@@ -1,0 +1,15 @@
+<article class='{{#if className}}{{className}}{{else}}flex flex-col gap-2{{/if}}'>
+  <div class='flex items-center gap-4'>
+    <span class='{{#if timeClass}}{{timeClass}}{{else}}text-[10px] uppercase tracking-wider text-[#b21100] dark:text-[#ff2e1a] font-bold{{/if}}'>{{time}}</span>
+  </div>
+  <div class='flex gap-2 lg:gap-4 items-start'>
+    <div class='flex-1'>
+      <h3 class='{{#if titleClass}}{{titleClass}}{{else}}text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-slate-900 dark:text-slate-100 font-sans{{/if}}'>
+        <a href='{{slug}}' class='{{#if linkClass}}{{linkClass}}{{else}}hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors{{/if}}'>{{title}}</a>
+      </h3>
+    </div>
+    {{#unless (eq showImage false)}}
+      <a href='{{slug}}' class='{{#if imageSizeClass}}{{imageSizeClass}}{{else}}w-12 h-12 lg:w-16 lg:h-16{{/if}} flex-shrink-0 rounded {{#if imageFallbackBgClass}}{{imageFallbackBgClass}}{{else}}bg-slate-300 dark:bg-slate-700{{/if}}' style='background: url({{#if image}}{{image}}{{else}}{{featuredImage.url}}{{/if}}) center/cover;'></a>
+    {{/unless}}
+  </div>
+</article>

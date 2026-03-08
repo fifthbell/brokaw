@@ -1,0 +1,37 @@
+<section class='xl:col-span-6 flex flex-col xl:order-2 order-1 xl:mb-0 mb-8'>
+  <div class='relative flex flex-col w-full h-full'>
+    <a href='{{slug}}' class='relative w-full h-[360px] xl:rounded-lg overflow-hidden xl:mb-[-104px] mb-0 z-10 block' style='box-shadow: 0px 14px 14px -8px rgba(41, 41, 43, 0.08);'>
+      <img src='{{image}}' alt='{{alt}}' class='w-full h-full object-cover' fetchpriority='high' />
+    </a>
+
+    <div class='xl:pt-24 pt-0 xl:px-6 px-0 flex-grow flex flex-col'>
+      <div class='bg-white dark:bg-slate-900 xl:rounded-lg xl:px-8 px-6 pt-8 pb-6 flex flex-col items-center gap-6 h-full'>
+        <div class='inline-flex items-center justify-center px-3 py-2 bg-[#cc0000] text-white'>
+          <span class='text-xs font-bold tracking-[0.08em] uppercase'>{{category}}</span>
+        </div>
+
+        <div class='flex flex-col items-center gap-2 w-full'>
+          <h1 class='text-[40px] font-bold font-encode leading-[56px] text-center tracking-[1px] text-slate-900 dark:text-slate-100'>
+            <a href='{{slug}}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
+          </h1>
+          <p class='text-[22px] leading-8 text-center text-slate-600 dark:text-slate-400 font-serif'>{{excerpt}}</p>
+          <h2 class='text-lg font-medium leading-6 text-slate-900 dark:text-slate-100 mt-6 mb-4' style='font-variant: small-caps;'>live updates</h2>
+        </div>
+
+        <div class='flex flex-col w-full bg-white dark:bg-slate-900 gap-0 xl:px-0 px-0 flex-grow overflow-y-auto'>
+          {{#each updates}}
+            <div class='flex gap-4 w-full xl:pb-6 pb-8'>
+              <div class='flex flex-col items-center gap-1'>
+                <div class='w-2 h-2 rounded-full bg-[#4FC3F7] flex-shrink-0'></div>
+              </div>
+              <div class='flex flex-col gap-3 flex-grow'>
+                <span class='text-base font-medium leading-[22px] text-[#4FC3F7]'>{{time}}</span>
+                <p class='text-base leading-[22px] text-slate-900 dark:text-slate-100'>{{text}}</p>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

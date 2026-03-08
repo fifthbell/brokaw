@@ -1,0 +1,23 @@
+<div class='py-12 px-6'>
+  <div class='flex items-center gap-2 mb-6 border-l-4 border-[#b21100] pl-4'>
+    <h2 class='text-2xl font-bold tracking-tight font-serif'>More Stories</h2>
+  </div>
+  <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12'>
+    {{#each (slice articles 23 35)}}
+      {{> components/snack
+        slug=slug
+        title=title
+        excerpt=excerpt
+        categories=categories
+        readTime=(formatDate updatedAt)
+        showImage=false
+        metaTextSize='text-xs'
+        titleTextSize='text-lg'
+        titleFontWeight='font-bold'
+        titleClasses='font-encode'
+        excerptTextSize='text-lg'
+        excerptClasses='font-serif leading-relaxed line-clamp-3'
+      }}
+    {{/each}}
+  </div>
+</div>

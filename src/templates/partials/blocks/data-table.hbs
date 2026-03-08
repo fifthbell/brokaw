@@ -1,0 +1,23 @@
+<figure class='my-8 overflow-x-auto'>
+  {{#if caption}}
+    <figcaption class='text-sm text-slate-500 dark:text-slate-400 mb-2'>{{caption}}</figcaption>
+  {{/if}}
+  <table class='w-full border-collapse text-sm'>
+    <thead>
+      <tr class='border-b border-slate-300 dark:border-slate-700'>
+        {{#each headers}}
+          <th class='text-left py-2 pr-4 font-bold text-slate-800 dark:text-slate-200'>{{this}}</th>
+        {{/each}}
+      </tr>
+    </thead>
+    <tbody>
+      {{#each rows}}
+        <tr class='border-b border-slate-200 dark:border-slate-800'>
+          {{#each this}}
+            <td class='py-2 pr-4 text-slate-700 dark:text-slate-300'>{{this}}</td>
+          {{/each}}
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</figure>

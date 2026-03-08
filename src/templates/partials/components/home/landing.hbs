@@ -1,0 +1,109 @@
+<div class='grid grid-cols-12 lg:grid-cols-12 gap-6 px-6'>
+  <div class='col-span-12 lg:col-span-9 xl:col-span-6 pt-6 lg:pt-8 space-y-12'>
+    {{#with (lookup articles 0)}}
+      <section class='lg:col-span-12 xl:col-span-8 flex flex-col'>
+        <a href='{{slug}}' class='relative flex-shrink-0 block'>
+          <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-[400px] object-cover rounded' fetchpriority='high' />
+        </a>
+
+        <div class='mt-4 flex-grow flex flex-col'>
+          <div class='flex items-center text-slate-500 dark:text-slate-400 text-xs mb-4'>
+            <span class='uppercase font-bold tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+            <span class='mx-2'>•</span>
+            <span class='article-time' data-timestamp='{{updatedAt}}'>{{formatDate updatedAt}}</span>
+          </div>
+
+          <h1 class='text-4xl font-bold font-encode text-slate-900 dark:text-slate-100 mb-4 leading-11'>
+            <a href='{{slug}}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
+          </h1>
+
+          <p class='text-slate-600 dark:text-slate-400 text-2xl mb-4 font-serif leading-8'>{{excerpt}}</p>
+
+          <div class='grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 border-t border-slate-200 dark:border-slate-800 pt-6 flex-grow'>
+            {{#each (slice ../articles 1 5)}}
+              {{> components/snack
+                slug=slug
+                title=title
+                excerpt=excerpt
+                image=featuredImage.url
+                alt=featuredImage.alt
+                readTime=(formatDate updatedAt)
+                imageSize='w-24 h-24'
+                imageClasses=''
+                titleTextSize='text-lg'
+                titleFontWeight='font-medium'
+                titleClasses='font-encode'
+              }}
+            {{/each}}
+          </div>
+        </div>
+      </section>
+    {{/with}}
+  </div>
+
+  <div class='col-span-12 md:col-span-7 lg:col-span-3 pt-6 lg:pt-8 space-y-12'>
+    <section class='lg:col-span-1 xl:col-span-4 flex flex-col h-full justify-between'>
+      {{#with (lookup articles 5)}}
+        <div class='bg-black text-white mb-6 flex-grow flex flex-col'>
+          <div class='flex-grow min-h-[250px] bg-cover bg-center flex flex-col justify-end' style='background-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0.7) 50%, transparent 100%), url("{{featuredImage.url}}");'>
+            <div class='px-4'>
+              <span class='bg-[#b21100] text-white px-3 py-2 text-xs tracking-[1px] font-bold uppercase inline-block mb-2'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+              <h2 class='text-2xl font-bold font-encode mb-2'>
+                <a href='{{slug}}' class='hover:text-slate-300 transition-colors'>{{title}}</a>
+              </h2>
+            </div>
+          </div>
+          <div class='px-4 pb-4 flex-shrink-0'>
+            <p class='text-sm'>{{excerpt}}</p>
+          </div>
+        </div>
+      {{/with}}
+
+      {{#with (lookup articles 6)}}
+        <div class='flex flex-col'>
+          <a href='{{slug}}' class='mb-4 flex-shrink-0 h-[180px] block'>
+            <img src='{{featuredImage.url}}' width='500' height='200' alt='{{featuredImage.alt}}' class='w-full h-full object-cover rounded' />
+          </a>
+          <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-2'>
+            <span class='uppercase font-bold'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+            <span class='mx-2'>•</span>
+            <span>{{formatDate updatedAt}}</span>
+          </div>
+          <h2 class='text-xl font-bold font-encode mb-2 text-slate-900 dark:text-slate-100'>
+            <a href='{{slug}}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
+          </h2>
+          <p class='text-slate-600 dark:text-slate-400 flex-grow'>{{excerpt}}</p>
+        </div>
+      {{/with}}
+    </section>
+  </div>
+
+  <aside class='col-span-12 md:col-span-5 lg:col-span-12 xl:col-span-3 pt-6'>
+    <div class='space-y-10'>
+      <div class='space-y-6'>
+        <div class='flex items-center justify-between border-b border-slate-300 dark:border-slate-700 pb-2'>
+          <h3 class='kicker text-red-700 dark:text-red-500 text-lg'>Top Stories</h3>
+        </div>
+      </div>
+
+      <div class='space-y-6 lg:grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-1 lg:gap-6 lg:space-y-0'>
+        {{#each (slice articles 7 13)}}
+          {{> components/snack
+            slug=slug
+            title=title
+            excerpt=excerpt
+            image=featuredImage.url
+            alt=featuredImage.alt
+            readTime=(formatDate updatedAt)
+            className='pb-4 border-b border-slate-200 dark:border-slate-800'
+            imageSize='w-20 h-20'
+            imageClasses='bg-slate-200 grayscale hover:grayscale-0 transition-all'
+            titleTextSize='text-xl'
+            titleFontWeight='font-bold'
+            titleClasses='font-serif leading-snug'
+          }}
+        {{/each}}
+      </div>
+    </div>
+  </aside>
+</div>

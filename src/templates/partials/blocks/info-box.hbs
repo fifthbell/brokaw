@@ -1,0 +1,8 @@
+<aside class='my-8 border-l-4 pl-4 py-1 {{#if (eq tone "warning")}}border-amber-500 bg-amber-50/60 dark:bg-amber-950/30{{else}}{{#if (eq tone "success")}}border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/30{{else}}{{#if (eq tone "info")}}border-sky-500 bg-sky-50/60 dark:bg-sky-950/30{{else}}border-slate-400 bg-slate-50/60 dark:bg-slate-900/40{{/if}}{{/if}}{{/if}}'>
+  {{#if title}}
+    <h4 class='text-sm uppercase tracking-wider font-bold text-slate-700 dark:text-slate-300 mb-2'>{{title}}</h4>
+  {{/if}}
+  <div class='text-slate-800 dark:text-slate-200'>
+    {{{html}}}
+  </div>
+</aside>
