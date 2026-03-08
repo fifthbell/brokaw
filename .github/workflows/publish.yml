@@ -45,6 +45,7 @@ jobs:
         run: |
           echo "## Publish Summary" >> $GITHUB_STEP_SUMMARY
           echo "- **Package**: @fifthbell/brokaw" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version**: $(node -p \"require('./package.json').version\")" >> $GITHUB_STEP_SUMMARY
+          VERSION=$(node -p 'require("./package.json").version')
+          echo "- **Version**: ${VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "- **Registry**: GitHub Packages" >> $GITHUB_STEP_SUMMARY
           echo "- **Status**: ✅ Published" >> $GITHUB_STEP_SUMMARY
