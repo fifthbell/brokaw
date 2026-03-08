@@ -117,7 +117,9 @@ const articleReferenceSchema = z
     slug: z.string(),
     title: z.string(),
     excerpt: z.string().optional(),
+    time: z.string().optional(),
     categories: z.array(categorySchema).default([]),
+    hero: heroSchema.optional(),
     featuredImage: featuredImageSchema.optional(),
     updatedAt: isoDateTime.optional(),
     publishedAt: isoDateTime.optional()
@@ -157,7 +159,71 @@ export const canonicalArticleSchema = z
         categories: z.array(categorySchema)
       })
       .optional(),
-    articles: z.array(articleReferenceSchema).optional()
+    articles: z.array(articleReferenceSchema).optional(),
+    heroSlides: z
+      .array(
+        z.object({
+          image: z.string(),
+          alt: z.string().optional()
+        })
+      )
+      .optional(),
+    breakingNews: z
+      .object({
+        displayClass: z.string().optional(),
+        sidebarFeature: z
+          .object({
+            category: z.string(),
+            title: z.string(),
+            slug: z.string(),
+            image: z.string(),
+            excerpt: z.string().optional()
+          })
+          .optional(),
+        sidebarSub: z
+          .object({
+            category: z.string(),
+            title: z.string(),
+            slug: z.string(),
+            image: z.string(),
+            alt: z.string().optional(),
+            readTime: z.string().optional(),
+            excerpt: z.string().optional()
+          })
+          .optional(),
+        main: z
+          .object({
+            category: z.string(),
+            title: z.string(),
+            slug: z.string(),
+            image: z.string(),
+            alt: z.string().optional(),
+            excerpt: z.string().optional()
+          })
+          .optional(),
+        updates: z
+          .array(
+            z.object({
+              time: z.string(),
+              text: z.string()
+            })
+          )
+          .optional(),
+        snacks: z
+          .array(
+            z.object({
+              category: z.string().optional(),
+              readTime: z.string().optional(),
+              title: z.string(),
+              slug: z.string(),
+              excerpt: z.string().optional(),
+              image: z.string().optional(),
+              alt: z.string().optional()
+            })
+          )
+          .optional()
+      })
+      .optional()
   })
   .passthrough();
 
