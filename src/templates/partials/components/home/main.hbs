@@ -1,10 +1,24 @@
 <div class='min-h-screen font-sans text-slate-900 dark:text-slate-100 antialiased'>
   {{#unless (eq showHero false)}}
     {{#if hero}}
-      {{> components/spotlight-hero title=title slug=slug excerpt=excerpt hero=hero slides=heroSlides related=(slice articles 0 4)}}
+      {{> components/spotlight-hero
+        title=(coalesce heroTitle title)
+        slug=(coalesce heroSlug slug)
+        excerpt=(coalesce heroExcerpt excerpt)
+        hero=hero
+        slides=heroSlides
+        related=(coalesce heroRelated (slice articles 0 4))
+      }}
     {{else}}
       {{#if heroSlides}}
-        {{> components/spotlight-hero title=title slug=slug excerpt=excerpt hero=hero slides=heroSlides related=(slice articles 0 4)}}
+        {{> components/spotlight-hero
+          title=(coalesce heroTitle title)
+          slug=(coalesce heroSlug slug)
+          excerpt=(coalesce heroExcerpt excerpt)
+          hero=hero
+          slides=heroSlides
+          related=(coalesce heroRelated (slice articles 0 4))
+        }}
       {{/if}}
     {{/if}}
   {{/unless}}
