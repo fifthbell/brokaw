@@ -4,7 +4,7 @@ const category = { name: 'World', slug: 'world' };
 
 const makeWorldArticle = (index: number): SelfReference => ({
   id: `10000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-  slug: `/world/dispatch-${index + 1}`,
+  url: `/world/dispatch-${index + 1}`,
   title: `World dispatch ${index + 1}`,
   excerpt: `Key update from international desk report ${index + 1}.`,
   categories: [category],

@@ -7,7 +7,7 @@
         </div>
         {{#with (lookup articles 15)}}
           <article class='grid grid-cols-1 md:grid-cols-2 gap-6 items-start'>
-            <a href='{{slug}}' class='block aspect-video overflow-hidden bg-slate-100'>
+            <a href='{{url}}' class='block aspect-video overflow-hidden bg-slate-100'>
               <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 hover:scale-105' />
             </a>
             <div class='space-y-3'>
@@ -15,7 +15,7 @@
                 <span>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
               </div>
               <h3 class='headline text-3xl font-bold font-serif leading-tight'>
-                <a href='{{slug}}' class='hover:underline decoration-[#b21100]'>{{title}}</a>
+                <a href='{{url}}' class='hover:underline decoration-[#b21100]'>{{title}}</a>
               </h3>
               <p class='text-slate-600 dark:text-slate-400 font-serif leading-relaxed line-clamp-3 text-xl'>{{excerpt}}</p>
               <span class='text-s text-slate-400 block font-sans'>{{formatDate updatedAt}}</span>
@@ -27,13 +27,13 @@
       {{#with (lookup articles 16)}}
         <div class='col-span-1'>
           <article class='group'>
-            <a href='{{slug}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
+            <a href='{{url}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
               <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105' />
             </a>
             <div class='space-y-2'>
               <span class='text-xs font-bold text-[#b21100] uppercase tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
               <h3 class='text-2xl font-bold font-serif leading-tight group-hover:underline'>
-                <a href='{{slug}}'>{{title}}</a>
+                <a href='{{url}}'>{{title}}</a>
               </h3>
             </div>
           </article>
@@ -43,13 +43,13 @@
       {{#with (lookup articles 17)}}
         <div class='col-span-1'>
           <article class='group'>
-            <a href='{{slug}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
+            <a href='{{url}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
               <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105' />
             </a>
             <div class='space-y-2'>
               <span class='text-xs font-bold text-[#0066cc] uppercase tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
               <h3 class='text-2xl font-bold font-serif leading-tight group-hover:underline'>
-                <a href='{{slug}}'>{{title}}</a>
+                <a href='{{url}}'>{{title}}</a>
               </h3>
             </div>
           </article>
@@ -63,7 +63,7 @@
       <div class='space-y-6 md:grid grid-cols-2 xl:grid-cols-1 lg:gap-6 lg:space-y-0'>
         {{#each (slice articles 18 25)}}
           {{> components/snack
-            slug=slug
+            url=url
             title=title
             readTime=(formatDate updatedAt)
             showImage=false
