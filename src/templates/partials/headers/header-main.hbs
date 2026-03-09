@@ -19,7 +19,7 @@
                   <div id='sections-links' class='space-y-3'>
                     <a href='{{logoLink}}' class='block text-lg font-bold text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>TOP STORIES</a>
                     <div id='category-links-container' class='space-y-3'>
-                      {{> nav/nav-categories}}
+                      <p class='text-sm text-slate-400 dark:text-slate-500'>Loading sections...</p>
                     </div>
                   </div>
 
@@ -143,16 +143,9 @@
     let isOpen = false;
     let contentLoaded = false;
     let currentCategoryKey = '__home__';
+    let activeCategorySlug = '';
+    let requestVersion = 0;
     const cache = new Map();
-
-    const fallbackCategories = [
-      { name: 'Politics', slug: 'politics' },
-      { name: 'World', slug: 'world' },
-      { name: 'Business', slug: 'business' },
-      { name: 'Sports', slug: 'sports' },
-      { name: 'Technology', slug: 'technology' },
-      { name: 'Weather', slug: 'weather' }
-    ];
 
     function getCurrentLang() {
       const p = window.location.pathname || '/';
@@ -181,15 +174,49 @@
       return payload.docs || payload.articles || [];
     }
 
+    function showCategoryLinksLoading() {
+      if (!categoryLinksContainer) return;
+      categoryLinksContainer.innerHTML = `<p class='text-sm text-slate-400 dark:text-slate-500'>Loading sections...</p>`;
+    }
+
+    function showCategoryLinksError() {
+      if (!categoryLinksContainer) return;
+      categoryLinksContainer.innerHTML = `<p class='text-sm text-red-500'>Failed to load sections</p>`;
+    }
+
+    function setActiveCategoryLink(categorySlug) {
+      if (!sectionsLinks) return;
+      activeCategorySlug = categorySlug || '';
+      const links = sectionsLinks.querySelectorAll('.category-link');
+      links.forEach((link) => {
+        const isActive = (link.getAttribute('data-category-slug') || '') === activeCategorySlug;
+        if (isActive) {
+          link.classList.add('text-[#b21100]', 'dark:text-[#ff2e1a]');
+          link.classList.remove('text-black', 'dark:text-white');
+          link.setAttribute('aria-current', 'page');
+        } else {
+          link.classList.remove('text-[#b21100]', 'dark:text-[#ff2e1a]');
+          link.classList.add('text-black', 'dark:text-white');
+          link.setAttribute('aria-current', 'false');
+        }
+      });
+    }
+
     function renderCategories(categories) {
       if (!categoryLinksContainer) return;
-      const featured = Array.isArray(categories) && categories.length > 0 ? categories : fallbackCategories;
-      categoryLinksContainer.innerHTML = featured
+      if (!Array.isArray(categories) || categories.length === 0) {
+        categoryLinksContainer.innerHTML = `<p class='text-sm text-slate-400 dark:text-slate-500'>No sections available</p>`;
+        return;
+      }
+
+      categoryLinksContainer.innerHTML = categories
         .map(
           (category) =>
-            `<a href="${buildLocalePath(category.slug)}" class="category-link block text-lg font-bold text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors" data-category-slug="${category.slug}">${String(category.name || '').toUpperCase()}</a>`
+            `<a href="${buildLocalePath(category.slug)}" class="category-link block text-lg font-bold text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors" data-category-slug="${category.slug}" aria-current="false">${String(category.name || '').toUpperCase()}</a>`
         )
         .join('');
+
+      setActiveCategoryLink(activeCategorySlug);
     }
 
     function showMiniFeaturedLoading() {
@@ -204,6 +231,13 @@
 
     function renderMiniFeatured(articles, categoryName) {
       if (!miniFeatured) return;
+      if (!Array.isArray(articles) || articles.length === 0) {
+        miniFeatured.innerHTML =
+          `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>${(categoryName || 'Featured Stories').toUpperCase()}</h3>` +
+          `<p class='text-slate-400 dark:text-slate-500'>No stories available</p>`;
+        return;
+      }
+
       const top = (articles || []).slice(0, 2);
       const grid = (articles || []).slice(2, 11);
 
@@ -260,6 +294,15 @@
       `;
     }
 
+    function getCategoryName(payload, categorySlug) {
+      if (!categorySlug) return 'Featured Stories';
+      const fromPrimaryCategory = payload?.category?.name;
+      if (fromPrimaryCategory) return fromPrimaryCategory;
+      const fromCategoriesArray = (payload?.categories || []).find((category) => category?.slug === categorySlug)?.name;
+      if (fromCategoriesArray) return fromCategoriesArray;
+      return String(categorySlug).replace(/-/g, ' ');
+    }
+
     async function fetchPayload(categorySlug) {
       const response = await fetch(getCdnUrl(categorySlug), { headers: { 'Content-Type': 'application/json' } });
       if (!response.ok) throw new Error(`Failed to fetch ${categorySlug || 'homepage'} data`);
@@ -277,26 +320,36 @@
         return;
       }
 
+      const requestId = ++requestVersion;
       showMiniFeaturedLoading();
 
       try {
         const payload = await fetchPayload(categorySlug);
+        if (requestId !== requestVersion || key !== currentCategoryKey) return;
         const articles = getArticlesFromPayload(payload);
-        const category = (payload.categories || []).find((c) => c.slug === categorySlug);
-        const categoryName = category?.name || (categorySlug ? categorySlug : 'Featured Stories');
+        const categoryName = getCategoryName(payload, categorySlug);
         const data = { articles, categoryName };
         cache.set(key, data);
         renderMiniFeatured(articles, categoryName);
       } catch (error) {
+        if (requestId !== requestVersion || key !== currentCategoryKey) return;
         if (miniFeatured) {
           miniFeatured.innerHTML =
-            `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 pb-2'>ERROR</h3>` +
+            `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>ERROR</h3>` +
             `<p class='text-red-500'>Failed to load stories</p>`;
         }
       }
     }
 
-    function attachSectionHoverHandlers() {
+    function shouldPreviewOnClick(event) {
+      if (!(miniFeatured instanceof HTMLElement)) return false;
+      if (!window.matchMedia('(min-width: 1024px)').matches) return false;
+      if (event.button !== 0) return false;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
+      return true;
+    }
+
+    function attachSectionHandlers() {
       if (!sectionsLinks) return;
 
       const topStories = sectionsLinks.querySelector('a[href="{{logoLink}}"]');
@@ -307,27 +360,48 @@
 
       const links = sectionsLinks.querySelectorAll('.category-link');
       links.forEach((link) => {
-        link.addEventListener('mouseenter', () => {
+        const selectCategory = () => {
           const slug = link.getAttribute('data-category-slug') || '';
+          setActiveCategoryLink(slug);
           loadCategoryContent(slug);
+        };
+
+        link.addEventListener('mouseenter', selectCategory);
+        link.addEventListener('focus', selectCategory);
+        link.addEventListener('click', (event) => {
+          if (!shouldPreviewOnClick(event)) return;
+          event.preventDefault();
+          selectCategory();
         });
       });
     }
 
     async function initializeMenuContent() {
       if (contentLoaded) return;
-      contentLoaded = true;
+      showCategoryLinksLoading();
+      showMiniFeaturedLoading();
 
       try {
         const payload = await fetchPayload('');
-        const categories = (payload.categories || []).filter((c) => c && c.featured);
+        const categories = (payload.categories || []).filter((c) => c && c.slug && (c.featured ?? true));
         renderCategories(categories);
-      } catch {
-        renderCategories(fallbackCategories);
-      }
+        attachSectionHandlers();
 
-      attachSectionHoverHandlers();
-      loadCategoryContent('');
+        const homeArticles = getArticlesFromPayload(payload);
+        const homeData = { articles: homeArticles, categoryName: 'Featured Stories' };
+        cache.set('__home__', homeData);
+        currentCategoryKey = '__home__';
+        setActiveCategoryLink('');
+        renderMiniFeatured(homeArticles, homeData.categoryName);
+        contentLoaded = true;
+      } catch {
+        showCategoryLinksError();
+        if (miniFeatured) {
+          miniFeatured.innerHTML =
+            `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>ERROR</h3>` +
+            `<p class='text-red-500'>Failed to load stories</p>`;
+        }
+      }
     }
 
     function toggleMenu() {
