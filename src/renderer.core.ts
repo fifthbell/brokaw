@@ -13,6 +13,11 @@ let initialized = false;
 const layoutCache = new Map<LayoutName, HandlebarsTemplateDelegate>();
 let runtimeStyles = '';
 const removedBlockTypes = new Set(['truthSocial', 'truthsocial', 'truth-social', 'truth_social']);
+const siteTitlesByLanguage: Record<CanonicalArticle['language'], string> = {
+  en: 'fifthbell - Breaking News & Current Events',
+  es: 'fifthbell - Noticias de última hora y actualidad',
+  it: 'fifthbell - Ultime notizie e attualità'
+};
 
 function normalizeDocument(doc: CanonicalArticle): CanonicalArticle {
   const rawBody = (doc as { body?: unknown }).body;
@@ -116,6 +121,35 @@ function registerHelpers(): void {
     const match = url.match(/\/video\/(\d+)/);
     if (!match) return url;
     return `https://www.tiktok.com/embed/v2/${match[1]}`;
+  });
+  Handlebars.registerHelper('resolveHeadTitle', (doc: unknown) => {
+    if (!doc || typeof doc !== 'object') return 'fifthbell';
+    const page = doc as Partial<CanonicalArticle>;
+
+    if (page.layout === 'homepage') {
+      const language = page.language === 'es' || page.language === 'it' ? page.language : 'en';
+      return siteTitlesByLanguage[language];
+    }
+
+    if (page.layout === 'category-page') {
+      const categoryName = page.categories?.[0]?.name?.trim();
+      const baseTitle = categoryName || page.title?.trim() || 'Category';
+      return `${baseTitle} | fifthbell`;
+    }
+
+    if (page.layout === 'article-page') {
+      const baseTitle = page.title?.trim() || 'Article';
+      return `${baseTitle} | fifthbell`;
+    }
+
+    if (page.layout === '404') {
+      return '404 - Page Not Found | fifthbell';
+    }
+
+    const seoTitle = page.seo?.metaTitle?.trim();
+    if (seoTitle) return seoTitle;
+    const baseTitle = page.title?.trim() || 'fifthbell';
+    return `${baseTitle} | fifthbell`;
   });
 }
 

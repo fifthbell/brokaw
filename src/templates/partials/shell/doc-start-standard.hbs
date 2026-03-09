@@ -11,7 +11,7 @@
     />
     <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
     <link rel='canonical' href='{{canonicalUrl}}' />
-    <title>{{#if seo.metaTitle}}{{seo.metaTitle}}{{else}}{{title}} | fifthbell{{/if}}</title>
+    <title>{{resolveHeadTitle this}}</title>
     <style>{{{styles}}}</style>
   </head>
   <body class='bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors'>
