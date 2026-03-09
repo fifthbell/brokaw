@@ -35,6 +35,16 @@ function registerHelpers(): void {
     return items.slice(start, end);
   });
   Handlebars.registerHelper('uppercase', (value: unknown) => String(value ?? '').toUpperCase());
+  Handlebars.registerHelper('coalesce', (...args: unknown[]) => {
+    const values = args.slice(0, -1);
+    for (const value of values) {
+      if (value === null || value === undefined) continue;
+      if (typeof value === 'string' && value.trim().length === 0) continue;
+      if (Array.isArray(value) && value.length === 0) continue;
+      return value;
+    }
+    return '';
+  });
   Handlebars.registerHelper('formatDate', (isoString: string) => {
     if (!isoString) return '';
     try {

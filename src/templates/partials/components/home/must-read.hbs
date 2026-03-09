@@ -5,7 +5,7 @@
         <div class='flex items-center gap-2 mb-6 border-l-4 border-[#b21100] pl-4'>
           <h2 class='text-2xl font-bold tracking-tight font-serif'>Must Read</h2>
         </div>
-        {{#with (lookup articles 13)}}
+        {{#with (lookup articles 15)}}
           <article class='grid grid-cols-1 md:grid-cols-2 gap-6 items-start'>
             <a href='{{slug}}' class='block aspect-video overflow-hidden bg-slate-100'>
               <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 hover:scale-105' />
@@ -24,7 +24,7 @@
         {{/with}}
       </div>
 
-      {{#with (lookup articles 14)}}
+      {{#with (lookup articles 16)}}
         <div class='col-span-1'>
           <article class='group'>
             <a href='{{slug}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
@@ -41,7 +41,7 @@
         </div>
       {{/with}}
 
-      {{#with (lookup articles 15)}}
+      {{#with (lookup articles 17)}}
         <div class='col-span-1'>
           <article class='group'>
             <a href='{{slug}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
@@ -63,7 +63,7 @@
   <aside class='col-span-12 xl:col-span-3 pt-6'>
     <div class='space-y-10'>
       <div class='space-y-6 md:grid grid-cols-2 xl:grid-cols-1 lg:gap-6 lg:space-y-0'>
-        {{#each (slice articles 16 23)}}
+        {{#each (slice articles 18 27)}}
           {{> components/snack
             slug=slug
             title=title
