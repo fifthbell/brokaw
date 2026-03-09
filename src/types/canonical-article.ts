@@ -114,7 +114,7 @@ const bodyBlockSchema = z.discriminatedUnion('type', [
 const articleReferenceSchema = z
   .object({
     id: z.string().uuid(),
-    slug: z.string(),
+    url: z.string(),
     title: z.string(),
     excerpt: z.string().optional(),
     time: z.string().optional(),
@@ -175,7 +175,7 @@ export const canonicalArticleSchema = z
           .object({
             category: z.string(),
             title: z.string(),
-            slug: z.string(),
+            url: z.string(),
             image: z.string(),
             excerpt: z.string().optional()
           })
@@ -184,7 +184,7 @@ export const canonicalArticleSchema = z
           .object({
             category: z.string(),
             title: z.string(),
-            slug: z.string(),
+            url: z.string(),
             image: z.string(),
             alt: z.string().optional(),
             readTime: z.string().optional(),
@@ -195,7 +195,7 @@ export const canonicalArticleSchema = z
           .object({
             category: z.string(),
             title: z.string(),
-            slug: z.string(),
+            url: z.string(),
             image: z.string(),
             alt: z.string().optional(),
             excerpt: z.string().optional()
@@ -215,7 +215,7 @@ export const canonicalArticleSchema = z
               category: z.string().optional(),
               readTime: z.string().optional(),
               title: z.string(),
-              slug: z.string(),
+              url: z.string(),
               excerpt: z.string().optional(),
               image: z.string().optional(),
               alt: z.string().optional()

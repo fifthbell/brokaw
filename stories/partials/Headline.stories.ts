@@ -13,7 +13,7 @@ const meta = {
   title: 'Partials/Headline',
   render: (args) => template(args),
   args: {
-    slug: item?.slug ?? '/story',
+    url: item?.url ?? '/story',
     title: item?.title ?? 'Headline title',
     time: item?.time ?? '1 hr ago',
     image: item?.featuredImage?.url,

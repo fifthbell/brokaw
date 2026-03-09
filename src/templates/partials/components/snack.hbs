@@ -68,7 +68,7 @@
       {{/if}}
 
       <h3 class='{{#if titleFontWeight}}{{titleFontWeight}}{{else}}font-bold{{/if}} {{#if titleTextSize}}{{titleTextSize}}{{else}}text-lg{{/if}} leading-snug text-slate-900 dark:text-slate-100 {{#if titleClasses}}{{titleClasses}}{{else}}font-encode{{/if}}'>
-        <a href='{{slug}}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
+        <a href='{{url}}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
       </h3>
       {{#unless (eq showExcerpt false)}}
         {{#if excerpt}}
@@ -79,11 +79,11 @@
 
     {{#unless (eq showImage false)}}
       {{#if image}}
-        <a href='{{slug}}' class='{{#if imageSize}}{{imageSize}}{{else}}w-32 h-24{{/if}} flex-shrink-0 block'>
+        <a href='{{url}}' class='{{#if imageSize}}{{imageSize}}{{else}}w-32 h-24{{/if}} flex-shrink-0 block'>
           <img src='{{image}}' alt='{{alt}}' class='w-full h-full object-cover rounded {{#if imageClasses}}{{imageClasses}}{{/if}}' />
         </a>
       {{else if featuredImage.url}}
-        <a href='{{slug}}' class='{{#if imageSize}}{{imageSize}}{{else}}w-32 h-24{{/if}} flex-shrink-0 block'>
+        <a href='{{url}}' class='{{#if imageSize}}{{imageSize}}{{else}}w-32 h-24{{/if}} flex-shrink-0 block'>
           <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover rounded {{#if imageClasses}}{{imageClasses}}{{/if}}' />
         </a>
       {{/if}}

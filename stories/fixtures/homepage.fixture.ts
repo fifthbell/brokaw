@@ -15,7 +15,7 @@ const makeArticle = (index: number): SelfReference => {
 
   return {
     id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
-    slug: `/${category.slug}/story-${index + 1}`,
+    url: `/${category.slug}/story-${index + 1}`,
     title: `${category.name} headline ${index + 1}`,
     excerpt: `Context line for ${category.name.toLowerCase()} headline ${index + 1}.`,
     categories: [category],
@@ -82,14 +82,14 @@ export const homepageFixture: CanonicalArticle = {
     sidebarFeature: {
       category: 'LIVE',
       title: 'Developing situation at regional transport hubs',
-      slug: '/world/transport-live',
+      url: '/world/transport-live',
       image: 'https://images.unsplash.com/photo-1465447142348-e9952c393450?w=900&h=700&fit=crop',
       excerpt: 'Terminals reported rolling delays after weather warnings expanded.'
     },
     sidebarSub: {
       category: 'World',
       title: 'Officials issue advisory for coastal operations',
-      slug: '/world/coastal-advisory',
+      url: '/world/coastal-advisory',
       image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=900&h=700&fit=crop',
       alt: 'Satellite image',
       readTime: '2 hr ago',
@@ -98,7 +98,7 @@ export const homepageFixture: CanonicalArticle = {
     main: {
       category: 'Live Updates',
       title: 'Minute-by-minute coverage of developing response',
-      slug: '/world/live-response',
+      url: '/world/live-response',
       image: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1200&h=800&fit=crop',
       alt: 'Field reporting setup',
       excerpt: 'Editors and correspondents are publishing confirmed updates in sequence.'
@@ -113,7 +113,7 @@ export const homepageFixture: CanonicalArticle = {
         category: 'Politics',
         readTime: '58 min ago',
         title: 'Legislators request a joint briefing',
-        slug: '/politics/joint-briefing',
+        url: '/politics/joint-briefing',
         excerpt: 'Committee chairs asked agencies for synchronized updates.',
         image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=640&h=480&fit=crop',
         alt: 'Government building'
@@ -122,7 +122,7 @@ export const homepageFixture: CanonicalArticle = {
         category: 'Business',
         readTime: '1 hr ago',
         title: 'Shipping insurers raise short-term risk guidance',
-        slug: '/business/shipping-risk',
+        url: '/business/shipping-risk',
         excerpt: 'Premium assumptions moved higher in afternoon trading.',
         image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=640&h=480&fit=crop',
         alt: 'Cargo containers'
@@ -131,7 +131,7 @@ export const homepageFixture: CanonicalArticle = {
         category: 'Technology',
         readTime: '1 hr ago',
         title: 'Grid telemetry dashboards show elevated loads',
-        slug: '/technology/grid-telemetry',
+        url: '/technology/grid-telemetry',
         excerpt: 'Peak demand clusters are appearing earlier than expected.',
         image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=640&h=480&fit=crop',
         alt: 'Operations center displays'
@@ -140,7 +140,7 @@ export const homepageFixture: CanonicalArticle = {
         category: 'Sports',
         readTime: '1 hr ago',
         title: 'League delays two match windows after storm alerts',
-        slug: '/sports/match-window-delays',
+        url: '/sports/match-window-delays',
         excerpt: 'Organizers shifted kickoff timing as regional travel advisories expanded.',
         image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=640&h=480&fit=crop',
         alt: 'Stadium under cloudy skies'
@@ -149,7 +149,7 @@ export const homepageFixture: CanonicalArticle = {
         category: 'Weather',
         readTime: '2 hr ago',
         title: 'Forecasters extend severe watch into overnight hours',
-        slug: '/weather/severe-watch-extended',
+        url: '/weather/severe-watch-extended',
         excerpt: 'Meteorologists cited a slow-moving front and saturated ground conditions.',
         image: 'https://images.unsplash.com/photo-1500740516770-92bd004b996e?w=640&h=480&fit=crop',
         alt: 'Dark storm clouds'

@@ -6,7 +6,7 @@
   <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
     {{#each (slice articles 13 25)}}
       <article class='group flex flex-col h-full'>
-        <a href='{{slug}}' class='block mb-3 overflow-hidden aspect-[3/2] bg-slate-100'>
+        <a href='{{url}}' class='block mb-3 overflow-hidden aspect-[3/2] bg-slate-100'>
           <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105' />
         </a>
         <div class='flex-1 flex flex-col'>
@@ -16,7 +16,7 @@
             <span class='text-slate-400 font-normal'>{{formatDate updatedAt}}</span>
           </div>
           <h3 class='text-lg font-bold font-encode text-slate-900 dark:text-slate-100 mb-2 leading-snug group-hover:underline decoration-[#b21100]'>
-            <a href='{{slug}}'>{{title}}</a>
+            <a href='{{url}}'>{{title}}</a>
           </h3>
           <p class='text-slate-500 dark:text-slate-400 text-base font-serif line-clamp-3 leading-relaxed'>{{excerpt}}</p>
         </div>

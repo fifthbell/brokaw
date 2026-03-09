@@ -254,7 +254,7 @@
                 <span>5 min</span>
               </div>
               <h2 class='text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight'>
-                <a href='${buildLocalePath(article?.slug || '#')}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
+                <a href='${buildLocalePath(article?.url || '#')}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
               </h2>
             </div>
           `
@@ -275,7 +275,7 @@
                   <span class='uppercase font-bold'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span>
                 </div>
                 <h3 class='font-medium text-base leading-tight text-slate-900 dark:text-slate-100'>
-                  <a href='${buildLocalePath(article?.slug || '#')}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
+                  <a href='${buildLocalePath(article?.url || '#')}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
                 </h3>
               </div>
             `
