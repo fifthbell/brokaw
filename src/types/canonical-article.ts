@@ -128,7 +128,7 @@ const articleReferenceSchema = z
 
 export const canonicalArticleSchema = z
   .object({
-    id: z.string().uuid(),
+    id: z.coerce.string(),
     slug: z.string(),
     layout: z.enum(['article-page', 'homepage', 'category-page', '404']),
     canonicalUrl: z.string(),
