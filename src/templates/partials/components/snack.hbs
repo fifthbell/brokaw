@@ -70,9 +70,11 @@
       <h3 class='{{#if titleFontWeight}}{{titleFontWeight}}{{else}}font-bold{{/if}} {{#if titleTextSize}}{{titleTextSize}}{{else}}text-lg{{/if}} leading-snug text-slate-900 dark:text-slate-100 {{#if titleClasses}}{{titleClasses}}{{else}}font-encode{{/if}}'>
         <a href='{{slug}}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
       </h3>
-      {{#if excerpt}}
-        <p class='text-slate-500 dark:text-slate-400 {{#if excerptTextSize}}{{excerptTextSize}}{{else}}text-lg{{/if}} {{#if excerptClasses}}{{excerptClasses}}{{else}}font-serif leading-relaxed line-clamp-3{{/if}}'>{{excerpt}}</p>
-      {{/if}}
+      {{#unless (eq showExcerpt false)}}
+        {{#if excerpt}}
+          <p class='text-slate-500 dark:text-slate-400 {{#if excerptTextSize}}{{excerptTextSize}}{{else}}text-lg{{/if}} {{#if excerptClasses}}{{excerptClasses}}{{else}}font-serif leading-relaxed line-clamp-3{{/if}}'>{{excerpt}}</p>
+        {{/if}}
+      {{/unless}}
     </div>
 
     {{#unless (eq showImage false)}}
