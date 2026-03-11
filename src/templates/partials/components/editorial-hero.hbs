@@ -1,6 +1,6 @@
 <section class='border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pb-8 mb-8 font-sans' data-nosnippet data-carousel='editorial'>
   <div class='container mx-auto px-4 pt-8'>
-    <div class='grid grid-cols-1 lg:grid-cols-12 gap-8 items-start'>
+    <div class='grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch'>
       <div class='lg:col-span-12 xl:col-span-5 flex flex-col justify-center space-y-4 pt-2 order-2 lg:order-1'>
         <span class='kicker text-[#b21100] dark:text-[#ff2e1a] text-xs font-bold uppercase tracking-widest mb-1 block relative pl-3 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-[#b21100] before:rounded-sm'>
           Lead Story
@@ -34,8 +34,8 @@
         {{/if}}
       </div>
 
-      <div class='lg:col-span-12 xl:col-span-7 relative order-1 lg:order-2'>
-        <div class='carousel-background aspect-[3/2] w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative shadow-sm'>
+      <div class='lg:col-span-12 xl:col-span-7 relative order-1 lg:order-2 flex flex-col'>
+        <div class='carousel-background flex-1 w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative shadow-sm'>
           {{#if slides}}
             {{#each slides}}
               <div class='carousel-slide {{#if @first}}active opacity-100{{else}}hidden opacity-0{{/if}} absolute inset-0 bg-cover bg-center transition-opacity duration-700' style='background-image: url({{image}});'></div>

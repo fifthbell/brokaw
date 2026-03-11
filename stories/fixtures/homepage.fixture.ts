@@ -25,7 +25,7 @@ const recentTimestamps = [
   '2026-03-10T14:00:00.000Z', // 22 h ago
   '2026-03-10T13:00:00.000Z', // 23 h ago
   '2026-03-10T12:30:00.000Z', // 23.5 h ago
-  '2026-03-10T12:10:00.000Z'  // ~23.8 h ago
+  '2026-03-10T12:10:00.000Z' // ~23.8 h ago
 ];
 
 /** Timestamps that are older than 24 h (will not qualify as featured-recent) */
@@ -55,13 +55,9 @@ const makeArticle = (index: number): SelfReference => {
   const isRecentFeatured = index < 8;
   const isOldFeatured = index >= 8 && index < 17;
 
-  const publishedAt = isRecentFeatured
-    ? recentTimestamps[index % recentTimestamps.length]
-    : olderTimestamps[(index - 8) % olderTimestamps.length];
+  const publishedAt = isRecentFeatured ? recentTimestamps[index % recentTimestamps.length] : olderTimestamps[(index - 8) % olderTimestamps.length];
 
-  const updatedAt = isRecentFeatured
-    ? recentTimestamps[index % recentTimestamps.length]
-    : olderTimestamps[(index - 8) % olderTimestamps.length];
+  const updatedAt = isRecentFeatured ? recentTimestamps[index % recentTimestamps.length] : olderTimestamps[(index - 8) % olderTimestamps.length];
 
   return {
     id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
@@ -135,7 +131,8 @@ export const homepageFixture: CanonicalArticle = {
       title: 'Developing situation at regional transport hubs',
       url: '/world/transport-live',
       image: 'https://images.unsplash.com/photo-1465447142348-e9952c393450?w=900&h=700&fit=crop',
-      excerpt: 'Terminals reported rolling delays after weather warnings expanded.'
+      excerpt: 'Terminals reported rolling delays after weather warnings expanded.',
+      publishedAt: '2026-03-11T11:30:00.000Z'
     },
     sidebarSub: {
       category: 'World',

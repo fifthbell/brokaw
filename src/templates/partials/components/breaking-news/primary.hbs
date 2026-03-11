@@ -9,5 +9,6 @@
   </div>
   <div class='px-4 py-3 flex-shrink-0 bg-black'>
     <p class='text-sm leading-relaxed'>{{excerpt}}</p>
+    {{#if publishedAt}}<span class='text-xs text-slate-400 mt-2 block'>{{formatDate publishedAt}}</span>{{/if}}
   </div>
 </div>
