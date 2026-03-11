@@ -146,6 +146,11 @@ function registerHelpers(): void {
       return '404 - Page Not Found | fifthbell';
     }
 
+    if (page.layout === 'live-story') {
+      const baseTitle = page.title?.trim() || 'Live Story';
+      return `${baseTitle} | fifthbell`;
+    }
+
     const seoTitle = page.seo?.metaTitle?.trim();
     if (seoTitle) return seoTitle;
     const baseTitle = page.title?.trim() || 'fifthbell';
@@ -208,7 +213,7 @@ export function renderWithAssets(doc: CanonicalArticle, assets: RendererAssets):
 
   const requestedLayout = (doc as { layout?: string }).layout;
   if (!requestedLayout || !layoutCache.has(requestedLayout as LayoutName)) {
-    throw new Error(`Unknown layout \"${requestedLayout ?? 'undefined'}\". Expected one of: article-page, homepage, category-page, 404`);
+    throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: article-page, homepage, category-page, 404, live-story`);
   }
 
   const parsed = canonicalArticleSchema.parse(normalizeDocument(doc));
