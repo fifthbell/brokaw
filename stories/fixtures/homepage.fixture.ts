@@ -9,9 +9,59 @@ const categoryPool = [
   { name: 'Weather', slug: 'weather' }
 ];
 
+/**
+ * Reference time used for the fixture.
+ * All "recent" articles are within 24 h of this instant;
+ * all "older" articles are at least 48 h before it.
+ */
+export const FIXTURE_NOW = new Date('2026-03-11T12:00:00.000Z');
+
+/** Timestamps that fall within the last 24 h of FIXTURE_NOW */
+const recentTimestamps = [
+  '2026-03-11T11:00:00.000Z', // 1 h ago
+  '2026-03-11T08:00:00.000Z', // 4 h ago
+  '2026-03-11T05:00:00.000Z', // 7 h ago
+  '2026-03-11T02:00:00.000Z', // 10 h ago
+  '2026-03-10T14:00:00.000Z', // 22 h ago
+  '2026-03-10T13:00:00.000Z', // 23 h ago
+  '2026-03-10T12:30:00.000Z', // 23.5 h ago
+  '2026-03-10T12:10:00.000Z'  // ~23.8 h ago
+];
+
+/** Timestamps that are older than 24 h (will not qualify as featured-recent) */
+const olderTimestamps = [
+  '2026-03-10T11:00:00.000Z', // 25 h ago
+  '2026-03-09T12:00:00.000Z',
+  '2026-03-08T12:00:00.000Z',
+  '2026-03-07T12:00:00.000Z',
+  '2026-03-06T12:00:00.000Z',
+  '2026-03-05T12:00:00.000Z',
+  '2026-03-04T12:00:00.000Z',
+  '2026-03-03T12:00:00.000Z',
+  '2026-03-02T12:00:00.000Z'
+];
+
+/**
+ * Articles 0–7 are featured:true with recent timestamps so they exercise the
+ * "6 featured slots + overflow goes to top of queue" path.
+ * Articles 8+ are either not featured or older than 24 h.
+ */
 const makeArticle = (index: number): SelfReference => {
   const category = categoryPool[index % categoryPool.length];
-  const day = String((index % 9) + 1).padStart(2, '0');
+
+  // First 8 articles are featured with recent timestamps (within 24 h).
+  // Articles 8–16 are featured but with older timestamps.
+  // The rest are not featured.
+  const isRecentFeatured = index < 8;
+  const isOldFeatured = index >= 8 && index < 17;
+
+  const publishedAt = isRecentFeatured
+    ? recentTimestamps[index % recentTimestamps.length]
+    : olderTimestamps[(index - 8) % olderTimestamps.length];
+
+  const updatedAt = isRecentFeatured
+    ? recentTimestamps[index % recentTimestamps.length]
+    : olderTimestamps[(index - 8) % olderTimestamps.length];
 
   return {
     id: `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
@@ -23,9 +73,10 @@ const makeArticle = (index: number): SelfReference => {
       url: `https://picsum.photos/seed/fifthbell-home-${index + 1}/1280/720`,
       alt: `${category.name} visual ${index + 1}`
     },
-    publishedAt: `2026-03-${day}T09:00:00.000Z`,
-    updatedAt: `2026-03-${day}T11:30:00.000Z`,
-    time: `${(index % 6) + 1} hr ago`
+    publishedAt,
+    updatedAt,
+    time: `${(index % 6) + 1} hr ago`,
+    featured: isRecentFeatured || isOldFeatured
   };
 };
 
