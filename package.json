@@ -1,6 +1,6 @@
 {
   "name": "@fifthbell/brokaw",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "files": [
     "dist",
     "src/templates",
