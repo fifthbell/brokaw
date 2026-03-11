@@ -46,7 +46,7 @@ const template = Handlebars.compile(liveStoryMainHbs);
 const meta = {
   title: 'Partials/LiveStory/Main',
   render: (args) => template(args),
-  args: liveStoryFixture,
+  args: liveStoryFixture
 } satisfies Meta;
 
 export default meta;
