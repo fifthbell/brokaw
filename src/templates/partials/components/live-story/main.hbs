@@ -1,0 +1,130 @@
+<main class='min-h-screen pb-16'>
+
+  {{!-- Hero Image --}}
+  {{#if featuredImage.url}}
+  <div class='w-full overflow-hidden' style='max-height:520px;'>
+    <img
+      src='{{featuredImage.url}}'
+      alt='{{featuredImage.alt}}'
+      class='w-full object-cover object-center'
+      style='max-height:520px;'
+      fetchpriority='high'
+    />
+  </div>
+  {{/if}}
+
+  <div class='max-w-screen-xl mx-auto px-4 xl:px-8'>
+
+    {{!-- Story Header --}}
+    <header class='pt-8 pb-8 border-b border-slate-200 dark:border-slate-700'>
+      <div class='flex items-center gap-3 mb-4'>
+        <span class='inline-flex items-center px-3 py-1.5 bg-[#cc0000] text-white text-xs font-bold tracking-[0.08em] uppercase leading-none'>LIVE</span>
+        {{#with (lookup categories 0)}}
+          <span class='text-xs font-bold uppercase tracking-wider text-[#b21100] dark:text-[#ff2e1a]'>{{name}}</span>
+        {{/with}}
+      </div>
+
+      <h1 class='text-3xl xl:text-5xl font-bold font-encode text-slate-900 dark:text-slate-100 leading-tight mb-4 max-w-4xl'>
+        {{title}}
+      </h1>
+
+      {{#if excerpt}}
+      <p class='text-xl text-slate-600 dark:text-slate-400 font-serif leading-relaxed mb-6 max-w-3xl'>
+        {{excerpt}}
+      </p>
+      {{/if}}
+
+      <div class='flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500 dark:text-slate-400'>
+        {{#each authors}}
+          <span>By <strong class='text-slate-700 dark:text-slate-300 font-semibold'>{{name}}</strong></span>
+        {{/each}}
+        <span class='text-slate-300 dark:text-slate-700'>|</span>
+        {{#if liveStory.lastUpdated}}
+          <span>Updated {{liveStory.lastUpdated}}</span>
+        {{else}}
+          <span>Updated {{formatDate updatedAt}}</span>
+        {{/if}}
+      </div>
+    </header>
+
+    {{!-- Body Grid --}}
+    <div class='pt-8 xl:grid xl:grid-cols-12 xl:gap-12'>
+
+      {{!-- Feed Column --}}
+      <div class='xl:col-span-8'>
+
+        {{!-- Key Points Summary --}}
+        {{#if liveStory.keyPoints}}
+        <div class='mb-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700'>
+          <div class='px-6 py-3 bg-[#cc0000]'>
+            <h2 class='text-sm font-bold tracking-[0.06em] uppercase text-white leading-none'>Here's the latest</h2>
+          </div>
+          <div class='px-6 py-5 bg-slate-50 dark:bg-slate-800'>
+            <ul class='space-y-3'>
+              {{#each liveStory.keyPoints}}
+              <li class='flex items-start gap-3'>
+                <span class='w-2 h-2 rounded-full bg-[#cc0000] flex-shrink-0 mt-2'></span>
+                <p class='text-base leading-relaxed text-slate-700 dark:text-slate-300'>{{this}}</p>
+              </li>
+              {{/each}}
+            </ul>
+          </div>
+        </div>
+        {{/if}}
+
+        {{!-- Live Updates Timeline --}}
+        <div>
+          {{#each body}}
+            {{#if (eq type 'liveUpdate')}}
+            <div class='relative pl-9 pb-10'>
+              <div class='absolute left-0 top-[5px] w-4 h-4 rounded-full bg-[#4FC3F7] ring-4 ring-white dark:ring-slate-950 z-10'></div>
+              {{#unless @last}}
+              <div class='absolute left-[7px] top-5 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700'></div>
+              {{/unless}}
+              <div class='flex flex-col gap-1'>
+                <time class='text-sm font-semibold text-[#0ea5e9] dark:text-[#4FC3F7]'>{{formatDate timestamp}}</time>
+                <h2 class='text-xl font-bold font-encode text-slate-900 dark:text-slate-100 leading-snug mt-1'>
+                  {{headline}}
+                </h2>
+                {{#if html}}
+                <div class='text-base leading-relaxed text-slate-700 dark:text-slate-300 mt-2'>
+                  {{{html}}}
+                </div>
+                {{/if}}
+              </div>
+            </div>
+            {{else}}
+            <div class='relative pl-9 pb-6'>
+              <div class='absolute left-[5px] top-[5px] w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-600 z-10'></div>
+              {{#unless @last}}
+              <div class='absolute left-[9px] top-4 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700'></div>
+              {{/unless}}
+              <div>
+                {{> (lookup . 'type')}}
+              </div>
+            </div>
+            {{/if}}
+          {{/each}}
+        </div>
+
+      </div>
+
+      {{!-- Sidebar --}}
+      <aside class='xl:col-span-4 mt-10 xl:mt-0'>
+        <div class='sticky top-6'>
+          {{#if articles.[0]}}
+          <h3 class='text-xs font-bold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500 mb-4 pb-2 border-b border-slate-200 dark:border-slate-700'>
+            Related Coverage
+          </h3>
+          <div>
+            {{#each (slice articles 0 6)}}
+              {{> components/snack showExcerpt=true}}
+            {{/each}}
+          </div>
+          {{/if}}
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</main>

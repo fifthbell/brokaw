@@ -2,6 +2,7 @@ import articleLayoutHbs from './templates/layouts/article-page.hbs?raw';
 import homepageLayoutHbs from './templates/layouts/homepage.hbs?raw';
 import categoryLayoutHbs from './templates/layouts/category-page.hbs?raw';
 import notFoundLayoutHbs from './templates/layouts/404.hbs?raw';
+import liveStoryLayoutHbs from './templates/layouts/live-story.hbs?raw';
 
 import headerMainHbs from './templates/partials/headers/header-main.hbs?raw';
 import headerMinimalHbs from './templates/partials/headers/header-minimal.hbs?raw';
@@ -51,6 +52,7 @@ import componentCategoryHeaderHbs from './templates/partials/components/category
 import componentCategoryMainGridHbs from './templates/partials/components/category/main-grid.hbs?raw';
 import componentCategoryMoreGridHbs from './templates/partials/components/category/more-grid.hbs?raw';
 import componentNotFoundMainHbs from './templates/partials/components/not-found/main.hbs?raw';
+import componentLiveStoryMainHbs from './templates/partials/components/live-story/main.hbs?raw';
 
 import styles from './styles/compiled.css?raw';
 
@@ -62,7 +64,8 @@ const assets: RendererAssets = {
     'article-page': articleLayoutHbs,
     homepage: homepageLayoutHbs,
     'category-page': categoryLayoutHbs,
-    '404': notFoundLayoutHbs
+    '404': notFoundLayoutHbs,
+    'live-story': liveStoryLayoutHbs
   },
   partials: {
     'headers/header-main': headerMainHbs,
@@ -110,7 +113,8 @@ const assets: RendererAssets = {
     'components/category/header': componentCategoryHeaderHbs,
     'components/category/main-grid': componentCategoryMainGridHbs,
     'components/category/more-grid': componentCategoryMoreGridHbs,
-    'components/not-found/main': componentNotFoundMainHbs
+    'components/not-found/main': componentNotFoundMainHbs,
+    'components/live-story/main': componentLiveStoryMainHbs
   },
   styles
 };
