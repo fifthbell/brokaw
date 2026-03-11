@@ -14,7 +14,7 @@ const relatedArticles: SelfReference[] = [
     id: '20000000-0000-4000-8000-000000000001',
     url: '/world/strait-of-hormuz-explainer',
     title: 'What is the Strait of Hormuz and why does it matter?',
-    excerpt: 'A fifth of the world\'s seaborne oil passes through this narrow waterway.',
+    excerpt: "A fifth of the world's seaborne oil passes through this narrow waterway.",
     categories: [{ name: 'World', slug: 'world' }],
     featuredImage: {
       url: 'https://picsum.photos/seed/livestory-rel-1/400/225',
@@ -42,7 +42,7 @@ const relatedArticles: SelfReference[] = [
     id: '20000000-0000-4000-8000-000000000003',
     url: '/business/oil-markets-hormuz-risk',
     title: 'Oil markets brace for extended disruption as Hormuz fears mount',
-    excerpt: 'Brent crude futures have climbed more than 6% since Monday\'s session close.',
+    excerpt: "Brent crude futures have climbed more than 6% since Monday's session close.",
     categories: [{ name: 'Business', slug: 'business' }],
     featuredImage: {
       url: 'https://picsum.photos/seed/livestory-rel-3/400/225',
@@ -70,7 +70,7 @@ const relatedArticles: SelfReference[] = [
     id: '20000000-0000-4000-8000-000000000005',
     url: '/world/eu-middle-east-response',
     title: 'EU calls for emergency consultations on Middle East security',
-    excerpt: 'The bloc\'s foreign policy chief convened an urgent videoconference with regional envoys.',
+    excerpt: "The bloc's foreign policy chief convened an urgent videoconference with regional envoys.",
     categories: [{ name: 'World', slug: 'world' }],
     featuredImage: {
       url: 'https://picsum.photos/seed/livestory-rel-5/400/225',
@@ -83,7 +83,7 @@ const relatedArticles: SelfReference[] = [
   {
     id: '20000000-0000-4000-8000-000000000006',
     url: '/world/iran-proxy-networks-explainer',
-    title: 'Iran\'s regional network: who are the affiliated groups?',
+    title: "Iran's regional network: who are the affiliated groups?",
     excerpt: 'An explainer on the interconnected proxy forces Tehran uses across the Middle East.',
     categories: [{ name: 'World', slug: 'world' }],
     featuredImage: {
@@ -123,8 +123,7 @@ export const liveStoryFixture: CanonicalArticle = {
   navigation: { categories: navigationCategories },
   seo: {
     metaTitle: 'Middle East Live Updates: U.S. Strikes Mine-Laying Vessels | fifthbell',
-    metaDescription:
-      'Live coverage of U.S. military strikes on mine-laying vessels near the Strait of Hormuz and the diplomatic fallout across the region.'
+    metaDescription: 'Live coverage of U.S. military strikes on mine-laying vessels near the Strait of Hormuz and the diplomatic fallout across the region.'
   },
   liveStory: {
     lastUpdated: 'March 10, 2026 at 1:45 PM ET',
@@ -154,7 +153,7 @@ export const liveStoryFixture: CanonicalArticle = {
       type: 'liveUpdate',
       timestamp: '2026-03-10T11:55:00.000Z',
       headline: "Iran summons Swiss ambassador, condemns strikes as 'flagrant violation'",
-      html: "<p>Iran's foreign ministry summoned the Swiss ambassador — who represents U.S. interests in Tehran — to formally protest the military action. A ministry spokesperson described the strikes as \"a flagrant violation of international law and an unprovoked act of aggression,\" adding that Iran reserves the right to respond.</p>"
+      html: '<p>Iran\'s foreign ministry summoned the Swiss ambassador — who represents U.S. interests in Tehran — to formally protest the military action. A ministry spokesperson described the strikes as "a flagrant violation of international law and an unprovoked act of aggression," adding that Iran reserves the right to respond.</p>'
     },
     {
       type: 'liveUpdate',
@@ -166,13 +165,13 @@ export const liveStoryFixture: CanonicalArticle = {
       type: 'liveUpdate',
       timestamp: '2026-03-10T10:20:00.000Z',
       headline: 'European Union calls for urgent de-escalation',
-      html: "<p>The EU's High Representative for Foreign Affairs issued a statement calling for \"urgent de-escalation\" and announcing an emergency consultation among member states with naval assets currently deployed to the region. The EU's maritime security mission has been operating in the area for the past 14 months.</p>"
+      html: '<p>The EU\'s High Representative for Foreign Affairs issued a statement calling for "urgent de-escalation" and announcing an emergency consultation among member states with naval assets currently deployed to the region. The EU\'s maritime security mission has been operating in the area for the past 14 months.</p>'
     },
     {
       type: 'liveUpdate',
       timestamp: '2026-03-10T09:05:00.000Z',
       headline: 'White House confirms president approved the operation in advance',
-      html: "<p>A senior administration official said the president was briefed and approved the military strikes as a proportional response to what was characterized as \"an imminent threat to freedom of navigation in international waters.\" Congressional leaders on key security committees are expected to receive classified briefings later in the day.</p>"
+      html: '<p>A senior administration official said the president was briefed and approved the military strikes as a proportional response to what was characterized as "an imminent threat to freedom of navigation in international waters." Congressional leaders on key security committees are expected to receive classified briefings later in the day.</p>'
     },
     {
       type: 'liveUpdate',
@@ -184,7 +183,7 @@ export const liveStoryFixture: CanonicalArticle = {
       type: 'liveUpdate',
       timestamp: '2026-03-10T06:15:00.000Z',
       headline: 'U.S. military confirms overnight strikes on 16 mine-laying vessels',
-      html: '<p>U.S. Central Command released a statement in the early morning hours confirming that American naval forces struck 16 vessels identified as Iranian-affiliated mine-laying ships in international waters near the Strait of Hormuz. The statement described the operation as a defensive measure intended to protect freedom of navigation in one of the world\'s most critical shipping lanes.</p>'
+      html: "<p>U.S. Central Command released a statement in the early morning hours confirming that American naval forces struck 16 vessels identified as Iranian-affiliated mine-laying ships in international waters near the Strait of Hormuz. The statement described the operation as a defensive measure intended to protect freedom of navigation in one of the world's most critical shipping lanes.</p>"
     }
   ],
   articles: relatedArticles

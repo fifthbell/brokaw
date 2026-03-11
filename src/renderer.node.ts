@@ -38,7 +38,10 @@ function readPartialsRecursively(dir: string, root: string, partials: Record<str
       continue;
     }
 
-    const partialName = path.relative(root, fullPath).replace(/\\/g, '/').replace(/\.hbs$/, '');
+    const partialName = path
+      .relative(root, fullPath)
+      .replace(/\\/g, '/')
+      .replace(/\.hbs$/, '');
     partials[partialName] = fs.readFileSync(fullPath, 'utf8');
   }
 }
