@@ -17,6 +17,21 @@
           <span class='text-xs text-slate-400'>•</span>
           <a href='{{slug}}' class='text-xs font-bold uppercase tracking-wider text-black dark:text-white hover:text-[#b21100] transition-colors'>Read Now &rarr;</a>
         </div>
+
+        {{#if related.[0]}}
+          <div class='grid grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800 mt-4'>
+            {{#each (slice related 0 4)}}
+              {{> components/headline
+                url=url
+                title=title
+                time=time
+                image=image
+                featuredImage=featuredImage
+                titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-slate-900 dark:text-slate-100 font-sans'
+              }}
+            {{/each}}
+          </div>
+        {{/if}}
       </div>
 
       <div class='lg:col-span-12 xl:col-span-7 relative order-1 lg:order-2'>
@@ -52,21 +67,6 @@
           <span class='italic text-slate-400'>Photo: Agency/Wire</span>
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class='container mx-auto px-4 mt-12 pt-8 border-t border-black dark:border-white'>
-    <div class='grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6'>
-      {{#each (slice related 0 4)}}
-        {{> components/headline
-          url=url
-          title=title
-          time=time
-          image=image
-          featuredImage=featuredImage
-          titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-slate-900 dark:text-slate-100 font-sans'
-        }}
-      {{/each}}
     </div>
   </div>
 </section>
