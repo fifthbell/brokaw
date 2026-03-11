@@ -130,7 +130,7 @@ export const canonicalArticleSchema = z
   .object({
     id: z.coerce.string(),
     slug: z.string(),
-    layout: z.enum(['article-page', 'homepage', 'category-page', '404']),
+    layout: z.enum(['article-page', 'homepage', 'category-page', '404', 'live-story']),
     canonicalUrl: z.string(),
     contentVersion: isoDateTime,
     publishedAt: isoDateTime,
@@ -222,6 +222,12 @@ export const canonicalArticleSchema = z
             })
           )
           .optional()
+      })
+      .optional(),
+    liveStory: z
+      .object({
+        lastUpdated: z.string().optional(),
+        keyPoints: z.array(z.string()).optional()
       })
       .optional()
   })

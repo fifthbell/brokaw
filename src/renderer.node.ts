@@ -8,7 +8,8 @@ const layoutFiles: Record<LayoutName, string> = {
   'article-page': 'article-page.hbs',
   homepage: 'homepage.hbs',
   'category-page': 'category-page.hbs',
-  '404': '404.hbs'
+  '404': '404.hbs',
+  'live-story': 'live-story.hbs'
 };
 
 function getPaths() {
