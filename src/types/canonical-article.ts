@@ -178,7 +178,8 @@ export const canonicalArticleSchema = z
             title: z.string(),
             url: z.string(),
             image: z.string(),
-            excerpt: z.string().optional()
+            excerpt: z.string().optional(),
+            publishedAt: isoDateTime.optional()
           })
           .optional(),
         sidebarSub: z

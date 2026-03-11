@@ -54,14 +54,24 @@ function registerHelpers(): void {
   Handlebars.registerHelper('formatDate', (isoString: string) => {
     if (!isoString) return '';
     try {
-      return new Date(isoString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'America/New_York'
-      });
+      const date = new Date(isoString);
+      const now = new Date();
+      const isWithin24h = now.getTime() - date.getTime() < 24 * 60 * 60 * 1000;
+      if (isWithin24h) {
+        return date.toLocaleTimeString('en-US', {
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+          timeZone: 'America/New_York'
+        });
+      } else {
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          timeZone: 'America/New_York'
+        });
+      }
     } catch {
       return isoString;
     }
@@ -226,15 +236,9 @@ export function renderWithAssets(doc: CanonicalArticle, assets: RendererAssets):
   // Build the template context, enriching homepage renders with pre-distributed
   // article slots so templates do not need to perform index arithmetic.
   const docExtra = doc as Record<string, unknown>;
-  const showBreakingNews =
-    parsed.layout === 'homepage' &&
-    Boolean(parsed.breakingNews) &&
-    docExtra['showBreakingNews'] !== false;
+  const showBreakingNews = parsed.layout === 'homepage' && Boolean(parsed.breakingNews) && docExtra['showBreakingNews'] !== false;
 
-  const homepageSlots =
-    parsed.layout === 'homepage'
-      ? distributeHomepageArticles(parsed.articles ?? [], new Date(), showBreakingNews)
-      : undefined;
+  const homepageSlots = parsed.layout === 'homepage' ? distributeHomepageArticles(parsed.articles ?? [], new Date(), showBreakingNews) : undefined;
 
   return template({
     ...parsed,
