@@ -122,7 +122,8 @@ const articleReferenceSchema = z
     hero: heroSchema.optional(),
     featuredImage: featuredImageSchema.optional(),
     updatedAt: isoDateTime.optional(),
-    publishedAt: isoDateTime.optional()
+    publishedAt: isoDateTime.optional(),
+    featured: z.boolean().optional()
   })
   .passthrough();
 

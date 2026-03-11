@@ -7,7 +7,7 @@
         excerpt=(coalesce heroExcerpt excerpt)
         hero=hero
         slides=heroSlides
-        related=(coalesce heroRelated (slice articles 0 4))
+        related=(coalesce heroRelated homepageSlots.landing.sub1)
       }}
     {{else}}
       {{#if heroSlides}}
@@ -17,7 +17,7 @@
           excerpt=(coalesce heroExcerpt excerpt)
           hero=hero
           slides=heroSlides
-          related=(coalesce heroRelated (slice articles 0 4))
+          related=(coalesce heroRelated homepageSlots.landing.sub1)
         }}
       {{/if}}
     {{/if}}
@@ -29,12 +29,12 @@
     {{/unless}}
 
     {{#if showEditorialHero}}
-      {{> components/editorial-hero title=title slug=slug excerpt=excerpt hero=hero slides=heroSlides related=(slice articles 0 4) categories=categories}}
+      {{> components/editorial-hero title=title slug=slug excerpt=excerpt hero=hero slides=heroSlides related=homepageSlots.landing.sub1 categories=categories}}
     {{/if}}
 
     {{#unless (eq showBreakingNews false)}}
       {{#if breakingNews}}
-        {{> components/breaking-news breakingNews}}
+        {{> components/breaking-news breakingNews queueSnacks=homepageSlots.breakingNewsSnacks}}
       {{/if}}
     {{/unless}}
 

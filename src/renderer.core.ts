@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import { canonicalArticleSchema, type CanonicalArticle } from './types/canonical-article.js';
+import { distributeHomepageArticles } from './homepage-distributor.js';
 
 export type LayoutName = CanonicalArticle['layout'];
 
@@ -222,8 +223,22 @@ export function renderWithAssets(doc: CanonicalArticle, assets: RendererAssets):
     throw new Error(`Layout template missing for \"${parsed.layout}\"`);
   }
 
+  // Build the template context, enriching homepage renders with pre-distributed
+  // article slots so templates do not need to perform index arithmetic.
+  const docExtra = doc as Record<string, unknown>;
+  const showBreakingNews =
+    parsed.layout === 'homepage' &&
+    Boolean(parsed.breakingNews) &&
+    docExtra['showBreakingNews'] !== false;
+
+  const homepageSlots =
+    parsed.layout === 'homepage'
+      ? distributeHomepageArticles(parsed.articles ?? [], new Date(), showBreakingNews)
+      : undefined;
+
   return template({
     ...parsed,
+    ...(homepageSlots !== undefined ? { homepageSlots } : {}),
     styles: runtimeStyles,
     logoLink: parsed.language === 'en' ? '/' : `/${parsed.language}`
   });
