@@ -163,6 +163,71 @@
       return `/${lang}${normalized}`;
     }
 
+    function normalizePathInput(value) {
+      if (typeof value !== 'string') return '';
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+
+      try {
+        if (/^https?:\/\//i.test(trimmed)) {
+          const parsed = new URL(trimmed);
+          const normalizedAbsolute = `/${(parsed.pathname || '').replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/');
+          if (normalizedAbsolute !== '/' && normalizedAbsolute.endsWith('/')) {
+            return normalizedAbsolute.slice(0, -1);
+          }
+          return normalizedAbsolute || '/';
+        }
+      } catch {
+        // Fall back to raw string normalization below
+      }
+
+      const withoutQueryOrHash = trimmed.split('#')[0].split('?')[0];
+      const normalized = `/${withoutQueryOrHash.replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/');
+      if (normalized !== '/' && normalized.endsWith('/')) {
+        return normalized.slice(0, -1);
+      }
+      return normalized;
+    }
+
+    function cleanPathSegment(value) {
+      if (typeof value !== 'string') return '';
+      return value.trim().replace(/^\/+|\/+$/g, '');
+    }
+
+    function getArticleLeafPath(article) {
+      const explicitUrl = normalizePathInput(article?.url);
+      if (explicitUrl && explicitUrl !== '/') {
+        return buildLocalePath(explicitUrl);
+      }
+
+      const canonicalUrl = normalizePathInput(article?.canonicalUrl);
+      if (canonicalUrl && canonicalUrl !== '/') {
+        return buildLocalePath(canonicalUrl);
+      }
+
+      const slugRaw = typeof article?.slug === 'string' ? article.slug : '';
+      const normalizedSlugPath = normalizePathInput(slugRaw);
+      const slugSegments = normalizedSlugPath.split('/').filter(Boolean);
+
+      if (slugSegments.length > 1) {
+        return buildLocalePath(normalizedSlugPath);
+      }
+
+      const slugSegment = cleanPathSegment(slugRaw);
+      const primaryCategorySlug =
+        cleanPathSegment(article?.categories?.[0]?.slug) || cleanPathSegment(article?.category?.slug);
+
+      if (slugSegment && primaryCategorySlug) {
+        return buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`);
+      }
+
+      if (slugSegment) {
+        return buildLocalePath(`/${slugSegment}`);
+      }
+
+      return buildLocalePath('/');
+    }
+
     function getCdnUrl(categorySlug) {
       const lang = getCurrentLang();
       const file = categorySlug ? `${categorySlug}-current-${lang}.json` : `homepage-current-${lang}.json`;
@@ -254,7 +319,7 @@
                 <span>5 min</span>
               </div>
               <h2 class='text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight'>
-                <a href='${buildLocalePath(article?.url || '#')}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
+                <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
               </h2>
             </div>
           `
@@ -275,7 +340,7 @@
                   <span class='uppercase font-bold'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span>
                 </div>
                 <h3 class='font-medium text-base leading-tight text-slate-900 dark:text-slate-100'>
-                  <a href='${buildLocalePath(article?.url || '#')}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
+                  <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
                 </h3>
               </div>
             `
