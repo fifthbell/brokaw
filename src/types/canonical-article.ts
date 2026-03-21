@@ -156,6 +156,7 @@ export const canonicalArticleSchema = z
     authors: z.array(authorSchema),
     categories: z.array(categorySchema),
     featuredImage: featuredImageSchema.optional(),
+    media: z.array(featuredImageSchema).optional(),
     hero: heroSchema.optional(),
     body: z.array(bodyBlockSchema),
     seo: z
