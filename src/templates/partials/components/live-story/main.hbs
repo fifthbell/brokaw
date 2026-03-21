@@ -110,9 +110,11 @@
               {{/unless}}
               <div class='flex flex-col gap-1'>
                 <time class='text-sm font-semibold text-[#0ea5e9] dark:text-[#4FC3F7]'>{{formatDate timestamp}}</time>
+                {{#if headline}}
                 <h2 class='text-xl font-bold font-encode text-slate-900 dark:text-slate-100 leading-snug mt-1'>
                   {{headline}}
                 </h2>
+                {{/if}}
                 {{#if html}}
                 <div class='text-base leading-relaxed text-slate-700 dark:text-slate-300 mt-2'>
                   {{{html}}}
