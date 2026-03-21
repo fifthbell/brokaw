@@ -1,6 +1,10 @@
 import Handlebars from 'handlebars';
 import { canonicalArticleSchema, type CanonicalArticle } from './types/canonical-article.js';
 import { distributeHomepageArticles } from './homepage-distributor.js';
+import {
+  buildSofascoreAttackMomentumUrl,
+  buildSofascoreMatchUrl,
+} from './utils/sofascore.js';
 
 export type LayoutName = CanonicalArticle['layout'];
 
@@ -133,6 +137,12 @@ function registerHelpers(): void {
     if (!match) return url;
     return `https://www.tiktok.com/embed/v2/${match[1]}`;
   });
+  Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) =>
+    buildSofascoreAttackMomentumUrl(id),
+  );
+  Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) =>
+    buildSofascoreMatchUrl(id),
+  );
   Handlebars.registerHelper('resolveHeadTitle', (doc: unknown) => {
     if (!doc || typeof doc !== 'object') return 'fifthbell';
     const page = doc as Partial<CanonicalArticle>;

@@ -1,4 +1,8 @@
 import Handlebars from 'handlebars';
+import {
+  buildSofascoreAttackMomentumUrl,
+  buildSofascoreMatchUrl,
+} from '../../src/utils/sofascore';
 
 let initialized = false;
 
@@ -107,6 +111,12 @@ export function registerCommonHelpers(): void {
     if (!match) return url;
     return `https://www.tiktok.com/embed/v2/${match[1]}`;
   });
+  Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) =>
+    buildSofascoreAttackMomentumUrl(id),
+  );
+  Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) =>
+    buildSofascoreMatchUrl(id),
+  );
 
   initialized = true;
 }
