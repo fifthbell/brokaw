@@ -7,4 +7,18 @@
       {{{html}}}
     </div>
   {{/if}}
+  {{#if media}}
+    <div class='mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3'>
+      {{#each media}}
+        <figure class='overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'>
+          <img src='{{url}}' alt='{{alt}}' class='w-full h-auto object-cover' loading='lazy' />
+          {{#if caption}}
+            <figcaption class='px-3 py-2 text-xs text-slate-500 dark:text-slate-400'>
+              {{caption}}
+            </figcaption>
+          {{/if}}
+        </figure>
+      {{/each}}
+    </div>
+  {{/if}}
 </section>
