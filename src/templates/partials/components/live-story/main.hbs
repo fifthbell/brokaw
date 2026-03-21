@@ -72,6 +72,27 @@
         </div>
         {{/if}}
 
+        {{!-- Event Gallery --}}
+        {{#if media}}
+        <div class='mb-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'>
+          <div class='px-6 py-3 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700'>
+            <h2 class='text-sm font-bold tracking-[0.06em] uppercase text-slate-700 dark:text-slate-200 leading-none'>Event Gallery</h2>
+          </div>
+          <div class='p-4 grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            {{#each media}}
+            <figure class='overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'>
+              <img src='{{url}}' alt='{{alt}}' class='w-full h-auto object-cover' loading='lazy' />
+              {{#if caption}}
+              <figcaption class='px-3 py-2 text-xs text-slate-500 dark:text-slate-400'>
+                {{caption}}
+              </figcaption>
+              {{/if}}
+            </figure>
+            {{/each}}
+          </div>
+        </div>
+        {{/if}}
+
         {{!-- SofaScore Match Momentum --}}
         {{#with (sofascoreWidgetUrl sofascore_id) as |widgetUrl|}}
         <div class='mb-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'>
