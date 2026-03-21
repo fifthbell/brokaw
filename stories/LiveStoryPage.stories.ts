@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { render } from '../src/renderer.browser';
-import { liveStoryFixture } from './fixtures/live-story.fixture';
+import { loadLiveStoryPreviewData } from './preview-data';
 
 const meta = {
   title: 'Pages/LiveStoryPage',
-  render: (args) => render(args as typeof liveStoryFixture),
-  args: liveStoryFixture
-} satisfies Meta<typeof liveStoryFixture>;
+  loaders: [async () => ({ liveStory: await loadLiveStoryPreviewData() })],
+  render: (_args, { loaded }) => render(loaded.liveStory)
+} satisfies Meta;
 
 export default meta;
 

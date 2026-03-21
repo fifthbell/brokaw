@@ -14,7 +14,7 @@ import homeLandingHbs from '../../src/templates/partials/components/home/landing
 import homeMustReadHbs from '../../src/templates/partials/components/home/must-read.hbs?raw';
 import homeMoreStoriesHbs from '../../src/templates/partials/components/home/more-stories.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
-import { homepageFixture } from '../fixtures/homepage.fixture';
+import { loadHomepagePreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -46,9 +46,9 @@ const sectionControls = {
 
 const meta = {
   title: 'Partials/Home/Main',
-  render: (args) => template(args),
+  loaders: [async () => ({ homepage: await loadHomepagePreviewData() })],
+  render: (args, { loaded }) => template({ ...loaded.homepage, ...args }),
   args: {
-    ...homepageFixture,
     showHero: true,
     showEditorialHero: false,
     showBreakingNews: true,

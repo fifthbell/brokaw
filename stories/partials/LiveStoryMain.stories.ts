@@ -18,7 +18,7 @@ import instagramHbs from '../../src/templates/partials/blocks/instagram.hbs?raw'
 import tiktokHbs from '../../src/templates/partials/blocks/tiktok.hbs?raw';
 import pullQuoteHbs from '../../src/templates/partials/blocks/pull-quote.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
-import { liveStoryFixture } from '../fixtures/live-story.fixture';
+import { loadLiveStoryPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -45,8 +45,8 @@ const template = Handlebars.compile(liveStoryMainHbs);
 
 const meta = {
   title: 'Partials/LiveStory/Main',
-  render: (args) => template(args),
-  args: liveStoryFixture
+  loaders: [async () => ({ liveStory: await loadLiveStoryPreviewData() })],
+  render: (_args, { loaded }) => template(loaded.liveStory)
 } satisfies Meta;
 
 export default meta;

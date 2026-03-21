@@ -6,7 +6,7 @@ import secondaryHbs from '../../src/templates/partials/components/breaking-news/
 import liveUpdatesColumnHbs from '../../src/templates/partials/components/breaking-news/live-updates-column.hbs?raw';
 import candyBarHbs from '../../src/templates/partials/components/breaking-news/candy-bar.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
-import { homepageFixture } from '../fixtures/homepage.fixture';
+import { loadBreakingNewsPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -21,8 +21,8 @@ const template = Handlebars.compile(breakingNewsHbs);
 
 const meta = {
   title: 'Partials/BreakingNews',
-  render: (args) => template(args),
-  args: homepageFixture.breakingNews
+  loaders: [async () => ({ breakingNews: await loadBreakingNewsPreviewData() })],
+  render: (_args, { loaded }) => template(loaded.breakingNews)
 } satisfies Meta;
 
 export default meta;
