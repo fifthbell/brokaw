@@ -40,7 +40,7 @@ interface BreakingNewsStoryData {
   sidebarFeature?: Record<string, unknown>;
   sidebarSub?: Record<string, unknown>;
   main?: Record<string, unknown>;
-  updates?: Array<{ time: string; text: string }>;
+  updates?: Array<{ timestamp?: string; time?: string; text: string }>;
   snacks?: Array<Record<string, unknown>>;
 }
 
@@ -73,13 +73,38 @@ function resolveHref(value: unknown): string {
   return value;
 }
 
+function buildLiveEventPath(pathInput: unknown): string | undefined {
+  if (typeof pathInput !== 'string' || pathInput.trim().length === 0) return undefined;
+  const path = pathInput.trim();
+  if (!path.startsWith('/')) return undefined;
+  if (path === '/live' || path.startsWith('/live/')) return path;
+  if (path === '/es' || path.startsWith('/es/')) {
+    const rest = path.replace(/^\/es/, '');
+    if (!rest || rest === '/' || rest === '/live' || rest.startsWith('/live/')) return undefined;
+    return `/es/live${rest}`;
+  }
+  if (path === '/it' || path.startsWith('/it/')) {
+    const rest = path.replace(/^\/it/, '');
+    if (!rest || rest === '/' || rest === '/live' || rest.startsWith('/live/')) return undefined;
+    return `/it/live${rest}`;
+  }
+  return `/live${path}`;
+}
+
 function normalizeBreakingNewsCard(card: unknown): Record<string, unknown> | undefined {
   if (!card || typeof card !== 'object') return undefined;
 
   const record = card as Record<string, unknown>;
+  const resolvedUrl = resolveHref(record.url ?? record.slug);
+  const liveCandidate = record.liveUrl ?? buildLiveEventPath(resolvedUrl);
+  const resolvedLiveUrl =
+    typeof liveCandidate === 'string' && liveCandidate.trim().length > 0
+      ? liveCandidate
+      : undefined;
   return {
     ...record,
-    url: resolveHref(record.url ?? record.slug)
+    url: resolvedUrl,
+    ...(resolvedLiveUrl ? { liveUrl: resolvedLiveUrl } : {})
   };
 }
 
@@ -121,12 +146,37 @@ function normalizeBreakingNewsData(payload: HomepagePreviewPayload | null): Brea
     };
   }
 
+  const updates = Array.isArray(record.updates)
+    ? record.updates
+        .map((update) => {
+          if (!update || typeof update !== 'object') return null;
+          const mapped = update as Record<string, unknown>;
+          const text = typeof mapped.text === 'string' ? mapped.text.trim() : '';
+          const time = typeof mapped.time === 'string' ? mapped.time.trim() : '';
+          const timestamp =
+            typeof mapped.timestamp === 'string' ? mapped.timestamp.trim() : '';
+          if (!text) return null;
+          if (!time && !timestamp) return null;
+          return {
+            ...(timestamp ? { timestamp } : {}),
+            ...(time ? { time } : {}),
+            text
+          };
+        })
+        .filter(
+          (
+            update
+          ): update is { timestamp?: string; time?: string; text: string } =>
+            Boolean(update)
+        )
+    : [];
+
   return {
     ...record,
     sidebarFeature: normalizeBreakingNewsCard(record.sidebarFeature) ?? breakingNewsFixture.sidebarFeature,
     sidebarSub: normalizeBreakingNewsCard(record.sidebarSub) ?? breakingNewsFixture.sidebarSub,
     main: normalizeBreakingNewsCard(record.main) ?? breakingNewsFixture.main,
-    updates: Array.isArray(record.updates) ? (record.updates as Array<{ time: string; text: string }>) : [],
+    updates,
     snacks: Array.isArray(record.snacks)
       ? record.snacks.map((snack) => normalizeBreakingNewsCard(snack)).filter((snack): snack is Record<string, unknown> => Boolean(snack))
       : breakingNewsFixture.snacks
@@ -390,6 +440,9 @@ function buildBreakingNewsMainFromEvent(eventDoc: EventsPreviewDoc): Record<stri
     category,
     title: typeof eventDoc.title === 'string' && eventDoc.title.trim().length > 0 ? eventDoc.title : liveStoryFixture.title,
     url: resolveHref(eventDoc.url ?? eventDoc.slug ?? liveStoryFixture.slug),
+    liveUrl: buildLiveEventPath(
+      resolveHref(eventDoc.url ?? eventDoc.slug ?? liveStoryFixture.slug),
+    ),
     sofascore_id: sofascoreId,
     image:
       typeof eventDoc.featuredImage?.url === 'string' && eventDoc.featuredImage.url.trim().length > 0
@@ -405,12 +458,12 @@ function buildBreakingNewsMainFromEvent(eventDoc: EventsPreviewDoc): Record<stri
   };
 }
 
-function buildBreakingNewsUpdatesFromEvent(eventDoc: EventsPreviewDoc): Array<{ time: string; text: string }> {
+function buildBreakingNewsUpdatesFromEvent(eventDoc: EventsPreviewDoc): Array<{ timestamp?: string; time?: string; text: string }> {
   const updates = normalizeEventLiveUpdates(eventDoc);
   return updates.slice(0, 10).map((update, index) => {
     const text = stripTags(update.html || '').trim() || update.headline || deriveHeadline('', 'regular', index);
     const time = formatRelativeTimestamp(update.timestamp) || formatLiveStoryTimestamp(update.timestamp);
-    return { time, text };
+    return { timestamp: update.timestamp, time, text };
   });
 }
 
@@ -630,7 +683,10 @@ function buildLiveStoryDocument(payload: HomepagePreviewPayload | null, breaking
   if (Array.isArray(breakingNews.updates)) {
     breakingNews.updates.forEach((update, index) => {
       const text = typeof update?.text === 'string' ? update.text.trim() : '';
-      const timestamp = deriveSyntheticTimestamp(defaultTimestamp, update?.time, index);
+      const timestamp =
+        typeof update?.timestamp === 'string'
+          ? toIsoDateTime(update.timestamp, defaultTimestamp)
+          : deriveSyntheticTimestamp(defaultTimestamp, update?.time, index);
       if (!text) return;
 
       updates.push({

@@ -199,6 +199,7 @@ export const canonicalArticleSchema = z
             category: z.string(),
             title: z.string(),
             url: z.string(),
+            liveUrl: z.string().optional(),
             sofascore_id: z.number().int().positive().optional(),
             image: z.string(),
             alt: z.string().optional(),
@@ -208,7 +209,8 @@ export const canonicalArticleSchema = z
         updates: z
           .array(
             z.object({
-              time: z.string(),
+              timestamp: isoDateTime.optional(),
+              time: z.string().optional(),
               text: z.string()
             })
           )
