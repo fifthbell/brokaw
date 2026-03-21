@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { render } from '../src/renderer.browser';
 import { homepageFixture, FIXTURE_NOW } from './fixtures/homepage.fixture';
-import { distributeHomepageArticles } from '../src/homepage-distributor';
 import type { CanonicalArticle } from '../src/types/canonical-article';
+import { loadHomepagePreviewData } from './preview-data';
 
 const sectionControls = {
   showHero: { control: 'boolean' },
@@ -16,9 +16,9 @@ const sectionControls = {
 
 const meta = {
   title: 'Pages/Homepage',
-  render: (args) => render(args as typeof homepageFixture),
+  loaders: [async () => ({ homepage: await loadHomepagePreviewData() })],
+  render: (args, { loaded }) => render({ ...(loaded.homepage as CanonicalArticle), ...args }),
   args: {
-    ...homepageFixture,
     showHero: true,
     showEditorialHero: false,
     showBreakingNews: true,
