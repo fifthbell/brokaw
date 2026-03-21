@@ -40,7 +40,7 @@ interface BreakingNewsStoryData {
   sidebarFeature?: Record<string, unknown>;
   sidebarSub?: Record<string, unknown>;
   main?: Record<string, unknown>;
-  updates?: Array<{ timestamp?: string; time?: string; text: string }>;
+  updates?: Array<{ timestamp?: string; time?: string; text?: string; html?: string }>;
   snacks?: Array<Record<string, unknown>>;
 }
 
@@ -152,21 +152,23 @@ function normalizeBreakingNewsData(payload: HomepagePreviewPayload | null): Brea
           if (!update || typeof update !== 'object') return null;
           const mapped = update as Record<string, unknown>;
           const text = typeof mapped.text === 'string' ? mapped.text.trim() : '';
+          const html = typeof mapped.html === 'string' ? mapped.html.trim() : '';
           const time = typeof mapped.time === 'string' ? mapped.time.trim() : '';
           const timestamp =
             typeof mapped.timestamp === 'string' ? mapped.timestamp.trim() : '';
-          if (!text) return null;
+          if (!text && !html) return null;
           if (!time && !timestamp) return null;
           return {
             ...(timestamp ? { timestamp } : {}),
             ...(time ? { time } : {}),
-            text
+            ...(text ? { text } : {}),
+            ...(html ? { html } : {})
           };
         })
         .filter(
           (
             update
-          ): update is { timestamp?: string; time?: string; text: string } =>
+          ): update is { timestamp?: string; time?: string; text?: string; html?: string } =>
             Boolean(update)
         )
     : [];
@@ -228,21 +230,6 @@ function stripTags(value: string): string {
 
 function escapeHtml(value: string): string {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-}
-
-function deriveHeadline(text: string, updateType: unknown, index: number): string {
-  const cleaned = text.replace(/\s+/g, ' ').trim();
-  if (cleaned.length > 0) {
-    const sentence = cleaned.split(/(?<=[.!?])\s+/)[0]?.trim() || cleaned;
-    if (sentence.length <= 110) return sentence;
-    return `${sentence.slice(0, 107).trimEnd()}…`;
-  }
-
-  if (typeof updateType === 'string' && updateType.trim().length > 0) {
-    return `${updateType.charAt(0).toUpperCase()}${updateType.slice(1)} update`;
-  }
-
-  return `Live update ${index + 1}`;
 }
 
 function formatLiveStoryTimestamp(isoString: string): string {
@@ -395,7 +382,7 @@ function normalizeEventLiveUpdates(eventDoc: EventsPreviewDoc): Extract<Canonica
 
   const updates: Extract<CanonicalArticle['body'][number], { type: 'liveUpdate' }>[] = [];
 
-  eventDoc.updates.forEach((update, index) => {
+  eventDoc.updates.forEach((update) => {
     if (!update || typeof update !== 'object') return;
     const record = update as Record<string, unknown>;
 
@@ -407,8 +394,8 @@ function normalizeEventLiveUpdates(eventDoc: EventsPreviewDoc): Extract<Canonica
       extractLexicalText(record.content);
     const headline =
       typeof record.headline === 'string' && record.headline.trim().length > 0
-        ? record.headline
-        : deriveHeadline(plainText, record.type, index);
+        ? record.headline.trim()
+        : '';
 
     if (!headline && !html && !plainText) return;
 
@@ -458,12 +445,17 @@ function buildBreakingNewsMainFromEvent(eventDoc: EventsPreviewDoc): Record<stri
   };
 }
 
-function buildBreakingNewsUpdatesFromEvent(eventDoc: EventsPreviewDoc): Array<{ timestamp?: string; time?: string; text: string }> {
+function buildBreakingNewsUpdatesFromEvent(eventDoc: EventsPreviewDoc): Array<{ timestamp?: string; time?: string; text?: string; html?: string }> {
   const updates = normalizeEventLiveUpdates(eventDoc);
-  return updates.slice(0, 10).map((update, index) => {
-    const text = stripTags(update.html || '').trim() || update.headline || deriveHeadline('', 'regular', index);
+  return updates.slice(0, 10).map((update) => {
+    const text = stripTags(update.html || '').trim() || update.headline || '';
     const time = formatRelativeTimestamp(update.timestamp) || formatLiveStoryTimestamp(update.timestamp);
-    return { timestamp: update.timestamp, time, text };
+    return {
+      timestamp: update.timestamp,
+      time,
+      ...(text ? { text } : {}),
+      ...(update.html ? { html: update.html } : {})
+    };
   });
 }
 
@@ -683,17 +675,18 @@ function buildLiveStoryDocument(payload: HomepagePreviewPayload | null, breaking
   if (Array.isArray(breakingNews.updates)) {
     breakingNews.updates.forEach((update, index) => {
       const text = typeof update?.text === 'string' ? update.text.trim() : '';
+      const html = typeof update?.html === 'string' ? update.html.trim() : '';
       const timestamp =
         typeof update?.timestamp === 'string'
           ? toIsoDateTime(update.timestamp, defaultTimestamp)
           : deriveSyntheticTimestamp(defaultTimestamp, update?.time, index);
-      if (!text) return;
+      if (!text && !html) return;
 
       updates.push({
         type: 'liveUpdate',
         timestamp,
-        headline: deriveHeadline(text, 'regular', index),
-        html: text ? `<p>${escapeHtml(text)}</p>` : undefined
+        headline: '',
+        html: html || (text ? `<p>${escapeHtml(text)}</p>` : undefined)
       });
     });
 

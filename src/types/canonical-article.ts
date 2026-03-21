@@ -211,7 +211,8 @@ export const canonicalArticleSchema = z
             z.object({
               timestamp: isoDateTime.optional(),
               time: z.string().optional(),
-              text: z.string()
+              text: z.string().optional(),
+              html: z.string().optional()
             })
           )
           .optional(),
