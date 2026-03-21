@@ -141,6 +141,7 @@ export const canonicalArticleSchema = z
     dek: z.string().optional(),
     excerpt: z.string().optional(),
     language: z.enum(['en', 'es', 'it']),
+    sofascore_id: z.number().int().positive().optional(),
     originalArticleId: z.string().optional(),
     featured: z.boolean(),
     authors: z.array(authorSchema),
@@ -198,6 +199,7 @@ export const canonicalArticleSchema = z
             category: z.string(),
             title: z.string(),
             url: z.string(),
+            sofascore_id: z.number().int().positive().optional(),
             image: z.string(),
             alt: z.string().optional(),
             excerpt: z.string().optional()
