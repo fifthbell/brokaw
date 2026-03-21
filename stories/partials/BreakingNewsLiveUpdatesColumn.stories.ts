@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
 import liveUpdatesColumnHbs from '../../src/templates/partials/components/breaking-news/live-updates-column.hbs?raw';
-import { homepageFixture } from '../fixtures/homepage.fixture';
+import { loadBreakingNewsPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -10,8 +10,12 @@ const template = Handlebars.compile(liveUpdatesColumnHbs);
 
 const meta = {
   title: 'Partials/BreakingNews/LiveUpdatesColumn',
-  render: (args) => template(args),
-  args: { ...homepageFixture.breakingNews.main, updates: homepageFixture.breakingNews.updates }
+  loaders: [async () => ({ breakingNews: await loadBreakingNewsPreviewData() })],
+  render: (_args, { loaded }) =>
+    template({
+      ...(loaded.breakingNews.main || {}),
+      updates: loaded.breakingNews.updates || []
+    })
 } satisfies Meta;
 
 export default meta;
