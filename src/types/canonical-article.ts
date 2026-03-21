@@ -80,7 +80,16 @@ const bodyBlockSchema = z.discriminatedUnion('type', [
     type: z.literal('liveUpdate'),
     timestamp: isoDateTime,
     headline: z.string(),
-    html: z.string().optional()
+    html: z.string().optional(),
+    media: z
+      .array(
+        z.object({
+          url: z.string(),
+          alt: z.string(),
+          caption: z.string().optional()
+        })
+      )
+      .optional()
   }),
   z.object({
     type: z.literal('audio'),

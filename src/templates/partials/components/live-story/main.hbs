@@ -53,9 +53,9 @@
       {{!-- Feed Column --}}
       <div class='xl:col-span-8'>
 
-        {{!-- Key Points Summary --}}
+        {{!-- Key Points Summary (kept in template, temporarily hidden) --}}
         {{#if liveStory.keyPoints}}
-        <div class='mb-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700'>
+        <div class='hidden mb-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700'>
           <div class='px-6 py-3 bg-[#cc0000]'>
             <h2 class='text-sm font-bold tracking-[0.06em] uppercase text-white leading-none'>Here's the latest</h2>
           </div>
@@ -116,8 +116,22 @@
                 </h2>
                 {{/if}}
                 {{#if html}}
-                <div class='text-base leading-relaxed text-slate-700 dark:text-slate-300 mt-2'>
+                <div class='text-base leading-relaxed text-slate-700 dark:text-slate-300 mt-2 [&_img]:w-full [&_img]:h-auto [&_img]:rounded-lg [&_img]:mt-3'>
                   {{{html}}}
+                </div>
+                {{/if}}
+                {{#if media}}
+                <div class='mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                  {{#each media}}
+                  <figure class='overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'>
+                    <img src='{{url}}' alt='{{alt}}' class='w-full h-auto object-cover' loading='lazy' />
+                    {{#if caption}}
+                    <figcaption class='px-3 py-2 text-xs text-slate-500 dark:text-slate-400'>
+                      {{caption}}
+                    </figcaption>
+                    {{/if}}
+                  </figure>
+                  {{/each}}
                 </div>
                 {{/if}}
               </div>

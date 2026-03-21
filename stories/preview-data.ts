@@ -396,14 +396,37 @@ function normalizeEventLiveUpdates(eventDoc: EventsPreviewDoc): Extract<Canonica
       typeof record.headline === 'string' && record.headline.trim().length > 0
         ? record.headline.trim()
         : '';
+    const media = Array.isArray(record.media)
+      ? record.media
+          .map((item) => {
+            if (!item || typeof item !== 'object') return null;
+            const mediaRecord = item as Record<string, unknown>;
+            const url = typeof mediaRecord.url === 'string' ? mediaRecord.url.trim() : '';
+            if (!url) return null;
+            const alt = typeof mediaRecord.alt === 'string' && mediaRecord.alt.trim().length > 0
+              ? mediaRecord.alt
+              : 'Live update image';
+            const caption =
+              typeof mediaRecord.caption === 'string' && mediaRecord.caption.trim().length > 0
+                ? mediaRecord.caption
+                : undefined;
+            return { url, alt, ...(caption ? { caption } : {}) };
+          })
+          .filter(
+            (
+              item
+            ): item is { url: string; alt: string; caption?: string } => Boolean(item)
+          )
+      : [];
 
-    if (!headline && !html && !plainText) return;
+    if (!headline && !html && !plainText && media.length === 0) return;
 
     updates.push({
       type: 'liveUpdate',
       timestamp: toIsoDateTime(record.timestamp ?? eventDoc.updatedAt ?? eventDoc.eventDate, liveStoryFixture.updatedAt),
       headline,
-      html: html ?? (plainText ? `<p>${escapeHtml(plainText)}</p>` : undefined)
+      html: html ?? (plainText ? `<p>${escapeHtml(plainText)}</p>` : undefined),
+      ...(media.length > 0 ? { media } : {})
     });
   });
 
