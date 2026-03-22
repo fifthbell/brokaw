@@ -90,5 +90,56 @@
         }
       })();
     </script>
+    <script>
+      (function () {
+        var WIDGET_HOST = 'widgets.sofascore.com';
+        var WIDGET_PATH = '/embed/attackMomentum';
+
+        function getWidgetTheme() {
+          return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        }
+
+        function updateSofascoreIframe(iframe, theme) {
+          if (!(iframe instanceof HTMLIFrameElement)) return;
+          var src = iframe.getAttribute('src');
+          if (!src) return;
+
+          try {
+            var url = new URL(src, window.location.origin);
+            if (url.hostname !== WIDGET_HOST) return;
+            if (!url.pathname.includes(WIDGET_PATH)) return;
+
+            if (url.searchParams.get('widgetTheme') === theme) return;
+
+            url.searchParams.set('widgetTheme', theme);
+            iframe.setAttribute('src', url.toString());
+          } catch (_error) {
+            // Ignore malformed iframe src values.
+          }
+        }
+
+        function syncSofascoreTheme() {
+          var theme = getWidgetTheme();
+          var iframes = document.querySelectorAll('iframe[src*="widgets.sofascore.com/embed/attackMomentum"]');
+          iframes.forEach(function (iframe) {
+            updateSofascoreIframe(iframe, theme);
+          });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', syncSofascoreTheme);
+        } else {
+          syncSofascoreTheme();
+        }
+
+        var observer = new MutationObserver(function () {
+          syncSofascoreTheme();
+        });
+        observer.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['class'],
+        });
+      })();
+    </script>
   </body>
 </html>
