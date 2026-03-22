@@ -4,10 +4,31 @@
         function setSlideState(slides, dots, index) {
           slides.forEach(function (slide, slideIndex) {
             var active = slideIndex === index;
-            slide.classList.toggle('hidden', !active);
-            slide.classList.toggle('opacity-0', !active);
-            slide.classList.toggle('opacity-100', active);
-            slide.classList.toggle('active', active);
+            var wasActive = slide.classList.contains('active');
+
+            if (active) {
+              slide.classList.remove('hidden');
+              slide.classList.add('active');
+              slide.classList.remove('pointer-events-none');
+
+              if (!wasActive) {
+                slide.classList.remove('opacity-100');
+                slide.classList.add('opacity-0');
+                window.requestAnimationFrame(function () {
+                  slide.classList.remove('opacity-0');
+                  slide.classList.add('opacity-100');
+                });
+              } else {
+                slide.classList.remove('opacity-0');
+                slide.classList.add('opacity-100');
+              }
+            } else {
+              slide.classList.remove('active');
+              slide.classList.remove('opacity-100');
+              slide.classList.add('opacity-0');
+              slide.classList.add('hidden');
+              slide.classList.add('pointer-events-none');
+            }
           });
           dots.forEach(function (dot, dotIndex) {
             dot.classList.toggle('active', dotIndex === index);
