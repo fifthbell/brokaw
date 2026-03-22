@@ -1,9 +1,14 @@
 import type { CanonicalArticle, SelfReference } from '../src/types/canonical-article';
 import { homepageFixture } from './fixtures/homepage.fixture';
 import { liveStoryFixture } from './fixtures/live-story.fixture';
+import { categoryFixture } from './fixtures/category.fixture';
+import { articleFixture } from './fixtures/article.fixture';
 
 const HOMEPAGE_JSON_URL = 'https://cdn.fifthbell.com/content/homepage-current-en.json';
 const EVENTS_JSON_URL = 'https://cdn.fifthbell.com/content/events-current-en.json';
+const CATEGORY_JSON_BASE_URL = 'https://cdn.fifthbell.com/content';
+const ARTICLE_JSON_BASE_URL = 'https://cdn.fifthbell.com/json/articles';
+const DEFAULT_CURRENT_CATEGORY_SLUG = 'sports';
 const PREVIEW_CACHE_TTL_MS = 30_000;
 
 interface HomepagePreviewPayload {
@@ -12,6 +17,17 @@ interface HomepagePreviewPayload {
   categories?: Array<{ name?: string; slug?: string }>;
   articles?: unknown[];
   breakingNews?: Record<string, unknown>;
+}
+
+interface CategoryPreviewPayload extends HomepagePreviewPayload {
+  category?: {
+    id?: string | number;
+    name?: string;
+    slug?: string;
+    description?: string | null;
+    updatedAt?: string;
+    publishedAt?: string;
+  };
 }
 
 interface EventsPreviewDoc {
@@ -50,6 +66,12 @@ let homepagePayloadPromise: Promise<HomepagePreviewPayload | null> | null = null
 let eventsPayloadPromise: Promise<EventsPreviewPayload | null> | null = null;
 let homepagePayloadFetchedAt = 0;
 let eventsPayloadFetchedAt = 0;
+const categoryPayloadPromises = new Map<string, Promise<CategoryPreviewPayload | null>>();
+const categoryPayloadFetchedAt = new Map<string, number>();
+
+function normalizeCategorySlug(input: string): string {
+  return input.replace(/^\/+/, '').replace(/\/+$/g, '').trim().toLowerCase();
+}
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
@@ -134,6 +156,31 @@ function getEventsPayload(): Promise<EventsPreviewPayload | null> {
   }
 
   return eventsPayloadPromise;
+}
+
+function getCategoryPayload(categorySlug: string): Promise<CategoryPreviewPayload | null> {
+  const normalizedSlug = normalizeCategorySlug(categorySlug);
+  if (!normalizedSlug) {
+    return Promise.resolve(null);
+  }
+
+  const now = Date.now();
+  const lastFetched = categoryPayloadFetchedAt.get(normalizedSlug) ?? 0;
+  const existingPromise = categoryPayloadPromises.get(normalizedSlug);
+
+  if (!existingPromise || now - lastFetched > PREVIEW_CACHE_TTL_MS) {
+    categoryPayloadFetchedAt.set(normalizedSlug, now);
+    const cacheBuster = Math.floor(now / PREVIEW_CACHE_TTL_MS);
+    const url = `${CATEGORY_JSON_BASE_URL}/${normalizedSlug}-current-en.json?v=${cacheBuster}`;
+    const nextPromise = fetchJson<CategoryPreviewPayload>(url).catch((error) => {
+      console.warn(`[storybook] Failed to fetch ${normalizedSlug} category preview JSON:`, error);
+      return null;
+    });
+    categoryPayloadPromises.set(normalizedSlug, nextPromise);
+    return nextPromise;
+  }
+
+  return existingPromise;
 }
 
 function normalizeBreakingNewsData(payload: HomepagePreviewPayload | null): BreakingNewsStoryData {
@@ -686,6 +733,172 @@ function buildHomepagePreviewDocument(payload: HomepagePreviewPayload | null, br
   };
 }
 
+function humanizeSlug(slug: string): string {
+  return slug
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function buildCategoryPreviewDocument(categorySlug: string, payload: CategoryPreviewPayload | null): CanonicalArticle {
+  const normalizedSlug = normalizeCategorySlug(categorySlug) || DEFAULT_CURRENT_CATEGORY_SLUG;
+  const categoryMeta = payload?.category;
+  const mappedArticles = buildHomepageArticles(payload);
+  const navigationCategories = buildHomepageCategories(payload);
+  const leadArticle = mappedArticles[0];
+  const categoryName =
+    (typeof categoryMeta?.name === 'string' && categoryMeta.name.trim().length > 0
+      ? categoryMeta.name.trim()
+      : '') ||
+    navigationCategories.find((category) => category.slug === normalizedSlug)?.name ||
+    humanizeSlug(normalizedSlug);
+  const categoryDescription =
+    (typeof categoryMeta?.description === 'string' && categoryMeta.description.trim().length > 0
+      ? categoryMeta.description.trim()
+      : '') ||
+    leadArticle?.excerpt ||
+    `Latest news in ${categoryName}`;
+  const updatedAt = toIsoDateTime(
+    payload?.generatedAt ?? categoryMeta?.updatedAt ?? leadArticle?.updatedAt,
+    categoryFixture.updatedAt,
+  );
+  const publishedAt = toIsoDateTime(
+    categoryMeta?.publishedAt ?? leadArticle?.publishedAt ?? updatedAt,
+    categoryFixture.publishedAt,
+  );
+
+  return {
+    ...categoryFixture,
+    id: String(categoryMeta?.id ?? `category-en-${normalizedSlug}`),
+    slug: `/${normalizedSlug}`,
+    layout: 'category-page',
+    canonicalUrl: `https://fifthbell.com/${normalizedSlug}`,
+    contentVersion: updatedAt,
+    publishedAt,
+    updatedAt,
+    status: 'published',
+    title: categoryName,
+    excerpt: categoryDescription,
+    language: 'en',
+    featured: true,
+    authors: [{ name: 'Fifthbell Desk', slug: 'fifthbell-desk' }],
+    categories: [{ name: categoryName, slug: normalizedSlug }],
+    featuredImage: leadArticle?.featuredImage || categoryFixture.featuredImage,
+    body: [],
+    navigation: {
+      categories: navigationCategories
+    },
+    articles: mappedArticles.length > 0 ? mappedArticles : categoryFixture.articles,
+    seo: {
+      metaTitle: `${categoryName} | fifthbell`,
+      metaDescription: categoryDescription
+    }
+  };
+}
+
+function getPrimaryCategorySlug(articleSummary: Record<string, unknown>): string | null {
+  if (!Array.isArray(articleSummary.categories) || articleSummary.categories.length === 0) {
+    return null;
+  }
+
+  const firstCategory = articleSummary.categories[0];
+  if (!firstCategory || typeof firstCategory !== 'object') {
+    return null;
+  }
+
+  const categorySlug = (firstCategory as Record<string, unknown>).slug;
+  if (typeof categorySlug !== 'string' || categorySlug.trim().length === 0) {
+    return null;
+  }
+
+  return normalizeCategorySlug(categorySlug);
+}
+
+function buildArticleJsonUrlCandidates(articleSummary: Record<string, unknown>): string[] {
+  const rawSlug = typeof articleSummary.slug === 'string' ? articleSummary.slug.trim() : '';
+  if (!rawSlug) {
+    return [];
+  }
+
+  const slugWithoutPrefix = rawSlug.replace(/^\/+/, '');
+  if (!slugWithoutPrefix) {
+    return [];
+  }
+
+  const candidates = new Set<string>();
+  const primaryCategorySlug = getPrimaryCategorySlug(articleSummary);
+
+  if (slugWithoutPrefix.includes('/')) {
+    candidates.add(`${ARTICLE_JSON_BASE_URL}/${slugWithoutPrefix}.json`);
+  }
+
+  if (primaryCategorySlug) {
+    candidates.add(`${ARTICLE_JSON_BASE_URL}/${primaryCategorySlug}/${slugWithoutPrefix}.json`);
+  }
+
+  candidates.add(`${ARTICLE_JSON_BASE_URL}/${slugWithoutPrefix}.json`);
+  return [...candidates];
+}
+
+function buildFallbackArticlePreviewDocument(articleSummary: Record<string, unknown>): CanonicalArticle {
+  const rawSlug = typeof articleSummary.slug === 'string' ? articleSummary.slug.trim().replace(/^\/+/, '') : '';
+  const primaryCategorySlug = getPrimaryCategorySlug(articleSummary) || categoryFixture.categories?.[0]?.slug || 'news';
+  const canonicalSlug = rawSlug.includes('/') ? `/${rawSlug}` : `/${primaryCategorySlug}/${rawSlug || 'story'}`;
+  const title =
+    typeof articleSummary.title === 'string' && articleSummary.title.trim().length > 0
+      ? articleSummary.title.trim()
+      : articleFixture.title;
+  const excerpt =
+    typeof articleSummary.excerpt === 'string' && articleSummary.excerpt.trim().length > 0
+      ? articleSummary.excerpt.trim()
+      : articleFixture.excerpt;
+  const categories = Array.isArray(articleSummary.categories)
+    ? articleSummary.categories
+        .map((category) => {
+          if (!category || typeof category !== 'object') return null;
+          const record = category as Record<string, unknown>;
+          const name = typeof record.name === 'string' ? record.name : '';
+          const slug = typeof record.slug === 'string' ? record.slug : '';
+          if (!name || !slug) return null;
+          return { name, slug };
+        })
+        .filter((category): category is CanonicalArticle['categories'][number] => Boolean(category))
+    : [];
+
+  const featuredImageRecord =
+    articleSummary.featuredImage && typeof articleSummary.featuredImage === 'object'
+      ? (articleSummary.featuredImage as Record<string, unknown>)
+      : null;
+  const featuredImageUrl = typeof featuredImageRecord?.url === 'string' ? featuredImageRecord.url : '';
+  const featuredImageAlt = typeof featuredImageRecord?.alt === 'string' ? featuredImageRecord.alt : title;
+  const updatedAt = toIsoDateTime(articleSummary.updatedAt, articleFixture.updatedAt);
+  const publishedAt = toIsoDateTime(articleSummary.publishedAt, articleFixture.publishedAt);
+  const summaryLanguage: CanonicalArticle['language'] =
+    articleSummary.language === 'es' || articleSummary.language === 'it'
+      ? articleSummary.language
+      : 'en';
+
+  return {
+    ...articleFixture,
+    id: String(articleSummary.id ?? articleFixture.id),
+    slug: canonicalSlug,
+    canonicalUrl: `https://fifthbell.com${canonicalSlug}`,
+    contentVersion: updatedAt,
+    publishedAt,
+    updatedAt,
+    title,
+    excerpt,
+    language: summaryLanguage,
+    featured: articleSummary.featured === true,
+    categories: categories.length > 0 ? categories : articleFixture.categories,
+    featuredImage: featuredImageUrl
+      ? { url: featuredImageUrl, alt: featuredImageAlt }
+      : articleFixture.featuredImage,
+    body: articleFixture.body
+  };
+}
+
 function buildLiveStoryDocument(payload: HomepagePreviewPayload | null, breakingNews: BreakingNewsStoryData): CanonicalArticle {
   const mainCard = (breakingNews.main || {}) as Record<string, unknown>;
   const slug = resolveHref(mainCard.url ?? mainCard.slug ?? liveStoryFixture.slug);
@@ -886,6 +1099,41 @@ export async function loadHomepagePreviewData(): Promise<CanonicalArticle> {
   const payload = await getHomepagePayload();
   const breakingNews = await loadBreakingNewsPreviewData();
   return buildHomepagePreviewDocument(payload, breakingNews);
+}
+
+export async function loadCategoryPreviewData(categorySlug = DEFAULT_CURRENT_CATEGORY_SLUG): Promise<CanonicalArticle> {
+  const payload = await getCategoryPayload(categorySlug);
+  if (!payload) {
+    console.warn(`[storybook] Falling back to category fixture for slug "${categorySlug}"`);
+    return categoryFixture;
+  }
+
+  return buildCategoryPreviewDocument(categorySlug, payload);
+}
+
+export async function loadArticlePreviewData(categorySlug = DEFAULT_CURRENT_CATEGORY_SLUG): Promise<CanonicalArticle> {
+  const payload = await getCategoryPayload(categorySlug);
+  const articleSummary =
+    payload?.articles && Array.isArray(payload.articles) && payload.articles[0] && typeof payload.articles[0] === 'object'
+      ? (payload.articles[0] as Record<string, unknown>)
+      : null;
+
+  if (!articleSummary) {
+    console.warn(`[storybook] No article summaries found in ${categorySlug} feed; falling back to article fixture.`);
+    return articleFixture;
+  }
+
+  const urlCandidates = buildArticleJsonUrlCandidates(articleSummary);
+  for (const url of urlCandidates) {
+    try {
+      return await fetchJson<CanonicalArticle>(url);
+    } catch (error) {
+      console.warn(`[storybook] Failed to fetch canonical article JSON from ${url}:`, error);
+    }
+  }
+
+  console.warn('[storybook] Falling back to synthesized current article preview document from summary payload.');
+  return buildFallbackArticlePreviewDocument(articleSummary);
 }
 
 export async function loadLiveStoryPreviewData(): Promise<CanonicalArticle> {

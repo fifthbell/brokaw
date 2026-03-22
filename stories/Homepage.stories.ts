@@ -46,6 +46,16 @@ export const Default: Story = {
   }
 };
 
+export const Current: Story = {
+  name: 'Current',
+  render: (_args, { loaded }) => render(loaded.homepage as CanonicalArticle),
+  parameters: {
+    controls: {
+      disable: true
+    }
+  }
+};
+
 /**
  * 8 recent featured articles are available.
  * The first 6 fill the featured slots (newest-first); the remaining 2 float to
