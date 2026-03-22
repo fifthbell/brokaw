@@ -2,15 +2,73 @@
 
   {{!-- Hero Image --}}
   {{#if featuredImage.url}}
-  <div class='w-full overflow-hidden' style='max-height:520px;'>
-    <img
-      src='{{featuredImage.url}}'
-      alt='{{featuredImage.alt}}'
-      class='w-full object-cover object-center'
-      style='max-height:520px;'
-      fetchpriority='high'
-    />
-  </div>
+  <section class='relative w-full overflow-hidden'>
+    <div class='hidden lg:block absolute inset-0 pointer-events-none' aria-hidden='true'>
+      <img
+        src='{{featuredImage.url}}'
+        alt=''
+        class='w-full h-full object-cover scale-125 opacity-90'
+        style='filter: blur(16px);'
+      />
+    </div>
+
+    <div class='relative max-w-screen-xl mx-auto px-0 lg:px-6 xl:px-8'>
+      <figure
+        class='relative overflow-hidden lg:rounded-lg'
+        style='box-shadow: -34px 0 36px -26px rgba(0,0,0,0.55), -74px 0 74px -62px rgba(0,0,0,0.4), 34px 0 36px -26px rgba(0,0,0,0.55), 74px 0 74px -62px rgba(0,0,0,0.4);'
+      >
+        {{#if media}}
+          <div data-carousel='live-story-hero' class='relative'>
+            <div class='carousel-slide active opacity-100 transition-opacity duration-700'>
+              <img
+                src='{{featuredImage.url}}'
+                alt='{{featuredImage.alt}}'
+                class='w-full h-auto object-cover object-center'
+                style='max-height:520px;'
+                fetchpriority='high'
+              />
+            </div>
+            {{#each media}}
+            <div class='carousel-slide hidden opacity-0 transition-opacity duration-700'>
+              <img
+                src='{{url}}'
+                alt='{{alt}}'
+                class='w-full h-auto object-cover object-center'
+                style='max-height:520px;'
+                loading='lazy'
+              />
+            </div>
+            {{/each}}
+            <div class='absolute inset-x-0 bottom-4 z-20 flex items-center justify-center gap-2'>
+              <button type='button' class='carousel-dot w-2.5 h-2.5 rounded-full active' aria-label='Show image 1'></button>
+              {{#each media}}
+              <button type='button' class='carousel-dot w-2.5 h-2.5 rounded-full' aria-label='Show image'></button>
+              {{/each}}
+            </div>
+            <button
+              type='button'
+              class='carousel-next absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/55 text-white text-lg leading-none flex items-center justify-center'
+              aria-label='Next image'
+            >
+              &rsaquo;
+            </button>
+          </div>
+        {{else}}
+          <img
+            src='{{featuredImage.url}}'
+            alt='{{featuredImage.alt}}'
+            class='w-full h-auto object-cover object-center'
+            style='max-height:520px;'
+            fetchpriority='high'
+          />
+        {{/if}}
+      </figure>
+      <div class='hidden lg:block pointer-events-none absolute inset-y-0 -left-8 w-8' style='background: linear-gradient(to left, rgba(0,0,0,0.44), rgba(0,0,0,0));'></div>
+      <div class='hidden lg:block pointer-events-none absolute inset-y-0 -left-20 w-12' style='background: linear-gradient(to left, rgba(0,0,0,0.28), rgba(0,0,0,0));'></div>
+      <div class='hidden lg:block pointer-events-none absolute inset-y-0 -right-8 w-8' style='background: linear-gradient(to right, rgba(0,0,0,0.44), rgba(0,0,0,0));'></div>
+      <div class='hidden lg:block pointer-events-none absolute inset-y-0 -right-20 w-12' style='background: linear-gradient(to right, rgba(0,0,0,0.28), rgba(0,0,0,0));'></div>
+    </div>
+  </section>
   {{/if}}
 
   <div class='max-w-screen-xl mx-auto px-4 xl:px-8'>
@@ -68,27 +126,6 @@
               </li>
               {{/each}}
             </ul>
-          </div>
-        </div>
-        {{/if}}
-
-        {{!-- Event Gallery --}}
-        {{#if media}}
-        <div class='mb-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'>
-          <div class='px-6 py-3 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700'>
-            <h2 class='text-sm font-bold tracking-[0.06em] uppercase text-slate-700 dark:text-slate-200 leading-none'>Event Gallery</h2>
-          </div>
-          <div class='p-4 grid grid-cols-1 sm:grid-cols-2 gap-3'>
-            {{#each media}}
-            <figure class='overflow-hidden rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900'>
-              <img src='{{url}}' alt='{{alt}}' class='w-full h-auto object-cover' loading='lazy' />
-              {{#if caption}}
-              <figcaption class='px-3 py-2 text-xs text-slate-500 dark:text-slate-400'>
-                {{caption}}
-              </figcaption>
-              {{/if}}
-            </figure>
-            {{/each}}
           </div>
         </div>
         {{/if}}
