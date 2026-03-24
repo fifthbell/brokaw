@@ -180,6 +180,9 @@ export const canonicalArticleSchema = z
         })
       )
       .optional(),
+    heroLayout: z.enum(['spotlight', 'editorial']).optional(),
+    showHero: z.boolean().optional(),
+    showEditorialHero: z.boolean().optional(),
     breakingNews: z
       .object({
         displayClass: z.string().optional(),
