@@ -1,6 +1,68 @@
     </div>
     <script>
       (function () {
+        function getLocale() {
+          var lang = document.documentElement.getAttribute('lang') || 'en';
+          if (lang === 'es') return 'es';
+          if (lang === 'it') return 'it';
+          return 'en';
+        }
+
+        function formatRelativeTimestamp(isoString) {
+          if (!isoString) return '';
+
+          var date = new Date(isoString);
+          if (Number.isNaN(date.getTime())) return '';
+
+          var locale = getLocale();
+          var rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+          var diffMs = Date.now() - date.getTime();
+          var diffMinutes = Math.max(1, Math.floor(diffMs / 60000));
+
+          if (diffMinutes < 60) {
+            return rtf.format(-diffMinutes, 'minute');
+          }
+
+          var diffHours = Math.max(1, Math.floor(diffMinutes / 60));
+          if (diffHours < 24) {
+            return rtf.format(-diffHours, 'hour');
+          }
+
+          var diffDays = Math.max(1, Math.floor(diffHours / 24));
+          return rtf.format(-diffDays, 'day');
+        }
+
+        function hydrateRelativeTimes(root) {
+          var scope = root || document;
+          var timestamps = scope.querySelectorAll('.article-time[data-timestamp]');
+
+          timestamps.forEach(function (node) {
+            var isoString = node.getAttribute('data-timestamp');
+            var formatted = formatRelativeTimestamp(isoString);
+            if (formatted) {
+              node.textContent = formatted;
+            }
+          });
+        }
+
+        window.__brokawHydrateRelativeTimes = hydrateRelativeTimes;
+
+        function initRelativeTimes() {
+          hydrateRelativeTimes(document);
+          window.setInterval(function () {
+            hydrateRelativeTimes(document);
+          }, 60000);
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initRelativeTimes);
+        } else {
+          initRelativeTimes();
+        }
+      })();
+    </script>
+    <script>
+      (function () {
         function setSlideState(slides, dots, index) {
           slides.forEach(function (slide, slideIndex) {
             var active = slideIndex === index;
