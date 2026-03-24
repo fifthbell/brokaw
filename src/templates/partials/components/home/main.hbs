@@ -29,7 +29,15 @@
     {{/unless}}
 
     {{#if showEditorialHero}}
-      {{> components/editorial-hero title=title slug=slug excerpt=excerpt hero=hero slides=heroSlides related=homepageSlots.landing.sub1 categories=categories}}
+      {{> components/editorial-hero
+        title=(coalesce heroTitle title)
+        slug=(coalesce heroSlug slug)
+        excerpt=(coalesce heroExcerpt excerpt)
+        hero=hero
+        slides=heroSlides
+        related=(coalesce heroRelated homepageSlots.landing.sub1)
+        categories=categories
+      }}
     {{/if}}
 
     {{#unless (eq showBreakingNews false)}}
