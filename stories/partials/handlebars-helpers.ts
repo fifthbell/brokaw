@@ -6,6 +6,96 @@ import {
 
 let initialized = false;
 
+function normalizePathInput(value: unknown): string {
+  if (typeof value !== 'string') return '';
+
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+
+  try {
+    if (/^https?:\/\//i.test(trimmed)) {
+      const parsed = new URL(trimmed);
+      const normalizedAbsolute = `/${(parsed.pathname || '').replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/');
+      if (normalizedAbsolute !== '/' && normalizedAbsolute.endsWith('/')) {
+        return normalizedAbsolute.slice(0, -1);
+      }
+      return normalizedAbsolute || '/';
+    }
+  } catch {
+    // Fall back to raw string normalization below.
+  }
+
+  const withoutQueryOrHash = trimmed.split('#')[0].split('?')[0];
+  const normalized = `/${withoutQueryOrHash.replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/');
+  if (normalized !== '/' && normalized.endsWith('/')) {
+    return normalized.slice(0, -1);
+  }
+  return normalized;
+}
+
+function cleanPathSegment(value: unknown): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().replace(/^\/+|\/+$/g, '');
+}
+
+function buildLocalePath(path: string, language: unknown): string {
+  const normalizedLanguage = language === 'es' || language === 'it' ? language : 'en';
+  if (!path) return normalizedLanguage === 'en' ? '/' : `/${normalizedLanguage}`;
+
+  const normalized = String(path).startsWith('/') ? String(path) : `/${path}`;
+  if (normalized.startsWith('/es/') || normalized.startsWith('/it/')) {
+    return normalized;
+  }
+
+  if (normalizedLanguage === 'en') {
+    return normalized;
+  }
+
+  return `/${normalizedLanguage}${normalized}`;
+}
+
+function resolveArticleUrl(input: {
+  url?: unknown;
+  canonicalUrl?: unknown;
+  slug?: unknown;
+  categories?: unknown;
+  category?: unknown;
+  language?: unknown;
+}): string {
+  const explicitUrl = normalizePathInput(input.url);
+  if (explicitUrl && explicitUrl !== '/') {
+    return buildLocalePath(explicitUrl, input.language);
+  }
+
+  const canonicalUrl = normalizePathInput(input.canonicalUrl);
+  if (canonicalUrl && canonicalUrl !== '/') {
+    return buildLocalePath(canonicalUrl, input.language);
+  }
+
+  const slugRaw = typeof input.slug === 'string' ? input.slug : '';
+  const normalizedSlugPath = normalizePathInput(slugRaw);
+  const slugSegments = normalizedSlugPath.split('/').filter(Boolean);
+  if (slugSegments.length > 1) {
+    return buildLocalePath(normalizedSlugPath, input.language);
+  }
+
+  const slugSegment = cleanPathSegment(slugRaw);
+  const categories = Array.isArray(input.categories) ? input.categories : [];
+  const primaryCategorySlug =
+    cleanPathSegment((categories[0] as { slug?: unknown } | undefined)?.slug) ||
+    cleanPathSegment((input.category as { slug?: unknown } | undefined)?.slug);
+
+  if (slugSegment && primaryCategorySlug) {
+    return buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`, input.language);
+  }
+
+  if (slugSegment) {
+    return buildLocalePath(`/${slugSegment}`, input.language);
+  }
+
+  return buildLocalePath('/', input.language);
+}
+
 export function registerCommonHelpers(): void {
   if (initialized) return;
 
@@ -27,6 +117,21 @@ export function registerCommonHelpers(): void {
       return value;
     }
     return '';
+  });
+
+  Handlebars.registerHelper('articleUrl', (...args: unknown[]) => {
+    const options = args[args.length - 1] as Handlebars.HelperOptions | undefined;
+    const hash = options?.hash as Record<string, unknown> | undefined;
+    const root = options?.data?.root as Record<string, unknown> | undefined;
+
+    return resolveArticleUrl({
+      url: hash?.url,
+      canonicalUrl: hash?.canonicalUrl,
+      slug: hash?.slug,
+      categories: hash?.categories,
+      category: hash?.category,
+      language: hash?.language ?? root?.language
+    });
   });
 
   Handlebars.registerHelper('formatDate', (isoString: string) => {
