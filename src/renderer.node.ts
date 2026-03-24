@@ -50,7 +50,7 @@ function loadAssetsFromDisk(): RendererAssets {
   const { layoutsDir, partialsDir, compiledStylesPath } = getPaths();
 
   if (!fs.existsSync(compiledStylesPath)) {
-    throw new Error('compiled.css not found — run pnpm build:css first');
+    throw new Error('compiled.css not found — run npm run build:css first');
   }
 
   const layouts = Object.fromEntries(

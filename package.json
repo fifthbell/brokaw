@@ -1,6 +1,27 @@
 {
   "name": "@fifthbell/brokaw",
+  "description": "Server-side Handlebars renderer and templates for Fifth Bell pages.",
   "version": "0.1.22",
+  "license": "MIT",
+  "author": "Fifth Bell",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fifthbell/brokaw.git"
+  },
+  "homepage": "https://github.com/fifthbell/brokaw#readme",
+  "bugs": {
+    "url": "https://github.com/fifthbell/brokaw/issues"
+  },
+  "keywords": [
+    "handlebars",
+    "ssr",
+    "renderer",
+    "news",
+    "templates"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "files": [
     "dist",
     "src/templates",
@@ -13,11 +34,14 @@
     "./partial-deps.json": "./src/partial-deps.json"
   },
   "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist',{ recursive: true, force: true })\"",
     "build:css": "tailwindcss -i src/styles/global.css -o src/styles/compiled.css --minify",
-    "build": "pnpm build:css && tsc",
-    "storybook": "pnpm build:css && storybook dev -p 6006",
-    "build-storybook": "pnpm build:css && storybook build",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "build": "npm run clean && npm run build:css && tsc -p tsconfig.build.json",
+    "storybook": "npm run build:css && storybook dev -p 6006",
+    "build-storybook": "npm run build:css && storybook build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "npm run test:unit",
+    "test:unit": "vitest run --project unit"
   },
   "dependencies": {
     "handlebars": "^4.7.8",
