@@ -31,10 +31,10 @@
 
     <div class='w-full max-w-[592px] border-l border-white pl-4 md:pl-10 flex flex-col gap-4 md:gap-6 mb-8 md:mb-12'>
       <h1 class='text-3xl md:text-[44px] leading-tight md:leading-[56px] font-normal text-white font-sans'>
-        <a href='{{slug}}' class='hover:text-slate-300 transition-colors'>{{title}}</a>
+        <a href='{{articleUrl slug=slug categories=categories language=@root.language}}' class='hover:text-slate-300 transition-colors'>{{title}}</a>
       </h1>
       <p class='text-xl md:text-2xl leading-7 md:leading-8 text-white self-stretch font-serif'>{{excerpt}}</p>
-      <a href='{{slug}}' class='border border-[#717273] rounded-md px-4 py-[11px] h-11 flex items-center justify-center whitespace-nowrap self-start hover:bg-white/10 transition-colors'>
+      <a href='{{articleUrl slug=slug categories=categories language=@root.language}}' class='border border-[#717273] rounded-md px-4 py-[11px] h-11 flex items-center justify-center whitespace-nowrap self-start hover:bg-white/10 transition-colors'>
         <span class='text-white text-base font-medium leading-[22px] font-sans'>Read More</span>
       </a>
     </div>
@@ -45,7 +45,8 @@
           {{> components/headline
             url=url
             title=title
-            time=time
+            time=(formatDate (coalesce updatedAt publishedAt))
+            timestamp=(coalesce updatedAt publishedAt)
             image=image
             featuredImage=featuredImage
             titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-[#F9FAFB] font-sans'

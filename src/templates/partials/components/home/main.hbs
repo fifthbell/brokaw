@@ -8,6 +8,7 @@
         hero=hero
         slides=heroSlides
         related=(coalesce heroRelated homepageSlots.landing.sub1)
+        categories=(coalesce heroCategories categories)
       }}
     {{else}}
       {{#if heroSlides}}
@@ -18,6 +19,7 @@
           hero=hero
           slides=heroSlides
           related=(coalesce heroRelated homepageSlots.landing.sub1)
+          categories=(coalesce heroCategories categories)
         }}
       {{/if}}
     {{/if}}

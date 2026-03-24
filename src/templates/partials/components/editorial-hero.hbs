@@ -7,7 +7,7 @@
         </span>
 
         <h1 class='headline text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-[1] font-serif'>
-          <a href='{{slug}}' class='hover:underline decoration-4 decoration-[#b21100]/20 underline-offset-4'>{{title}}</a>
+          <a href='{{articleUrl slug=slug categories=categories language=@root.language}}' class='hover:underline decoration-4 decoration-[#b21100]/20 underline-offset-4'>{{title}}</a>
         </h1>
 
         <p class='deck text-lg md:text-xl text-slate-600 dark:text-slate-400 font-serif leading-relaxed mt-4'>{{excerpt}}</p>
@@ -15,7 +15,7 @@
         <div class='flex items-center space-x-4 pt-4 border-t border-slate-100 dark:border-slate-800 mt-4'>
           <span class='text-xs font-bold uppercase tracking-wider text-slate-500'>{{#with (lookup categories 0)}}{{name}}{{else}}Top Stories{{/with}}</span>
           <span class='text-xs text-slate-400'>•</span>
-          <a href='{{slug}}' class='text-xs font-bold uppercase tracking-wider text-black dark:text-white hover:text-[#b21100] transition-colors'>Read Now &rarr;</a>
+          <a href='{{articleUrl slug=slug categories=categories language=@root.language}}' class='text-xs font-bold uppercase tracking-wider text-black dark:text-white hover:text-[#b21100] transition-colors'>Read Now &rarr;</a>
         </div>
 
         {{#if related.[0]}}
@@ -24,7 +24,8 @@
               {{> components/headline
                 url=url
                 title=title
-                time=time
+                time=(formatDate (coalesce updatedAt publishedAt))
+                timestamp=(coalesce updatedAt publishedAt)
                 image=image
                 featuredImage=featuredImage
                 titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-slate-900 dark:text-slate-100 font-sans'

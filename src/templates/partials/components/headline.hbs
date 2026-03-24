@@ -1,6 +1,6 @@
 <article class='{{#if className}}{{className}}{{else}}flex flex-col gap-2{{/if}}'>
   <div class='flex items-center gap-4'>
-    <span class='{{#if timeClass}}{{timeClass}}{{else}}text-[10px] uppercase tracking-wider text-[#b21100] dark:text-[#ff2e1a] font-bold{{/if}}'>{{time}}</span>
+    <span class='{{#if timeClass}}{{timeClass}}{{else}}text-[10px] uppercase tracking-wider text-[#b21100] dark:text-[#ff2e1a] font-bold{{/if}}{{#if timestamp}} article-time{{/if}}'{{#if timestamp}} data-timestamp='{{timestamp}}'{{/if}}>{{time}}</span>
   </div>
   <div class='flex gap-2 lg:gap-4 items-start'>
     <div class='flex-1'>
