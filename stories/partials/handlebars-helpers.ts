@@ -1,8 +1,5 @@
 import Handlebars from 'handlebars';
-import {
-  buildSofascoreAttackMomentumUrl,
-  buildSofascoreMatchUrl,
-} from '../../src/utils/sofascore';
+import { buildSofascoreAttackMomentumUrl, buildSofascoreMatchUrl } from '../../src/utils/sofascore';
 
 let initialized = false;
 
@@ -82,8 +79,7 @@ function resolveArticleUrl(input: {
   const slugSegment = cleanPathSegment(slugRaw);
   const categories = Array.isArray(input.categories) ? input.categories : [];
   const primaryCategorySlug =
-    cleanPathSegment((categories[0] as { slug?: unknown } | undefined)?.slug) ||
-    cleanPathSegment((input.category as { slug?: unknown } | undefined)?.slug);
+    cleanPathSegment((categories[0] as { slug?: unknown } | undefined)?.slug) || cleanPathSegment((input.category as { slug?: unknown } | undefined)?.slug);
 
   if (slugSegment && primaryCategorySlug) {
     return buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`, input.language);
@@ -216,12 +212,8 @@ export function registerCommonHelpers(): void {
     if (!match) return url;
     return `https://www.tiktok.com/embed/v2/${match[1]}`;
   });
-  Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) =>
-    buildSofascoreAttackMomentumUrl(id),
-  );
-  Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) =>
-    buildSofascoreMatchUrl(id),
-  );
+  Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) => buildSofascoreAttackMomentumUrl(id));
+  Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) => buildSofascoreMatchUrl(id));
 
   initialized = true;
 }
