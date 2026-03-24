@@ -181,6 +181,7 @@ export const canonicalArticleSchema = z
       )
       .optional(),
     heroLayout: z.enum(['spotlight', 'editorial']).optional(),
+    heroCategories: z.array(categorySchema).optional(),
     showHero: z.boolean().optional(),
     showEditorialHero: z.boolean().optional(),
     breakingNews: z
