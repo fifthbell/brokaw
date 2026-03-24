@@ -1,10 +1,7 @@
 import Handlebars from 'handlebars';
 import { canonicalArticleSchema, type CanonicalArticle } from './types/canonical-article.js';
 import { distributeHomepageArticles } from './homepage-distributor.js';
-import {
-  buildSofascoreAttackMomentumUrl,
-  buildSofascoreMatchUrl,
-} from './utils/sofascore.js';
+import { buildSofascoreAttackMomentumUrl, buildSofascoreMatchUrl } from './utils/sofascore.js';
 
 export type LayoutName = CanonicalArticle['layout'];
 
@@ -100,8 +97,7 @@ function resolveArticleUrl(input: {
   const slugSegment = cleanPathSegment(slugRaw);
   const categories = Array.isArray(input.categories) ? input.categories : [];
   const primaryCategorySlug =
-    cleanPathSegment((categories[0] as { slug?: unknown } | undefined)?.slug) ||
-    cleanPathSegment((input.category as { slug?: unknown } | undefined)?.slug);
+    cleanPathSegment((categories[0] as { slug?: unknown } | undefined)?.slug) || cleanPathSegment((input.category as { slug?: unknown } | undefined)?.slug);
 
   if (slugSegment && primaryCategorySlug) {
     return buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`, input.language);
@@ -241,12 +237,8 @@ function registerHelpers(): void {
     if (!match) return url;
     return `https://www.tiktok.com/embed/v2/${match[1]}`;
   });
-  Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) =>
-    buildSofascoreAttackMomentumUrl(id),
-  );
-  Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) =>
-    buildSofascoreMatchUrl(id),
-  );
+  Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) => buildSofascoreAttackMomentumUrl(id));
+  Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) => buildSofascoreMatchUrl(id));
   Handlebars.registerHelper('resolveHeadTitle', (doc: unknown) => {
     if (!doc || typeof doc !== 'object') return 'fifthbell';
     const page = doc as Partial<CanonicalArticle>;
