@@ -76,6 +76,20 @@
         {{#with (lookup categories 0)}}
           <span class='text-xs font-bold uppercase tracking-wider text-[#b21100] dark:text-[#ff2e1a]'>{{name}}</span>
         {{/with}}
+        {{#if status}}
+          {{#if (eq status "live")}}
+            {{> 'ui/status-badge' variant="live" label=status}}
+          {{else if (eq status "ended")}}
+            {{> 'ui/status-badge' variant="offline" label=status}}
+          {{else if (eq status "archived")}}
+            {{> 'ui/status-badge' variant="offline" label=status}}
+          {{else}}
+            {{> 'ui/status-badge' variant="info" label=status}}
+          {{/if}}
+        {{/if}}
+        {{#if updatedAt}}
+          <span class='text-xs text-slate-500 dark:text-slate-400'>Last updated: <span class='article-time' data-timestamp='{{updatedAt}}'>{{formatDate updatedAt}}</span></span>
+        {{/if}}
       </div>
 
       <h1 class='text-3xl xl:text-5xl font-bold font-encode text-slate-900 dark:text-slate-100 leading-tight mb-4 max-w-4xl'>
@@ -87,18 +101,6 @@
         {{excerpt}}
       </p>
       {{/if}}
-
-      <div class='flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500 dark:text-slate-400'>
-        {{#each authors}}
-          <span>By <strong class='text-slate-700 dark:text-slate-300 font-semibold'>{{name}}</strong></span>
-        {{/each}}
-        <span class='text-slate-300 dark:text-slate-700'>|</span>
-        {{#if liveStory.lastUpdated}}
-          <span>Updated {{liveStory.lastUpdated}}</span>
-        {{else}}
-          <span>Updated {{formatDate updatedAt}}</span>
-        {{/if}}
-      </div>
     </header>
 
     {{!-- Body Grid --}}

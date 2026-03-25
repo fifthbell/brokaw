@@ -1,19 +1,56 @@
 <div class='mx-auto xl:px-4 pb-8 my-4 {{#if displayClass}}{{displayClass}}{{/if}}'>
-  <div class='grid grid-cols-1 xl:grid-cols-12 xl:gap-8 mb-4'>
-    <section class='xl:col-span-3 flex flex-col h-full gap-6 xl:order-1 order-2 px-4 xl:px-0 mb-8 xl:mb-0'>
-      {{#with sidebarFeature}}
-        {{> components/breaking-news/primary}}
-      {{/with}}
-
-      {{#with sidebarSub}}
-        {{> components/breaking-news/secondary}}
-      {{/with}}
-    </section>
-
+  <div class='grid grid-cols-1 xl:grid-cols-2 xl:gap-8 gap-6 mb-4 px-4 xl:px-0'>
     {{#with main}}
-      {{> components/breaking-news/live-updates-column updates=../updates}}
+      <section class='flex flex-col h-full'>
+        <a href='{{url}}' class='relative w-full h-[360px] xl:rounded-t-lg overflow-hidden z-10 block' style='box-shadow: 0px 14px 14px -8px rgba(41, 41, 43, 0.08);'>
+          <img src='{{image}}' alt='{{alt}}' class='w-full h-full object-cover' fetchpriority='high' />
+        </a>
+
+        <div class='bg-white dark:bg-slate-900 xl:rounded-b-lg xl:px-8 px-6 pt-8 pb-6 flex flex-col items-center gap-6 h-full'>
+          <div class='inline-flex items-center justify-center px-3 py-2 bg-[#cc0000] text-white'>
+            <span class='text-xs font-bold tracking-[0.08em] uppercase'>{{category}}</span>
+          </div>
+
+          <div class='flex flex-col items-center gap-2 w-full'>
+            <h1 class='text-[40px] font-bold font-encode leading-[45px] text-center tracking-[1px] text-slate-900 dark:text-slate-100'>
+              <a href='{{url}}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
+            </h1>
+            <p class='text-[22px] leading-8 text-center text-slate-600 dark:text-slate-400 font-serif'>{{excerpt}}</p>
+
+            {{#if liveUrl}}
+              <a
+                href='{{liveUrl}}'
+                class='inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 mt-2 rounded-md bg-[#cc0000] text-white text-sm font-bold uppercase tracking-[0.08em] shadow-[0_10px_20px_-12px_rgba(204,0,0,0.9)] hover:bg-[#b21100] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#cc0000] transition-colors'
+              >
+                View Live Story
+              </a>
+            {{/if}}
+
+            {{#with (sofascoreWidgetUrl sofascore_id) as |widgetUrl|}}
+              <div class='w-full mt-4 mb-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700'>
+                <iframe
+                  width='100%'
+                  height='286'
+                  src='{{widgetUrl}}'
+                  title='SofaScore Attack Momentum'
+                  frameborder='0'
+                  scrolling='no'
+                  loading='lazy'
+                  referrerpolicy='no-referrer-when-downgrade'
+                  style='border:0;'
+                ></iframe>
+                {{#with (sofascoreMatchUrl sofascore_id) as |matchUrl|}}
+                  <div style='font-size:12px;font-family:Arial,sans-serif'>
+                    <a href='{{matchUrl}}' target='_blank' rel='noreferrer'>{{title}} Live Score</a>
+                  </div>
+                {{/with}}
+              </div>
+            {{/with}}
+          </div>
+        </div>
+      </section>
     {{/with}}
 
-    {{> components/breaking-news/candy-bar snacks=snacks queueSnacks=queueSnacks}}
+    {{> components/breaking-news/live-updates-column updates=updates}}
   </div>
 </div>

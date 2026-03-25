@@ -1,0 +1,19 @@
+{{#if href}}
+  <a
+    href='{{href}}'
+    class='inline-flex items-center justify-center rounded-full w-9 h-9 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition-colors hover:border-[#b21100] hover:text-[#b21100] dark:hover:border-[#ff2e1a] dark:hover:text-[#ff2e1a] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#b21100] {{#if className}}{{className}}{{/if}}'
+    {{#if title}}title='{{title}}'{{/if}}
+    {{#if ariaLabel}}aria-label='{{ariaLabel}}'{{/if}}
+  >
+    {{{icon}}}
+  </a>
+{{else}}
+  <button
+    type='{{coalesce type "button"}}'
+    class='inline-flex items-center justify-center rounded-full w-9 h-9 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 transition-colors hover:border-[#b21100] hover:text-[#b21100] dark:hover:border-[#ff2e1a] dark:hover:text-[#ff2e1a] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#b21100] {{#if className}}{{className}}{{/if}}'
+    {{#if title}}title='{{title}}'{{/if}}
+    {{#if ariaLabel}}aria-label='{{ariaLabel}}'{{/if}}
+  >
+    {{{icon}}}
+  </button>
+{{/if}}

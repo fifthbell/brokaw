@@ -34,15 +34,19 @@
   "components/category/main-grid": ["category-page"],
   "components/category/more-grid": ["category-page"],
   "components/breaking-news": ["homepage"],
-  "components/breaking-news/primary": ["homepage"],
-  "components/breaking-news/secondary": ["homepage"],
   "components/breaking-news/live-updates-column": ["homepage"],
-  "components/breaking-news/candy-bar": ["homepage"],
   "components/snack": ["homepage", "category-page"],
   "components/headline": ["homepage"],
   "components/spotlight-hero": ["homepage"],
   "components/editorial-hero": ["homepage"],
   "components/hero": ["homepage"],
   "components/hero-editorial": ["homepage"],
-  "components/trending": ["homepage"]
+  "components/trending": ["homepage"],
+  "components/ui/accordion": ["article-page", "homepage", "category-page", "live-story", "404"],
+  "components/ui/breadcrumb": ["article-page", "homepage", "category-page", "live-story", "404"],
+  "components/ui/icon-button": ["article-page", "homepage", "category-page", "live-story", "404"],
+  "components/ui/loading-spinner": ["article-page", "homepage", "category-page", "live-story", "404"],
+  "components/ui/pagination": ["article-page", "homepage", "category-page", "live-story", "404"],
+  "components/ui/scroll-area": ["article-page", "homepage", "category-page", "live-story", "404"],
+  "components/ui/status-badge": ["article-page", "homepage", "category-page", "live-story", "404"]
 }
