@@ -1,0 +1,30 @@
+<div class='border border-slate-200 dark:border-slate-800 {{#if className}}{{className}}{{/if}}'>
+  {{#each items}}
+    <details class='group border-b border-slate-200 dark:border-slate-800 last:border-b-0' {{#if open}}open{{/if}}>
+      <summary class='flex cursor-pointer list-none items-start justify-between gap-6 px-6 py-5 marker:hidden [&::-webkit-details-marker]:hidden hover:bg-slate-50 dark:hover:bg-slate-900/50'>
+        <span class='flex min-w-0 flex-col'>
+          <span class='text-base font-semibold text-slate-900 dark:text-slate-100'>{{title}}</span>
+          {{#if subtitle}}
+            <span class='mt-1.5 text-sm text-slate-500 dark:text-slate-400'>{{subtitle}}</span>
+          {{/if}}
+        </span>
+        <span class='mt-1 shrink-0 text-slate-400 transition-transform duration-200 group-open:rotate-180 group-open:text-[#b21100] dark:group-open:text-[#ff2e1a]' aria-hidden='true'>
+          <svg viewBox='0 0 20 20' fill='currentColor' class='h-5 w-5'>
+            <path fill-rule='evenodd' d='M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z' clip-rule='evenodd'></path>
+          </svg>
+        </span>
+      </summary>
+      <div class='grid grid-rows-[0fr] transition-[grid-template-rows] duration-200 group-open:grid-rows-[1fr]'>
+        <div class='overflow-hidden'>
+          <div class='border-l-2 border-[#b21100] dark:border-[#ff2e1a] mx-6 mb-6 mt-1 pl-5 pb-1 text-sm leading-relaxed text-slate-700 dark:text-slate-300'>
+            {{#if html}}
+              {{{html}}}
+            {{else}}
+              {{{content}}}
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </details>
+  {{/each}}
+</div>
