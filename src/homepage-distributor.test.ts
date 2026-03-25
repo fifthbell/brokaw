@@ -170,11 +170,11 @@ describe('distributeHomepageArticles', () => {
   });
 
   describe('breaking news', () => {
-    it('reserves 5 queue articles for breakingNewsSnacks when showBreakingNews=true', () => {
+    it('does not reserve queue articles for breakingNewsSnacks when showBreakingNews=true', () => {
       const articles = makeQueue(40);
       const slots = distributeHomepageArticles(articles, NOW, true);
 
-      expect(slots.breakingNewsSnacks).toHaveLength(5);
+      expect(slots.breakingNewsSnacks).toHaveLength(0);
     });
 
     it('returns empty breakingNewsSnacks when showBreakingNews=false', () => {
@@ -184,14 +184,12 @@ describe('distributeHomepageArticles', () => {
       expect(slots.breakingNewsSnacks).toHaveLength(0);
     });
 
-    it('shifts Landing / Must Read / More Stories slots when Breaking News is active', () => {
+    it('does not shift Landing / Must Read / More Stories slots when Breaking News is active', () => {
       const articles = makeQueue(40);
       const slotsNoBreaking = distributeHomepageArticles(articles, NOW, false);
       const slotsWithBreaking = distributeHomepageArticles(articles, NOW, true);
 
-      // The headline1 in the Breaking News variant should be different because
-      // the first 5 queue items were consumed by the candy-bar.
-      expect(slotsWithBreaking.landing.headline1?.id).not.toBe(
+      expect(slotsWithBreaking.landing.headline1?.id).toBe(
         slotsNoBreaking.landing.headline1?.id
       );
     });

@@ -32,10 +32,7 @@ import blockPullQuoteHbs from './templates/partials/blocks/pull-quote.hbs?raw';
 
 import componentArticleMainHbs from './templates/partials/components/article-main.hbs?raw';
 import componentBreakingNewsHbs from './templates/partials/components/breaking-news.hbs?raw';
-import componentBreakingNewsPrimaryHbs from './templates/partials/components/breaking-news/primary.hbs?raw';
-import componentBreakingNewsSecondaryHbs from './templates/partials/components/breaking-news/secondary.hbs?raw';
 import componentBreakingNewsLiveUpdatesColumnHbs from './templates/partials/components/breaking-news/live-updates-column.hbs?raw';
-import componentBreakingNewsCandyBarHbs from './templates/partials/components/breaking-news/candy-bar.hbs?raw';
 import componentSnackHbs from './templates/partials/components/snack.hbs?raw';
 import componentHeadlineHbs from './templates/partials/components/headline.hbs?raw';
 import componentHeroHbs from './templates/partials/components/hero.hbs?raw';
@@ -53,6 +50,13 @@ import componentCategoryMainGridHbs from './templates/partials/components/catego
 import componentCategoryMoreGridHbs from './templates/partials/components/category/more-grid.hbs?raw';
 import componentNotFoundMainHbs from './templates/partials/components/not-found/main.hbs?raw';
 import componentLiveStoryMainHbs from './templates/partials/components/live-story/main.hbs?raw';
+import componentUiAccordionHbs from './templates/partials/components/ui/accordion.hbs?raw';
+import componentUiBreadcrumbHbs from './templates/partials/components/ui/breadcrumb.hbs?raw';
+import componentUiIconButtonHbs from './templates/partials/components/ui/icon-button.hbs?raw';
+import componentUiLoadingSpinnerHbs from './templates/partials/components/ui/loading-spinner.hbs?raw';
+import componentUiPaginationHbs from './templates/partials/components/ui/pagination.hbs?raw';
+import componentUiScrollAreaHbs from './templates/partials/components/ui/scroll-area.hbs?raw';
+import componentUiStatusBadgeHbs from './templates/partials/components/ui/status-badge.hbs?raw';
 
 import styles from './styles/compiled.css?raw';
 
@@ -94,10 +98,7 @@ const assets: RendererAssets = {
     'blocks/pull-quote': blockPullQuoteHbs,
     'components/article-main': componentArticleMainHbs,
     'components/breaking-news': componentBreakingNewsHbs,
-    'components/breaking-news/primary': componentBreakingNewsPrimaryHbs,
-    'components/breaking-news/secondary': componentBreakingNewsSecondaryHbs,
     'components/breaking-news/live-updates-column': componentBreakingNewsLiveUpdatesColumnHbs,
-    'components/breaking-news/candy-bar': componentBreakingNewsCandyBarHbs,
     'components/snack': componentSnackHbs,
     'components/headline': componentHeadlineHbs,
     'components/spotlight-hero': componentSpotlightHeroHbs,
@@ -114,7 +115,14 @@ const assets: RendererAssets = {
     'components/category/main-grid': componentCategoryMainGridHbs,
     'components/category/more-grid': componentCategoryMoreGridHbs,
     'components/not-found/main': componentNotFoundMainHbs,
-    'components/live-story/main': componentLiveStoryMainHbs
+    'components/live-story/main': componentLiveStoryMainHbs,
+    'components/ui/accordion': componentUiAccordionHbs,
+    'components/ui/breadcrumb': componentUiBreadcrumbHbs,
+    'components/ui/icon-button': componentUiIconButtonHbs,
+    'components/ui/loading-spinner': componentUiLoadingSpinnerHbs,
+    'components/ui/pagination': componentUiPaginationHbs,
+    'components/ui/scroll-area': componentUiScrollAreaHbs,
+    'components/ui/status-badge': componentUiStatusBadgeHbs
   },
   styles
 };

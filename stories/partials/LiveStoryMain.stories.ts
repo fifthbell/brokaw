@@ -18,6 +18,7 @@ import instagramHbs from '../../src/templates/partials/blocks/instagram.hbs?raw'
 import tiktokHbs from '../../src/templates/partials/blocks/tiktok.hbs?raw';
 import pullQuoteHbs from '../../src/templates/partials/blocks/pull-quote.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
+import statusBadgeHbs from '../../src/templates/partials/components/ui/status-badge.hbs?raw';
 import { loadLiveStoryPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
@@ -40,6 +41,7 @@ Handlebars.registerPartial('instagram', instagramHbs);
 Handlebars.registerPartial('tiktok', tiktokHbs);
 Handlebars.registerPartial('pullQuote', pullQuoteHbs);
 Handlebars.registerPartial('components/snack', snackHbs);
+Handlebars.registerPartial('ui/status-badge', statusBadgeHbs);
 
 const template = Handlebars.compile(liveStoryMainHbs);
 

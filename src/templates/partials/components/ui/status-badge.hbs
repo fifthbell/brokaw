@@ -1,0 +1,21 @@
+<span class='inline-flex items-baseline gap-3 {{#if className}}{{className}}{{/if}}'>
+  <span class='inline-flex items-center gap-1.5 border-l-2 pl-2 pr-3 py-0.5 text-xs font-semibold uppercase tracking-wider leading-5
+    {{#if (eq variant "live")}}border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300
+    {{else}}{{#if (eq variant "offline")}}border-slate-400 bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400
+    {{else}}{{#if (eq variant "warning")}}border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400
+    {{else}}{{#if (eq variant "info")}}border-sky-500 bg-sky-50 text-sky-700 dark:bg-sky-950/30 dark:text-sky-400
+    {{else}}border-slate-400 bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400
+    {{/if}}{{/if}}{{/if}}{{/if}}'>
+    <span class='h-1.5 w-1.5 rounded-full flex-shrink-0
+      {{#if (eq variant "live")}}bg-emerald-500 animate-pulse
+      {{else}}{{#if (eq variant "offline")}}bg-slate-400
+      {{else}}{{#if (eq variant "warning")}}bg-amber-500
+      {{else}}{{#if (eq variant "info")}}bg-sky-500
+      {{else}}bg-slate-500
+      {{/if}}{{/if}}{{/if}}{{/if}}'></span>
+    <span>{{label}}</span>
+  </span>
+  {{#if description}}
+    <span class='text-xs leading-5 text-slate-500 dark:text-slate-400'>{{description}}</span>
+  {{/if}}
+</span>

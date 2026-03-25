@@ -13,9 +13,8 @@ import type { SelfReference } from './types/canonical-article.js';
  *   - All remaining non-featured / older articles
  * Sorted by date descending.
  *
- * When Breaking News is active, the first 5 queue items are reserved for
- * the Breaking News candy-bar snacks before filling the Landing / Must Read /
- * More Stories slots.
+ * Breaking News no longer reserves queue items; all queue ordering feeds
+ * Landing / Must Read / More Stories directly.
  */
 export interface HomepageSlots {
   landing: {
@@ -42,10 +41,7 @@ export interface HomepageSlots {
   };
   /** More Stories grid (12 items from queue) */
   moreStories: SelfReference[];
-  /**
-   * Queue articles shaped for the Breaking News candy-bar snacks (5 items).
-   * Populated only when `showBreakingNews` is true; empty array otherwise.
-   */
+  /** Deprecated compatibility field after candy-bar removal. Always empty. */
   breakingNewsSnacks: SelfReference[];
 }
 
@@ -61,9 +57,8 @@ function articleDateMs(article: SelfReference): number {
  * @param articles        Full list of article references from the document.
  * @param now             The reference time (default: current time). Exposed
  *                        as a parameter so tests can pass a fixed instant.
- * @param showBreakingNews When true, the first 5 queue items are reserved for
- *                        the Breaking News candy-bar before Landing slots are
- *                        filled.
+ * @param showBreakingNews Deprecated after candy-bar removal. Kept for
+ *                        compatibility and has no effect.
  */
 export function distributeHomepageArticles(
   articles: SelfReference[],
@@ -107,9 +102,9 @@ export function distributeHomepageArticles(
   const getFeatured = (index: number): SelfReference | undefined =>
     featuredSlots[index] ?? nextFromQueue();
 
-  // When Breaking News is active, reserve the first 5 queue items for the
-  // candy-bar snacks, so those slots are filled before Landing.
-  const breakingNewsSnacks = showBreakingNews ? nextNFromQueue(5) : [];
+  // Breaking News no longer reserves queue items.
+  void showBreakingNews;
+  const breakingNewsSnacks: SelfReference[] = [];
 
   // ── Landing ──────────────────────────────────────────────────────────────
   const headline1 = getFeatured(0);
