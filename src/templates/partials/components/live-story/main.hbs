@@ -78,13 +78,13 @@
         {{/with}}
         {{#if status}}
           {{#if (eq status "live")}}
-            {{> 'ui/status-badge' variant="live" label=status}}
+            {{> 'components/ui/status-badge' variant="live" label=status}}
           {{else if (eq status "ended")}}
-            {{> 'ui/status-badge' variant="offline" label=status}}
+            {{> 'components/ui/status-badge' variant="offline" label=status}}
           {{else if (eq status "archived")}}
-            {{> 'ui/status-badge' variant="offline" label=status}}
+            {{> 'components/ui/status-badge' variant="offline" label=status}}
           {{else}}
-            {{> 'ui/status-badge' variant="info" label=status}}
+            {{> 'components/ui/status-badge' variant="info" label=status}}
           {{/if}}
         {{/if}}
         {{#if updatedAt}}
