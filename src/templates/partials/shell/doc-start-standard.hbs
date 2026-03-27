@@ -9,6 +9,9 @@
       href='https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap&family=Encode+Sans:wght@100..900&family=Oswald:wght@200..700&display=swap'
       rel='stylesheet'
     />
+    {{#if featuredImage.url}}
+      <link rel='preload' as='image' href='{{featuredImage.url}}' fetchpriority='high' />
+    {{/if}}
     <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
     <link rel='canonical' href='{{canonicalUrl}}' />
     <title>{{resolveHeadTitle this}}</title>

@@ -2,7 +2,14 @@
   <div class='col-span-12 lg:col-span-4'>
     {{#if featuredImage}}
       <div class='mb-6 overflow-hidden aspect-video bg-slate-100'>
-        <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover' />
+        <img
+          src='{{featuredImage.url}}'
+          alt='{{featuredImage.alt}}'
+          class='w-full h-full object-cover'
+          fetchpriority='high'
+          loading='eager'
+          decoding='async'
+        />
       </div>
     {{/if}}
 
