@@ -3,7 +3,7 @@
     <div class='w-full flex items-center justify-between {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
       <span class='text-[#b21100] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{category}}</span>
       {{#if readTime}}
-        <span class='article-time text-slate-400 dark:text-slate-400'>{{readTime}}</span>
+        <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
       {{/if}}
     </div>
   {{else if (lookup categories 0)}}
@@ -11,13 +11,13 @@
       <div class='w-full flex items-center justify-between {{#if ../metaTextSize}}{{../metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
         <span class='text-[#b21100] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{name}}</span>
         {{#if ../readTime}}
-          <span class='article-time text-slate-400 dark:text-slate-400'>{{../readTime}}</span>
+          <span class='article-time text-slate-500 dark:text-slate-400'>{{../readTime}}</span>
         {{/if}}
       </div>
     {{/with}}
   {{else if readTime}}
     <div class='w-full flex items-center justify-end {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-      <span class='article-time text-slate-400 dark:text-slate-400'>{{readTime}}</span>
+      <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
     </div>
   {{/if}}
 {{/inline}}
@@ -27,8 +27,8 @@
     <div class='flex items-center {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
       <span class='text-[#b21100] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{category}}</span>
       {{#if readTime}}
-        <span class='mx-2 text-slate-300'>•</span>
-        <span class='article-time text-slate-400 dark:text-slate-400'>{{readTime}}</span>
+          <span class='mx-2 text-slate-400 dark:text-slate-500'>•</span>
+          <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
       {{/if}}
     </div>
   {{else if (lookup categories 0)}}
@@ -36,14 +36,14 @@
       <div class='flex items-center {{#if ../metaTextSize}}{{../metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
         <span class='text-[#b21100] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{name}}</span>
         {{#if ../readTime}}
-          <span class='mx-2 text-slate-300'>•</span>
-          <span class='article-time text-slate-400 dark:text-slate-400'>{{../readTime}}</span>
+          <span class='mx-2 text-slate-400 dark:text-slate-500'>•</span>
+          <span class='article-time text-slate-500 dark:text-slate-400'>{{../readTime}}</span>
         {{/if}}
       </div>
     {{/with}}
   {{else if readTime}}
     <div class='flex items-center {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-      <span class='article-time text-slate-400 dark:text-slate-400'>{{readTime}}</span>
+      <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
     </div>
   {{/if}}
 {{/inline}}
