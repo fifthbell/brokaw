@@ -239,6 +239,10 @@ function registerHelpers(): void {
   });
   Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) => buildSofascoreAttackMomentumUrl(id));
   Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) => buildSofascoreMatchUrl(id));
+  Handlebars.registerHelper('jsonString', (value: unknown) => {
+    if (value === undefined) return 'null';
+    return JSON.stringify(value);
+  });
   Handlebars.registerHelper('resolveHeadTitle', (doc: unknown) => {
     if (!doc || typeof doc !== 'object') return 'fifthbell';
     const page = doc as Partial<CanonicalArticle>;

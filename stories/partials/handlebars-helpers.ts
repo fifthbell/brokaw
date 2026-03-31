@@ -214,6 +214,10 @@ export function registerCommonHelpers(): void {
   });
   Handlebars.registerHelper('sofascoreWidgetUrl', (id: unknown) => buildSofascoreAttackMomentumUrl(id));
   Handlebars.registerHelper('sofascoreMatchUrl', (id: unknown) => buildSofascoreMatchUrl(id));
+  Handlebars.registerHelper('jsonString', (value: unknown) => {
+    if (value === undefined) return 'null';
+    return JSON.stringify(value);
+  });
 
   initialized = true;
 }

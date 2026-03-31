@@ -126,6 +126,14 @@
 
       if (!shareUrl) return;
       window.open(shareUrl, '_blank', 'width=600,height=400,noopener,noreferrer');
+
+      if (typeof gtag === 'function') {
+        gtag('event', 'share', {
+          method: platform,
+          content_type: 'article',
+          item_id: window.location.pathname
+        });
+      }
     });
   })();
 </script>
