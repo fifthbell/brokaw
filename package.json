@@ -1,7 +1,7 @@
 {
   "name": "@fifthbell/brokaw",
   "description": "Server-side Handlebars renderer and templates for Fifth Bell pages.",
-  "version": "0.1.29",
+  "version": "0.1.30",
   "license": "MIT",
   "author": "Fifth Bell",
   "repository": {
