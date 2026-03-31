@@ -224,5 +224,59 @@
         });
       })();
     </script>
+    <script>
+      (function () {
+        if (typeof gtag !== 'function') return;
+
+        /**
+          * Scroll depth tracking
+          * Tracks when users scroll to certain percentages of the page.
+          */
+        var scrollMilestones = [25, 50, 75, 100];
+        var scrollReached = {};
+
+        function checkScrollDepth() {
+          var scrolled = window.scrollY || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          if (docHeight <= 0) return;
+          var pct = Math.min(100, Math.round((scrolled / docHeight) * 100));
+          for (var i = 0; i < scrollMilestones.length; i++) {
+            var milestone = scrollMilestones[i];
+            if (!scrollReached[milestone] && pct >= milestone) {
+              scrollReached[milestone] = true;
+              gtag('event', 'scroll_depth', { percent_scrolled: milestone });
+            }
+          }
+        }
+
+        window.addEventListener('scroll', checkScrollDepth, { passive: true });
+        checkScrollDepth();
+
+        /**
+          * Outbound link click tracking
+          * Tracks clicks on links that navigate away from the current site.
+          */
+        document.addEventListener('click', function (e) {
+          var target = e.target;
+          while (target && target.tagName !== 'A') {
+            target = target.parentElement;
+          }
+          if (!target) return;
+          var href = target.getAttribute('href');
+          if (!href || href.charAt(0) === '#' || href.indexOf('mailto:') === 0 || href.indexOf('tel:') === 0) return;
+          try {
+            var url = new URL(href, window.location.href);
+            if (url.hostname && url.hostname !== window.location.hostname) {
+              gtag('event', 'outbound_click', {
+                link_url: url.href,
+                link_domain: url.hostname,
+                link_text: (target.textContent || '').trim().slice(0, 100),
+                transport_type: 'beacon'
+              });
+            }
+          } catch (_) {}
+        });
+      })();
+    </script>
   </body>
 </html>
