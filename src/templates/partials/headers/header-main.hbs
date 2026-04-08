@@ -1,9 +1,18 @@
-<header class='border-b border-slate-200 dark:border-slate-700 relative z-[60] bg-white dark:bg-slate-900 transition-colors' style='view-transition-name: site-header;'>
+<header
+  class='border-b border-slate-200 dark:border-slate-700 relative z-[60] bg-white dark:bg-slate-900 transition-colors'
+  style='view-transition-name: site-header;'
+>
   <div class='container mx-auto px-4'>
     <nav class='flex items-center justify-between h-16'>
       <div class='flex items-center space-x-8'>
         <div class='relative'>
-          <button id='menu-button' class='flex items-center space-x-2 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-black dark:text-white' aria-label='Menu' aria-expanded='false' type='button'>
+          <button
+            id='menu-button'
+            class='flex items-center space-x-2 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-black dark:text-white'
+            aria-label='Menu'
+            aria-expanded='false'
+            type='button'
+          >
             <svg class='w-4 h-4' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
               <line x1='3' y1='6' x2='21' y2='6'></line>
               <line x1='3' y1='12' x2='21' y2='12'></line>
@@ -11,13 +20,22 @@
             </svg>
           </button>
 
-          <div id='dropdown-menu' class='fixed top-16 left-0 right-0 bottom-0 bg-white/98 dark:bg-slate-900/98 backdrop-blur-md shadow-lg z-50 pointer-events-none border-t border-slate-200 dark:border-slate-700 overflow-hidden transition-colors' style='opacity: 0; transform: translateX(-100%); transition: transform 600ms ease-out, opacity 300ms ease-out 300ms;'>
+          <div
+            id='dropdown-menu'
+            class='fixed top-16 left-0 right-0 bottom-0 bg-white/98 dark:bg-slate-900/98 backdrop-blur-md shadow-lg z-50 pointer-events-none border-t border-slate-200 dark:border-slate-700 overflow-hidden transition-colors'
+            style='opacity: 0; transform: translateX(-100%); transition: transform 600ms ease-out, opacity 300ms ease-out 300ms;'
+          >
             <div class='container mx-auto px-4 py-4 md:py-8 h-full overflow-y-auto overscroll-contain'>
               <div class='grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8'>
                 <div class='lg:col-span-1'>
-                  <h3 class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-4 border-b border-slate-200 dark:border-slate-800 pb-2'>SECTIONS</h3>
+                  <h3
+                    class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-4 border-b border-slate-200 dark:border-slate-800 pb-2'
+                  >SECTIONS</h3>
                   <div id='sections-links' class='space-y-3'>
-                    <a href='{{logoLink}}' class='block text-lg font-bold text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>TOP STORIES</a>
+                    <a
+                      href='{{logoLink}}'
+                      class='block text-lg font-bold text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'
+                    >TOP STORIES</a>
                     <div id='category-links-container' class='space-y-3'>
                       <p class='text-sm text-slate-400 dark:text-slate-500'>Loading sections...</p>
                     </div>
@@ -26,24 +44,56 @@
                   <div class='mt-8 pt-6 border-t border-slate-200 dark:border-slate-800'>
                     <h3 class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-4'>FOLLOW US</h3>
                     <div class='flex items-center gap-3'>
-                      <a href='https://bsky.app/profile/fifthbell.com' target='_blank' rel='noopener noreferrer' class='text-slate-600 dark:text-slate-400 hover:text-[#0085ff] dark:hover:text-[#0085ff] transition-colors' aria-label='Follow us on Bluesky'>
+                      <a
+                        href='https://bsky.app/profile/fifthbell.com'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        class='text-slate-600 dark:text-slate-400 hover:text-[#0085ff] dark:hover:text-[#0085ff] transition-colors'
+                        aria-label='Follow us on Bluesky'
+                      >
                         <svg class='w-5 h-5' viewBox='0 0 600 530' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
-                          <path d='M135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-.0174-2.9357-1.1937.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z'></path>
+                          <path
+                            d='M135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-.0174-2.9357-1.1937.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z'
+                          ></path>
                         </svg>
                       </a>
-                      <a href='https://x.com/thisisfifthbell' target='_blank' rel='noopener noreferrer' class='text-slate-600 dark:text-slate-400 hover:text-[#000000] dark:hover:text-[#ffffff] transition-colors' aria-label='Follow us on X (Twitter)'>
+                      <a
+                        href='https://x.com/thisisfifthbell'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        class='text-slate-600 dark:text-slate-400 hover:text-[#000000] dark:hover:text-[#ffffff] transition-colors'
+                        aria-label='Follow us on X (Twitter)'
+                      >
                         <svg class='w-5 h-5' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
-                          <path d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'></path>
+                          <path
+                            d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'
+                          ></path>
                         </svg>
                       </a>
-                      <a href='https://instagram.com/fifth.bell' target='_blank' rel='noopener noreferrer' class='text-slate-600 dark:text-slate-400 hover:text-[#E4405F] dark:hover:text-[#E4405F] transition-colors' aria-label='Follow us on Instagram'>
+                      <a
+                        href='https://instagram.com/thisisfifthbell'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        class='text-slate-600 dark:text-slate-400 hover:text-[#E4405F] dark:hover:text-[#E4405F] transition-colors'
+                        aria-label='Follow us on Instagram'
+                      >
                         <svg class='w-5 h-5' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
-                          <path d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z'></path>
+                          <path
+                            d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z'
+                          ></path>
                         </svg>
                       </a>
-                      <a href='https://www.youtube.com/@thisisfifthbell' target='_blank' rel='noopener noreferrer' class='text-slate-600 dark:text-slate-400 hover:text-[#FF0000] dark:hover:text-[#FF0000] transition-colors' aria-label='Subscribe on YouTube'>
+                      <a
+                        href='https://www.youtube.com/@thisisfifthbell'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        class='text-slate-600 dark:text-slate-400 hover:text-[#FF0000] dark:hover:text-[#FF0000] transition-colors'
+                        aria-label='Subscribe on YouTube'
+                      >
                         <svg class='w-5 h-5' viewBox='0 0 24 24' fill='currentColor' xmlns='http://www.w3.org/2000/svg'>
-                          <path d='M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z'></path>
+                          <path
+                            d='M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z'
+                          ></path>
                         </svg>
                       </a>
                     </div>
@@ -52,8 +102,22 @@
                   <div class='mt-8 pt-6 border-t border-slate-200 dark:border-slate-800'>
                     <h3 class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-4'>THEME</h3>
                     <div class='flex items-center gap-2'>
-                      <button id='theme-light' class='theme-btn flex items-center justify-center p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300' aria-label='Light mode' data-theme='light' type='button'>
-                        <svg class='w-5 h-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                      <button
+                        id='theme-light'
+                        class='theme-btn flex items-center justify-center p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300'
+                        aria-label='Light mode'
+                        data-theme='light'
+                        type='button'
+                      >
+                        <svg
+                          class='w-5 h-5'
+                          viewBox='0 0 24 24'
+                          fill='none'
+                          stroke='currentColor'
+                          stroke-width='2'
+                          stroke-linecap='round'
+                          stroke-linejoin='round'
+                        >
                           <circle cx='12' cy='12' r='4'></circle>
                           <path d='M12 2v2'></path>
                           <path d='M12 20v2'></path>
@@ -65,13 +129,41 @@
                           <path d='m19.07 4.93-1.41 1.41'></path>
                         </svg>
                       </button>
-                      <button id='theme-dark' class='theme-btn flex items-center justify-center p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300' aria-label='Dark mode' data-theme='dark' type='button'>
-                        <svg class='w-5 h-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                      <button
+                        id='theme-dark'
+                        class='theme-btn flex items-center justify-center p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300'
+                        aria-label='Dark mode'
+                        data-theme='dark'
+                        type='button'
+                      >
+                        <svg
+                          class='w-5 h-5'
+                          viewBox='0 0 24 24'
+                          fill='none'
+                          stroke='currentColor'
+                          stroke-width='2'
+                          stroke-linecap='round'
+                          stroke-linejoin='round'
+                        >
                           <path d='M12 3a6 6 0 1 0 9 9 9 9 0 1 1-9-9z'></path>
                         </svg>
                       </button>
-                      <button id='theme-system' class='theme-btn flex items-center justify-center p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300' aria-label='System theme' data-theme='system' type='button'>
-                        <svg class='w-5 h-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+                      <button
+                        id='theme-system'
+                        class='theme-btn flex items-center justify-center p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300'
+                        aria-label='System theme'
+                        data-theme='system'
+                        type='button'
+                      >
+                        <svg
+                          class='w-5 h-5'
+                          viewBox='0 0 24 24'
+                          fill='none'
+                          stroke='currentColor'
+                          stroke-width='2'
+                          stroke-linecap='round'
+                          stroke-linejoin='round'
+                        >
                           <rect x='2' y='3' width='20' height='14' rx='2' ry='2'></rect>
                           <line x1='8' y1='21' x2='16' y2='21'></line>
                           <line x1='12' y1='17' x2='12' y2='21'></line>
@@ -83,13 +175,28 @@
                   <div class='mt-8 pt-6 border-t border-slate-200 dark:border-slate-800'>
                     <h3 class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-4'>LANGUAGE</h3>
                     <div class='flex items-center gap-2'>
-                      <button class='lang-btn flex items-center justify-center px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 font-medium text-sm' aria-label='English' data-lang='en' type='button'>
+                      <button
+                        class='lang-btn flex items-center justify-center px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 font-medium text-sm'
+                        aria-label='English'
+                        data-lang='en'
+                        type='button'
+                      >
                         EN
                       </button>
-                      <button class='lang-btn flex items-center justify-center px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 font-medium text-sm' aria-label='Español' data-lang='es' type='button'>
+                      <button
+                        class='lang-btn flex items-center justify-center px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 font-medium text-sm'
+                        aria-label='Español'
+                        data-lang='es'
+                        type='button'
+                      >
                         ES
                       </button>
-                      <button class='lang-btn flex items-center justify-center px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 font-medium text-sm' aria-label='Italiano' data-lang='it' type='button'>
+                      <button
+                        class='lang-btn flex items-center justify-center px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300 font-medium text-sm'
+                        aria-label='Italiano'
+                        data-lang='it'
+                        type='button'
+                      >
                         IT
                       </button>
                     </div>
@@ -120,7 +227,12 @@
       </div>
 
       <div class='flex items-center space-x-4'>
-        <a href='https://www.youtube.com/watch?v=3Zq7RR-9Asc' target='_blank' rel='noopener noreferrer' class='hidden md:flex items-center space-x-2 bg-[#b21100] hover:bg-[#8f0d00] text-white px-4 py-2 rounded font-bold transition-colors uppercase tracking-wide text-sm'>
+        <a
+          href='https://www.youtube.com/watch?v=3Zq7RR-9Asc'
+          target='_blank'
+          rel='noopener noreferrer'
+          class='hidden md:flex items-center space-x-2 bg-[#b21100] hover:bg-[#8f0d00] text-white px-4 py-2 rounded font-bold transition-colors uppercase tracking-wide text-sm'
+        >
           <svg class='w-5 h-5' viewBox='0 0 24 24' fill='currentColor'>
             <path d='M8 5v14l11-7z'></path>
           </svg>
@@ -132,507 +244,123 @@
 </header>
 
 <script>
-  (function () {
-    const menuButton = document.getElementById('menu-button');
-    const dropdownMenu = document.getElementById('dropdown-menu');
-    const sectionsLinks = document.getElementById('sections-links');
-    const categoryLinksContainer = document.getElementById('category-links-container');
-    const miniFeatured = document.getElementById('mini-featured');
-    if (!menuButton || !dropdownMenu) return;
-
-    let isOpen = false;
-    let contentLoaded = false;
-    let currentCategoryKey = '__home__';
-    let activeCategorySlug = '';
-    let requestVersion = 0;
-    const cache = new Map();
-
-    function getCurrentLang() {
-      const p = window.location.pathname || '/';
-      if (p.startsWith('/es')) return 'es';
-      if (p.startsWith('/it')) return 'it';
-      return 'en';
-    }
-
-    function buildLocalePath(slug) {
-      const lang = getCurrentLang();
-      if (!slug) return lang === 'en' ? '/' : `/${lang}`;
-      const normalized = String(slug).startsWith('/') ? String(slug) : `/${slug}`;
-      if (normalized.startsWith('/es/') || normalized.startsWith('/it/')) return normalized;
-      if (lang === 'en') return normalized;
-      return `/${lang}${normalized}`;
-    }
-
-    function normalizePathInput(value) {
-      if (typeof value !== 'string') return '';
-      const trimmed = value.trim();
-      if (!trimmed) return '';
-
-      try {
-        if (/^https?:\/\//i.test(trimmed)) {
-          const parsed = new URL(trimmed);
-          const normalizedAbsolute = `/${(parsed.pathname || '').replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/');
-          if (normalizedAbsolute !== '/' && normalizedAbsolute.endsWith('/')) {
-            return normalizedAbsolute.slice(0, -1);
-          }
-          return normalizedAbsolute || '/';
-        }
-      } catch {
-        // Fall back to raw string normalization below
-      }
-
-      const withoutQueryOrHash = trimmed.split('#')[0].split('?')[0];
-      const normalized = `/${withoutQueryOrHash.replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/');
-      if (normalized !== '/' && normalized.endsWith('/')) {
-        return normalized.slice(0, -1);
-      }
-      return normalized;
-    }
-
-    function cleanPathSegment(value) {
-      if (typeof value !== 'string') return '';
-      return value.trim().replace(/^\/+|\/+$/g, '');
-    }
-
-    function getArticleLeafPath(article) {
-      const explicitUrl = normalizePathInput(article?.url);
-      if (explicitUrl && explicitUrl !== '/') {
-        return buildLocalePath(explicitUrl);
-      }
-
-      const canonicalUrl = normalizePathInput(article?.canonicalUrl);
-      if (canonicalUrl && canonicalUrl !== '/') {
-        return buildLocalePath(canonicalUrl);
-      }
-
-      const slugRaw = typeof article?.slug === 'string' ? article.slug : '';
-      const normalizedSlugPath = normalizePathInput(slugRaw);
-      const slugSegments = normalizedSlugPath.split('/').filter(Boolean);
-
-      if (slugSegments.length > 1) {
-        return buildLocalePath(normalizedSlugPath);
-      }
-
-      const slugSegment = cleanPathSegment(slugRaw);
-      const primaryCategorySlug =
-        cleanPathSegment(article?.categories?.[0]?.slug) || cleanPathSegment(article?.category?.slug);
-
-      if (slugSegment && primaryCategorySlug) {
-        return buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`);
-      }
-
-      if (slugSegment) {
-        return buildLocalePath(`/${slugSegment}`);
-      }
-
-      return buildLocalePath('/');
-    }
-
-    function getCdnUrl(categorySlug) {
-      const lang = getCurrentLang();
-      const file = categorySlug ? `${categorySlug}-current-${lang}.json` : `homepage-current-${lang}.json`;
-      return `https://cdn.fifthbell.com/content/${file}?v=${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    }
-
-    function getArticlesFromPayload(payload) {
-      if (!payload || typeof payload !== 'object') return [];
-      return payload.docs || payload.articles || [];
-    }
-
-    function showCategoryLinksLoading() {
-      if (!categoryLinksContainer) return;
-      categoryLinksContainer.innerHTML = `<p class='text-sm text-slate-400 dark:text-slate-500'>Loading sections...</p>`;
-    }
-
-    function showCategoryLinksError() {
-      if (!categoryLinksContainer) return;
-      categoryLinksContainer.innerHTML = `<p class='text-sm text-red-500'>Failed to load sections</p>`;
-    }
-
-    function setActiveCategoryLink(categorySlug) {
-      if (!sectionsLinks) return;
-      activeCategorySlug = categorySlug || '';
-      const links = sectionsLinks.querySelectorAll('.category-link');
-      links.forEach((link) => {
-        const isActive = (link.getAttribute('data-category-slug') || '') === activeCategorySlug;
-        if (isActive) {
-          link.classList.add('text-[#b21100]', 'dark:text-[#ff2e1a]');
-          link.classList.remove('text-black', 'dark:text-white');
-          link.setAttribute('aria-current', 'page');
-        } else {
-          link.classList.remove('text-[#b21100]', 'dark:text-[#ff2e1a]');
-          link.classList.add('text-black', 'dark:text-white');
-          link.setAttribute('aria-current', 'false');
-        }
-      });
-    }
-
-    function renderCategories(categories) {
-      if (!categoryLinksContainer) return;
-      if (!Array.isArray(categories) || categories.length === 0) {
-        categoryLinksContainer.innerHTML = `<p class='text-sm text-slate-400 dark:text-slate-500'>No sections available</p>`;
-        return;
-      }
-
-      categoryLinksContainer.innerHTML = categories
-        .map(
-          (category) =>
-            `<a href="${buildLocalePath(category.slug)}" class="category-link block text-lg font-bold text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors" data-category-slug="${category.slug}" aria-current="false">${String(category.name || '').toUpperCase()}</a>`
-        )
-        .join('');
-
-      setActiveCategoryLink(activeCategorySlug);
-    }
-
-    function showMiniFeaturedLoading() {
-      if (!miniFeatured) return;
-      miniFeatured.innerHTML = `
-        <div class='flex flex-col items-center justify-center py-20'>
-          <div class='animate-spin rounded-full h-12 w-12 border-b-2 border-slate-300 dark:border-slate-600'></div>
-          <p class='text-slate-400 dark:text-slate-500 mt-4'>Loading stories...</p>
-        </div>
-      `;
-    }
-
-    function renderMiniFeatured(articles, categoryName) {
-      if (!miniFeatured) return;
-      if (!Array.isArray(articles) || articles.length === 0) {
-        miniFeatured.innerHTML =
-          `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>${(categoryName || 'Featured Stories').toUpperCase()}</h3>` +
-          `<p class='text-slate-400 dark:text-slate-500'>No stories available</p>`;
-        return;
-      }
-
-      const top = (articles || []).slice(0, 2);
-      const grid = (articles || []).slice(2, 11);
-
-      const topHtml = top
-        .map(
-          (article) => `
-            <div>
-              <div class='relative mb-5'>
-                <img src='${article?.featuredImage?.url || ''}' alt='${article?.featuredImage?.alt || article?.title || ''}' class='w-full h-50 object-cover rounded' />
-              </div>
-              <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-3'>
-                <span class='uppercase font-bold tracking-wider'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span>
-                <span class='mx-2'>•</span>
-                <span>5 min</span>
-              </div>
-              <h2 class='text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight'>
-                <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
-              </h2>
-            </div>
-          `
-        )
-        .join('');
-
-      const rows = [];
-      for (let i = 0; i < grid.length; i += 3) {
-        const row = grid.slice(i, i + 3);
-        if (!row.length) continue;
-        rows.push(`
-          <div class='grid grid-cols-3 gap-6 ${i > 0 ? 'pt-6 border-t border-slate-200 dark:border-slate-800' : ''}'>
-            ${row
-              .map(
-                (article, idx) => `
-              <div class='${idx === 0 ? 'pr-4 border-r border-slate-200 dark:border-slate-800' : idx === 1 ? 'px-4 border-r border-slate-200 dark:border-slate-800' : 'pl-4'}'>
-                <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-3'>
-                  <span class='uppercase font-bold'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span>
-                </div>
-                <h3 class='font-medium text-base leading-tight text-slate-900 dark:text-slate-100'>
-                  <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'>${article?.title || ''}</a>
-                </h3>
-              </div>
-            `
-              )
-              .join('')}
-          </div>
-        `);
-      }
-
-      miniFeatured.innerHTML = `
-        <h3 class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>
-          ${(categoryName || 'Featured Stories').toUpperCase()}
-        </h3>
-        <div class='grid grid-cols-2 gap-8 mb-10'>${topHtml}</div>
-        <div class='space-y-6'>${rows.join('')}</div>
-      `;
-    }
-
-    function getCategoryName(payload, categorySlug) {
-      if (!categorySlug) return 'Featured Stories';
-      const fromPrimaryCategory = payload?.category?.name;
-      if (fromPrimaryCategory) return fromPrimaryCategory;
-      const fromCategoriesArray = (payload?.categories || []).find((category) => category?.slug === categorySlug)?.name;
-      if (fromCategoriesArray) return fromCategoriesArray;
-      return String(categorySlug).replace(/-/g, ' ');
-    }
-
-    async function fetchPayload(categorySlug) {
-      const response = await fetch(getCdnUrl(categorySlug), { headers: { 'Content-Type': 'application/json' } });
-      if (!response.ok) throw new Error(`Failed to fetch ${categorySlug || 'homepage'} data`);
-      return response.json();
-    }
-
-    async function loadCategoryContent(categorySlug) {
-      const key = categorySlug || '__home__';
-      if (key === currentCategoryKey && cache.has(key)) return;
-      currentCategoryKey = key;
-
-      if (cache.has(key)) {
-        const cached = cache.get(key);
-        renderMiniFeatured(cached.articles, cached.categoryName);
-        return;
-      }
-
-      const requestId = ++requestVersion;
-      showMiniFeaturedLoading();
-
-      try {
-        const payload = await fetchPayload(categorySlug);
-        if (requestId !== requestVersion || key !== currentCategoryKey) return;
-        const articles = getArticlesFromPayload(payload);
-        const categoryName = getCategoryName(payload, categorySlug);
-        const data = { articles, categoryName };
-        cache.set(key, data);
-        renderMiniFeatured(articles, categoryName);
-      } catch (error) {
-        if (requestId !== requestVersion || key !== currentCategoryKey) return;
-        if (miniFeatured) {
-          miniFeatured.innerHTML =
-            `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>ERROR</h3>` +
-            `<p class='text-red-500'>Failed to load stories</p>`;
-        }
-      }
-    }
-
-    function shouldPreviewOnClick(event) {
-      if (!(miniFeatured instanceof HTMLElement)) return false;
-      if (!window.matchMedia('(min-width: 1024px)').matches) return false;
-      if (event.button !== 0) return false;
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
-      return true;
-    }
-
-    function attachSectionHandlers() {
-      if (!sectionsLinks) return;
-
-      const topStories = sectionsLinks.querySelector('a[href="{{logoLink}}"]');
-      if (topStories) {
-        topStories.classList.add('category-link');
-        topStories.setAttribute('data-category-slug', '');
-      }
-
-      const links = sectionsLinks.querySelectorAll('.category-link');
-      links.forEach((link) => {
-        const selectCategory = () => {
-          const slug = link.getAttribute('data-category-slug') || '';
-          setActiveCategoryLink(slug);
-          loadCategoryContent(slug);
-        };
-
-        link.addEventListener('mouseenter', selectCategory);
-        link.addEventListener('focus', selectCategory);
-        link.addEventListener('click', (event) => {
-          if (!shouldPreviewOnClick(event)) return;
-          event.preventDefault();
-          selectCategory();
-        });
-      });
-    }
-
-    async function initializeMenuContent() {
-      if (contentLoaded) return;
-      showCategoryLinksLoading();
-      showMiniFeaturedLoading();
-
-      try {
-        const payload = await fetchPayload('');
-        const categories = (payload.categories || []).filter((c) => c && c.slug && (c.featured ?? true));
-        renderCategories(categories);
-        attachSectionHandlers();
-
-        const homeArticles = getArticlesFromPayload(payload);
-        const homeData = { articles: homeArticles, categoryName: 'Featured Stories' };
-        cache.set('__home__', homeData);
-        currentCategoryKey = '__home__';
-        setActiveCategoryLink('');
-        renderMiniFeatured(homeArticles, homeData.categoryName);
-        contentLoaded = true;
-      } catch {
-        showCategoryLinksError();
-        if (miniFeatured) {
-          miniFeatured.innerHTML =
-            `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>ERROR</h3>` +
-            `<p class='text-red-500'>Failed to load stories</p>`;
-        }
-      }
-    }
-
-    function toggleMenu() {
-      isOpen = !isOpen;
-      menuButton.setAttribute('aria-expanded', String(isOpen));
-      dropdownMenu.style.pointerEvents = isOpen ? 'auto' : 'none';
-      dropdownMenu.style.transform = isOpen ? 'translateX(0)' : 'translateX(-100%)';
-      dropdownMenu.style.opacity = isOpen ? '1' : '0';
-      document.body.style.overflow = isOpen ? 'hidden' : '';
-      if (isOpen) {
-        initializeMenuContent();
-      }
-    }
-
-    menuButton.addEventListener('click', (event) => {
-      event.stopPropagation();
-      toggleMenu();
-    });
-
-    document.addEventListener('click', (event) => {
-      if (!isOpen) return;
-      const target = event.target;
-      if (target instanceof Node && dropdownMenu.contains(target)) return;
-      if (target === menuButton) return;
-      toggleMenu();
-    });
-  })();
+  (function () { const menuButton = document.getElementById('menu-button'); const dropdownMenu = document.getElementById('dropdown-menu'); const sectionsLinks =
+  document.getElementById('sections-links'); const categoryLinksContainer = document.getElementById('category-links-container'); const miniFeatured =
+  document.getElementById('mini-featured'); if (!menuButton || !dropdownMenu) return; let isOpen = false; let contentLoaded = false; let currentCategoryKey =
+  '__home__'; let activeCategorySlug = ''; let requestVersion = 0; const cache = new Map(); function getCurrentLang() { const p = window.location.pathname ||
+  '/'; if (p.startsWith('/es')) return 'es'; if (p.startsWith('/it')) return 'it'; return 'en'; } function buildLocalePath(slug) { const lang =
+  getCurrentLang(); if (!slug) return lang === 'en' ? '/' : `/${lang}`; const normalized = String(slug).startsWith('/') ? String(slug) : `/${slug}`; if
+  (normalized.startsWith('/es/') || normalized.startsWith('/it/')) return normalized; if (lang === 'en') return normalized; return `/${lang}${normalized}`; }
+  function normalizePathInput(value) { if (typeof value !== 'string') return ''; const trimmed = value.trim(); if (!trimmed) return ''; try { if
+  (/^https?:\/\//i.test(trimmed)) { const parsed = new URL(trimmed); const normalizedAbsolute = `/${(parsed.pathname || '').replace(/^\/+/,
+  '')}`.replace(/\/{2,}/g, '/'); if (normalizedAbsolute !== '/' && normalizedAbsolute.endsWith('/')) { return normalizedAbsolute.slice(0, -1); } return
+  normalizedAbsolute || '/'; } } catch { // Fall back to raw string normalization below } const withoutQueryOrHash = trimmed.split('#')[0].split('?')[0]; const
+  normalized = `/${withoutQueryOrHash.replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/'); if (normalized !== '/' && normalized.endsWith('/')) { return
+  normalized.slice(0, -1); } return normalized; } function cleanPathSegment(value) { if (typeof value !== 'string') return ''; return
+  value.trim().replace(/^\/+|\/+$/g, ''); } function getArticleLeafPath(article) { const explicitUrl = normalizePathInput(article?.url); if (explicitUrl &&
+  explicitUrl !== '/') { return buildLocalePath(explicitUrl); } const canonicalUrl = normalizePathInput(article?.canonicalUrl); if (canonicalUrl && canonicalUrl
+  !== '/') { return buildLocalePath(canonicalUrl); } const slugRaw = typeof article?.slug === 'string' ? article.slug : ''; const normalizedSlugPath =
+  normalizePathInput(slugRaw); const slugSegments = normalizedSlugPath.split('/').filter(Boolean); if (slugSegments.length > 1) { return
+  buildLocalePath(normalizedSlugPath); } const slugSegment = cleanPathSegment(slugRaw); const primaryCategorySlug =
+  cleanPathSegment(article?.categories?.[0]?.slug) || cleanPathSegment(article?.category?.slug); if (slugSegment && primaryCategorySlug) { return
+  buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`); } if (slugSegment) { return buildLocalePath(`/${slugSegment}`); } return buildLocalePath('/'); }
+  function getCdnUrl(categorySlug) { const lang = getCurrentLang(); const file = categorySlug ? `${categorySlug}-current-${lang}.json` :
+  `homepage-current-${lang}.json`; return `https://cdn.fifthbell.com/content/${file}?v=${Date.now()}-${Math.random().toString(36).slice(2)}`; } function
+  getArticlesFromPayload(payload) { if (!payload || typeof payload !== 'object') return []; return payload.docs || payload.articles || []; } function
+  showCategoryLinksLoading() { if (!categoryLinksContainer) return; categoryLinksContainer.innerHTML = `<p class='text-sm text-slate-400
+  dark:text-slate-500'>Loading sections...</p>`; } function showCategoryLinksError() { if (!categoryLinksContainer) return; categoryLinksContainer.innerHTML =
+  `<p class='text-sm text-red-500'>Failed to load sections</p>`; } function setActiveCategoryLink(categorySlug) { if (!sectionsLinks) return; activeCategorySlug
+  = categorySlug || ''; const links = sectionsLinks.querySelectorAll('.category-link'); links.forEach((link) => { const isActive =
+  (link.getAttribute('data-category-slug') || '') === activeCategorySlug; if (isActive) { link.classList.add('text-[#b21100]', 'dark:text-[#ff2e1a]');
+  link.classList.remove('text-black', 'dark:text-white'); link.setAttribute('aria-current', 'page'); } else { link.classList.remove('text-[#b21100]',
+  'dark:text-[#ff2e1a]'); link.classList.add('text-black', 'dark:text-white'); link.setAttribute('aria-current', 'false'); } }); } function
+  renderCategories(categories) { if (!categoryLinksContainer) return; if (!Array.isArray(categories) || categories.length === 0) {
+  categoryLinksContainer.innerHTML = `<p class='text-sm text-slate-400 dark:text-slate-500'>No sections available</p>`; return; }
+  categoryLinksContainer.innerHTML = categories .map( (category) => `<a href="${buildLocalePath(category.slug)}" class="category-link block text-lg font-bold
+  text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors" data-category-slug="${category.slug}"
+  aria-current="false">${String(category.name || '').toUpperCase()}</a>` ) .join(''); setActiveCategoryLink(activeCategorySlug); } function
+  showMiniFeaturedLoading() { if (!miniFeatured) return; miniFeatured.innerHTML = ` <div class='flex flex-col items-center justify-center py-20'> <div
+  class='animate-spin rounded-full h-12 w-12 border-b-2 border-slate-300 dark:border-slate-600'></div> <p class='text-slate-400 dark:text-slate-500
+  mt-4'>Loading stories...</p> </div> `; } function renderMiniFeatured(articles, categoryName) { if (!miniFeatured) return; if (!Array.isArray(articles) ||
+  articles.length === 0) { miniFeatured.innerHTML = `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200
+  dark:border-slate-800 pb-2'>${(categoryName || 'Featured Stories').toUpperCase()}</h3>` + `<p class='text-slate-400 dark:text-slate-500'>No stories
+  available</p>`; return; } const top = (articles || []).slice(0, 2); const grid = (articles || []).slice(2, 11); const topHtml = top .map( (article) => ` <div>
+  <div class='relative mb-5'> <img src='${article?.featuredImage?.url || ''}' alt='${article?.featuredImage?.alt || article?.title || ''}' class='w-full h-50
+  object-cover rounded' /> </div> <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-3'> <span class='uppercase font-bold
+  tracking-wider'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span> <span class='mx-2'>•</span> <span>5 min</span> </div> <h2 class='text-xl
+  font-bold text-slate-900 dark:text-slate-100 leading-tight'> <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a]
+  transition-colors'>${article?.title || ''}</a> </h2> </div> ` ) .join(''); const rows = []; for (let i = 0; i < grid.length; i += 3) { const row =
+  grid.slice(i, i + 3); if (!row.length) continue; rows.push(` <div class='grid grid-cols-3 gap-6 ${i > 0 ? 'pt-6 border-t border-slate-200
+  dark:border-slate-800' : ''}'> ${row .map( (article, idx) => ` <div class='${idx === 0 ? 'pr-4 border-r border-slate-200 dark:border-slate-800' : idx === 1 ?
+  'px-4 border-r border-slate-200 dark:border-slate-800' : 'pl-4'}'> <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-3'> <span
+  class='uppercase font-bold'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span> </div> <h3 class='font-medium text-base leading-tight
+  text-slate-900 dark:text-slate-100'> <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a]
+  transition-colors'>${article?.title || ''}</a> </h3> </div> ` ) .join('')} </div> `); } miniFeatured.innerHTML = ` <h3 class='text-xs font-bold text-slate-400
+  dark:text-slate-600 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'> ${(categoryName || 'Featured Stories').toUpperCase()}
+  </h3> <div class='grid grid-cols-2 gap-8 mb-10'>${topHtml}</div> <div class='space-y-6'>${rows.join('')}</div> `; } function getCategoryName(payload,
+  categorySlug) { if (!categorySlug) return 'Featured Stories'; const fromPrimaryCategory = payload?.category?.name; if (fromPrimaryCategory) return
+  fromPrimaryCategory; const fromCategoriesArray = (payload?.categories || []).find((category) => category?.slug === categorySlug)?.name; if
+  (fromCategoriesArray) return fromCategoriesArray; return String(categorySlug).replace(/-/g, ' '); } async function fetchPayload(categorySlug) { const response
+  = await fetch(getCdnUrl(categorySlug), { headers: { 'Content-Type': 'application/json' } }); if (!response.ok) throw new Error(`Failed to fetch ${categorySlug
+  || 'homepage'} data`); return response.json(); } async function loadCategoryContent(categorySlug) { const key = categorySlug || '__home__'; if (key ===
+  currentCategoryKey && cache.has(key)) return; currentCategoryKey = key; if (cache.has(key)) { const cached = cache.get(key);
+  renderMiniFeatured(cached.articles, cached.categoryName); return; } const requestId = ++requestVersion; showMiniFeaturedLoading(); try { const payload = await
+  fetchPayload(categorySlug); if (requestId !== requestVersion || key !== currentCategoryKey) return; const articles = getArticlesFromPayload(payload); const
+  categoryName = getCategoryName(payload, categorySlug); const data = { articles, categoryName }; cache.set(key, data); renderMiniFeatured(articles,
+  categoryName); } catch (error) { if (requestId !== requestVersion || key !== currentCategoryKey) return; if (miniFeatured) { miniFeatured.innerHTML = `<h3
+  class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'>ERROR</h3>` + `<p
+  class='text-red-500'>Failed to load stories</p>`; } } } function shouldPreviewOnClick(event) { if (!(miniFeatured instanceof HTMLElement)) return false; if
+  (!window.matchMedia('(min-width: 1024px)').matches) return false; if (event.button !== 0) return false; if (event.metaKey || event.ctrlKey || event.shiftKey
+  || event.altKey) return false; return true; } function attachSectionHandlers() { if (!sectionsLinks) return; const topStories =
+  sectionsLinks.querySelector('a[href="{{logoLink}}"]'); if (topStories) { topStories.classList.add('category-link');
+  topStories.setAttribute('data-category-slug', ''); } const links = sectionsLinks.querySelectorAll('.category-link'); links.forEach((link) => { const
+  selectCategory = () => { const slug = link.getAttribute('data-category-slug') || ''; setActiveCategoryLink(slug); loadCategoryContent(slug); };
+  link.addEventListener('mouseenter', selectCategory); link.addEventListener('focus', selectCategory); link.addEventListener('click', (event) => { if
+  (!shouldPreviewOnClick(event)) return; event.preventDefault(); selectCategory(); }); }); } async function initializeMenuContent() { if (contentLoaded) return;
+  showCategoryLinksLoading(); showMiniFeaturedLoading(); try { const payload = await fetchPayload(''); const categories = (payload.categories || []).filter((c)
+  => c && c.slug && (c.featured ?? true)); renderCategories(categories); attachSectionHandlers(); const homeArticles = getArticlesFromPayload(payload); const
+  homeData = { articles: homeArticles, categoryName: 'Featured Stories' }; cache.set('__home__', homeData); currentCategoryKey = '__home__';
+  setActiveCategoryLink(''); renderMiniFeatured(homeArticles, homeData.categoryName); contentLoaded = true; } catch { showCategoryLinksError(); if
+  (miniFeatured) { miniFeatured.innerHTML = `<h3 class='text-xs font-bold text-slate-400 uppercase tracking-wider mb-6 border-b border-slate-200
+  dark:border-slate-800 pb-2'>ERROR</h3>` + `<p class='text-red-500'>Failed to load stories</p>`; } } } function toggleMenu() { isOpen = !isOpen;
+  menuButton.setAttribute('aria-expanded', String(isOpen)); dropdownMenu.style.pointerEvents = isOpen ? 'auto' : 'none'; dropdownMenu.style.transform = isOpen ?
+  'translateX(0)' : 'translateX(-100%)'; dropdownMenu.style.opacity = isOpen ? '1' : '0'; document.body.style.overflow = isOpen ? 'hidden' : ''; if (isOpen) {
+  initializeMenuContent(); } } menuButton.addEventListener('click', (event) => { event.stopPropagation(); toggleMenu(); }); document.addEventListener('click',
+  (event) => { if (!isOpen) return; const target = event.target; if (target instanceof Node && dropdownMenu.contains(target)) return; if (target === menuButton)
+  return; toggleMenu(); }); })();
 </script>
 
 <script>
-  (function () {
-    const THEME_KEY = 'fifthbell_theme';
-    const themeButtons = document.querySelectorAll('.theme-btn');
-    if (!themeButtons.length) return;
-
-    function getSystemTheme() {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
-    function applyTheme(theme) {
-      const actualTheme = theme === 'system' ? getSystemTheme() : theme;
-      if (actualTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
-
-    function updateActiveButton(theme) {
-      themeButtons.forEach((button) => {
-        const buttonTheme = button.getAttribute('data-theme');
-        if (buttonTheme === theme) {
-          button.classList.add('!bg-[#b21100]', '!text-white');
-          button.classList.remove('text-slate-700', 'dark:text-slate-300');
-          button.setAttribute('aria-pressed', 'true');
-        } else {
-          button.classList.remove('!bg-[#b21100]', '!text-white');
-          button.classList.add('text-slate-700', 'dark:text-slate-300');
-          button.setAttribute('aria-pressed', 'false');
-        }
-      });
-    }
-
-    function setTheme(theme) {
-      localStorage.setItem(THEME_KEY, theme);
-      applyTheme(theme);
-      updateActiveButton(theme);
-    }
-
-    function initTheme() {
-      const savedTheme = localStorage.getItem(THEME_KEY) || 'system';
-      applyTheme(savedTheme);
-      updateActiveButton(savedTheme);
-    }
-
-    themeButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const theme = button.getAttribute('data-theme');
-        if (theme) setTheme(theme);
-      });
-    });
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if ((localStorage.getItem(THEME_KEY) || 'system') === 'system') {
-        applyTheme('system');
-      }
-    });
-
-    initTheme();
-  })();
+  (function () { const THEME_KEY = 'fifthbell_theme'; const themeButtons = document.querySelectorAll('.theme-btn'); if (!themeButtons.length) return; function
+  getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } function applyTheme(theme) { const actualTheme =
+  theme === 'system' ? getSystemTheme() : theme; if (actualTheme === 'dark') { document.documentElement.classList.add('dark'); } else {
+  document.documentElement.classList.remove('dark'); } } function updateActiveButton(theme) { themeButtons.forEach((button) => { const buttonTheme =
+  button.getAttribute('data-theme'); if (buttonTheme === theme) { button.classList.add('!bg-[#b21100]', '!text-white');
+  button.classList.remove('text-slate-700', 'dark:text-slate-300'); button.setAttribute('aria-pressed', 'true'); } else {
+  button.classList.remove('!bg-[#b21100]', '!text-white'); button.classList.add('text-slate-700', 'dark:text-slate-300'); button.setAttribute('aria-pressed',
+  'false'); } }); } function setTheme(theme) { localStorage.setItem(THEME_KEY, theme); applyTheme(theme); updateActiveButton(theme); } function initTheme() {
+  const savedTheme = localStorage.getItem(THEME_KEY) || 'system'; applyTheme(savedTheme); updateActiveButton(savedTheme); } themeButtons.forEach((button) => {
+  button.addEventListener('click', () => { const theme = button.getAttribute('data-theme'); if (theme) setTheme(theme); }); });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if ((localStorage.getItem(THEME_KEY) || 'system') === 'system') {
+  applyTheme('system'); } }); initTheme(); })();
 </script>
 
 <script>
-  (function () {
-    const langButtons = document.querySelectorAll('.lang-btn');
-    if (!langButtons.length) return;
-
-    function getCurrentLanguageFromPath() {
-      const path = window.location.pathname || '/';
-      if (path.startsWith('/es')) return 'es';
-      if (path.startsWith('/it')) return 'it';
-      return 'en';
-    }
-
-    function updateActiveButton(lang) {
-      langButtons.forEach((button) => {
-        const buttonLang = button.getAttribute('data-lang');
-        if (buttonLang === lang) {
-          button.classList.add('!bg-[#b21100]', '!text-white');
-          button.classList.remove('text-slate-700', 'dark:text-slate-300');
-          button.setAttribute('aria-pressed', 'true');
-        } else {
-          button.classList.remove('!bg-[#b21100]', '!text-white');
-          button.classList.add('text-slate-700', 'dark:text-slate-300');
-          button.setAttribute('aria-pressed', 'false');
-        }
-      });
-    }
-
-    function getTargetPathForLanguage(targetLang) {
-      const currentPath = window.location.pathname || '/';
-      const currentLang = getCurrentLanguageFromPath();
-      if (currentLang === targetLang) return null;
-
-      let basePath = currentPath;
-      if (currentLang === 'es' && currentPath.startsWith('/es')) {
-        basePath = currentPath.substring(3) || '/';
-      } else if (currentLang === 'it' && currentPath.startsWith('/it')) {
-        basePath = currentPath.substring(3) || '/';
-      }
-
-      const segments = basePath.split('/').filter(Boolean);
-      let categorySlugs = new Set(['politics', 'world', 'business', 'sports', 'technology', 'weather', 'crime', 'new-york']);
-      try {
-        const cached = localStorage.getItem('fifthbell_categories');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          const categories = parsed?.data;
-          if (Array.isArray(categories)) {
-            categorySlugs = new Set(categories.map((item) => item.slug));
-          }
-        }
-      } catch {
-        // ignore invalid local cache
-      }
-
-      const isHomepage = segments.length === 0;
-      const isCategoryPage = segments.length === 1 && categorySlugs.has(segments[0]);
-      if (!isHomepage && !isCategoryPage) {
-        return targetLang === 'en' ? '/' : `/${targetLang}`;
-      }
-
-      if (targetLang === 'en') return basePath === '/' ? '/' : basePath;
-      return basePath === '/' ? `/${targetLang}` : `/${targetLang}${basePath}`;
-    }
-
-    langButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const targetLang = button.getAttribute('data-lang');
-        if (!targetLang) return;
-        updateActiveButton(targetLang);
-        const targetPath = getTargetPathForLanguage(targetLang);
-        if (targetPath) window.location.href = targetPath;
-      });
-    });
-
-    updateActiveButton(getCurrentLanguageFromPath());
-  })();
+  (function () { const langButtons = document.querySelectorAll('.lang-btn'); if (!langButtons.length) return; function getCurrentLanguageFromPath() { const path
+  = window.location.pathname || '/'; if (path.startsWith('/es')) return 'es'; if (path.startsWith('/it')) return 'it'; return 'en'; } function
+  updateActiveButton(lang) { langButtons.forEach((button) => { const buttonLang = button.getAttribute('data-lang'); if (buttonLang === lang) {
+  button.classList.add('!bg-[#b21100]', '!text-white'); button.classList.remove('text-slate-700', 'dark:text-slate-300'); button.setAttribute('aria-pressed',
+  'true'); } else { button.classList.remove('!bg-[#b21100]', '!text-white'); button.classList.add('text-slate-700', 'dark:text-slate-300');
+  button.setAttribute('aria-pressed', 'false'); } }); } function getTargetPathForLanguage(targetLang) { const currentPath = window.location.pathname || '/';
+  const currentLang = getCurrentLanguageFromPath(); if (currentLang === targetLang) return null; let basePath = currentPath; if (currentLang === 'es' &&
+  currentPath.startsWith('/es')) { basePath = currentPath.substring(3) || '/'; } else if (currentLang === 'it' && currentPath.startsWith('/it')) { basePath =
+  currentPath.substring(3) || '/'; } const segments = basePath.split('/').filter(Boolean); let categorySlugs = new Set(['politics', 'world', 'business',
+  'sports', 'technology', 'weather', 'crime', 'new-york']); try { const cached = localStorage.getItem('fifthbell_categories'); if (cached) { const parsed =
+  JSON.parse(cached); const categories = parsed?.data; if (Array.isArray(categories)) { categorySlugs = new Set(categories.map((item) => item.slug)); } } }
+  catch { // ignore invalid local cache } const isHomepage = segments.length === 0; const isCategoryPage = segments.length === 1 &&
+  categorySlugs.has(segments[0]); if (!isHomepage && !isCategoryPage) { return targetLang === 'en' ? '/' : `/${targetLang}`; } if (targetLang === 'en') return
+  basePath === '/' ? '/' : basePath; return basePath === '/' ? `/${targetLang}` : `/${targetLang}${basePath}`; } langButtons.forEach((button) => {
+  button.addEventListener('click', () => { const targetLang = button.getAttribute('data-lang'); if (!targetLang) return; updateActiveButton(targetLang); const
+  targetPath = getTargetPathForLanguage(targetLang); if (targetPath) window.location.href = targetPath; }); });
+  updateActiveButton(getCurrentLanguageFromPath()); })();
 </script>
