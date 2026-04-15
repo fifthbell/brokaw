@@ -77,6 +77,26 @@
     {{#each body}}
       {{> (lookup . 'type')}}
     {{/each}}
+
+    {{#if articles.[1]}}
+      <section class='not-prose mt-12 pt-6 border-t border-slate-200 dark:border-slate-800'>
+        <h2 class='text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-6'>Related Articles</h2>
+        <div class='grid grid-cols-1 md:grid-cols-2 gap-8'>
+          {{#each (slice articles 0 6)}}
+            {{> components/snack
+              url=url
+              title=title
+              image=featuredImage.url
+              alt=featuredImage.alt
+              categories=categories
+              excerpt=excerpt
+              readTime=(formatDate publishedAt)
+              className='flex flex-col h-full'
+            }}
+          {{/each}}
+        </div>
+      </section>
+    {{/if}}
   </div>
 </main>
 <script>

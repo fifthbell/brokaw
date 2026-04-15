@@ -292,7 +292,6 @@ function registerPartials(partials: Record<string, string>): void {
     divider: 'blocks/divider',
     infoBox: 'blocks/info-box',
     keyPoints: 'blocks/key-points',
-    relatedLinks: 'blocks/related-links',
     dataTable: 'blocks/data-table',
     liveUpdate: 'blocks/live-update',
     audio: 'blocks/audio',
