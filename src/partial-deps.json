@@ -18,7 +18,6 @@
   "blocks/divider": ["article-page"],
   "blocks/info-box": ["article-page"],
   "blocks/key-points": ["article-page"],
-  "blocks/related-links": ["article-page"],
   "blocks/data-table": ["article-page"],
   "blocks/live-update": ["article-page"],
   "blocks/audio": ["article-page"],

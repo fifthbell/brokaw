@@ -20,7 +20,6 @@ import blockListHbs from './templates/partials/blocks/list.hbs?raw';
 import blockDividerHbs from './templates/partials/blocks/divider.hbs?raw';
 import blockInfoBoxHbs from './templates/partials/blocks/info-box.hbs?raw';
 import blockKeyPointsHbs from './templates/partials/blocks/key-points.hbs?raw';
-import blockRelatedLinksHbs from './templates/partials/blocks/related-links.hbs?raw';
 import blockDataTableHbs from './templates/partials/blocks/data-table.hbs?raw';
 import blockLiveUpdateHbs from './templates/partials/blocks/live-update.hbs?raw';
 import blockAudioHbs from './templates/partials/blocks/audio.hbs?raw';
@@ -87,7 +86,6 @@ const assets: RendererAssets = {
     'blocks/divider': blockDividerHbs,
     'blocks/info-box': blockInfoBoxHbs,
     'blocks/key-points': blockKeyPointsHbs,
-    'blocks/related-links': blockRelatedLinksHbs,
     'blocks/data-table': blockDataTableHbs,
     'blocks/live-update': blockLiveUpdateHbs,
     'blocks/audio': blockAudioHbs,
