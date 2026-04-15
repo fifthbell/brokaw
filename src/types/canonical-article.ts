@@ -59,18 +59,6 @@ const bodyBlockSchema = z.discriminatedUnion('type', [
     points: z.array(z.string()).min(1)
   }),
   z.object({
-    type: z.literal('relatedLinks'),
-    title: z.string().default('Related Coverage'),
-    links: z
-      .array(
-        z.object({
-          label: z.string(),
-          url: z.string().url()
-        })
-      )
-      .min(1)
-  }),
-  z.object({
     type: z.literal('dataTable'),
     caption: z.string().optional(),
     headers: z.array(z.string()).min(1),

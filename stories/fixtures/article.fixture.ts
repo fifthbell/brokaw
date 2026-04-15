@@ -120,14 +120,6 @@ export const articleFixture: CanonicalArticle = {
     {
       type: 'richText',
       html: '<p>Emergency managers urged residents to secure loose outdoor items and monitor local advisories. Transit agencies are preparing contingency schedules if wind thresholds are reached.</p>'
-    },
-    {
-      type: 'relatedLinks',
-      title: 'Related Coverage',
-      links: [
-        { label: 'How cities stage utility crews before severe weather', url: 'https://fifthbell.com/business/utility-prep-playbook' },
-        { label: 'Inside emergency communications during overnight storms', url: 'https://fifthbell.com/politics/emergency-communications-guide' }
-      ]
     }
   ],
   seo: {
@@ -145,5 +137,34 @@ export const articleFixture: CanonicalArticle = {
       { name: 'Weather', slug: 'weather' }
     ]
   },
-  articles: []
+  articles: [
+    {
+      id: '11111111-1111-4111-8111-111111111111',
+      url: '/weather/coastal-flood-watch-expanded',
+      title: 'Coastal flood watch expanded across three states',
+      excerpt: 'Emergency crews pre-positioned barricades as tidal surge estimates increased overnight.',
+      categories: [{ name: 'Weather', slug: 'weather' }],
+      featuredImage: {
+        url: 'https://images.unsplash.com/photo-1475776408506-9a5371e7a068?w=1200&h=675&fit=crop',
+        alt: 'Flooded coastal roadway at dusk'
+      },
+      publishedAt: '2026-03-08T09:15:00.000Z',
+      updatedAt: '2026-03-08T09:40:00.000Z',
+      featured: false
+    },
+    {
+      id: '22222222-2222-4222-8222-222222222222',
+      url: '/weather/transit-agencies-issue-severe-weather-plan',
+      title: 'Transit agencies issue severe weather contingency plans',
+      excerpt: 'Rail and bus operators outlined reduced schedules and fallback routes for evening service.',
+      categories: [{ name: 'Weather', slug: 'weather' }],
+      featuredImage: {
+        url: 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=1200&h=675&fit=crop',
+        alt: 'Commuters waiting on a windy platform'
+      },
+      publishedAt: '2026-03-08T08:20:00.000Z',
+      updatedAt: '2026-03-08T08:55:00.000Z',
+      featured: false
+    }
+  ]
 };

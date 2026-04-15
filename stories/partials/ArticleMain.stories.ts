@@ -8,7 +8,6 @@ import listHbs from '../../src/templates/partials/blocks/list.hbs?raw';
 import dividerHbs from '../../src/templates/partials/blocks/divider.hbs?raw';
 import infoBoxHbs from '../../src/templates/partials/blocks/info-box.hbs?raw';
 import keyPointsHbs from '../../src/templates/partials/blocks/key-points.hbs?raw';
-import relatedLinksHbs from '../../src/templates/partials/blocks/related-links.hbs?raw';
 import dataTableHbs from '../../src/templates/partials/blocks/data-table.hbs?raw';
 import liveUpdateHbs from '../../src/templates/partials/blocks/live-update.hbs?raw';
 import audioHbs from '../../src/templates/partials/blocks/audio.hbs?raw';
@@ -28,7 +27,6 @@ Handlebars.registerPartial('list', listHbs);
 Handlebars.registerPartial('divider', dividerHbs);
 Handlebars.registerPartial('infoBox', infoBoxHbs);
 Handlebars.registerPartial('keyPoints', keyPointsHbs);
-Handlebars.registerPartial('relatedLinks', relatedLinksHbs);
 Handlebars.registerPartial('dataTable', dataTableHbs);
 Handlebars.registerPartial('liveUpdate', liveUpdateHbs);
 Handlebars.registerPartial('audio', audioHbs);
@@ -51,3 +49,10 @@ export default meta;
 type Story = StoryObj;
 
 export const Default: Story = {};
+
+export const WithoutRelatedArticles: Story = {
+  args: {
+    ...articleFixture,
+    articles: [],
+  },
+};
