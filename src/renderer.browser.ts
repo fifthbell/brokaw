@@ -1,6 +1,7 @@
 import articleLayoutHbs from './templates/layouts/article-page.hbs?raw';
 import homepageLayoutHbs from './templates/layouts/homepage.hbs?raw';
 import categoryLayoutHbs from './templates/layouts/category-page.hbs?raw';
+import searchLayoutHbs from './templates/layouts/search-page.hbs?raw';
 import notFoundLayoutHbs from './templates/layouts/404.hbs?raw';
 import liveStoryLayoutHbs from './templates/layouts/live-story.hbs?raw';
 
@@ -47,6 +48,7 @@ import componentCategoryMainHbs from './templates/partials/components/category/m
 import componentCategoryHeaderHbs from './templates/partials/components/category/header.hbs?raw';
 import componentCategoryMainGridHbs from './templates/partials/components/category/main-grid.hbs?raw';
 import componentCategoryMoreGridHbs from './templates/partials/components/category/more-grid.hbs?raw';
+import componentSearchMainHbs from './templates/partials/components/search/main.hbs?raw';
 import componentNotFoundMainHbs from './templates/partials/components/not-found/main.hbs?raw';
 import componentLiveStoryMainHbs from './templates/partials/components/live-story/main.hbs?raw';
 import componentUiAccordionHbs from './templates/partials/components/ui/accordion.hbs?raw';
@@ -67,6 +69,7 @@ const assets: RendererAssets = {
     'article-page': articleLayoutHbs,
     homepage: homepageLayoutHbs,
     'category-page': categoryLayoutHbs,
+    'search-page': searchLayoutHbs,
     '404': notFoundLayoutHbs,
     'live-story': liveStoryLayoutHbs
   },
@@ -112,6 +115,7 @@ const assets: RendererAssets = {
     'components/category/header': componentCategoryHeaderHbs,
     'components/category/main-grid': componentCategoryMainGridHbs,
     'components/category/more-grid': componentCategoryMoreGridHbs,
+    'components/search/main': componentSearchMainHbs,
     'components/not-found/main': componentNotFoundMainHbs,
     'components/live-story/main': componentLiveStoryMainHbs,
     'components/ui/accordion': componentUiAccordionHbs,
