@@ -228,6 +228,33 @@
 
       <div class='flex items-center space-x-4'>
         <a
+          href='{{#if (eq language "en")}}/search{{else}}/{{language}}/search{{/if}}'
+          class='flex items-center justify-center p-2 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200'
+          aria-label='Search'
+        >
+          <svg class='w-4 h-4' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
+            <circle cx='11' cy='11' r='8'></circle>
+            <line x1='21' y1='21' x2='16.65' y2='16.65'></line>
+          </svg>
+        </a>
+        <form
+          class='hidden md:flex items-center'
+          role='search'
+          action='{{#if (eq language "en")}}/search{{else}}/{{language}}/search{{/if}}'
+          method='get'
+        >
+          <label for='header-search-input' class='sr-only'>Search</label>
+          <input
+            id='header-search-input'
+            name='q'
+            type='search'
+            autocomplete='off'
+            spellcheck='false'
+            placeholder='Search'
+            class='w-44 lg:w-56 px-3 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#b21100]/40'
+          />
+        </form>
+        <a
           href='https://www.youtube.com/watch?v=3Zq7RR-9Asc'
           target='_blank'
           rel='noopener noreferrer'
@@ -358,7 +385,9 @@
   'sports', 'technology', 'weather', 'crime', 'new-york']); try { const cached = localStorage.getItem('fifthbell_categories'); if (cached) { const parsed =
   JSON.parse(cached); const categories = parsed?.data; if (Array.isArray(categories)) { categorySlugs = new Set(categories.map((item) => item.slug)); } } }
   catch { // ignore invalid local cache } const isHomepage = segments.length === 0; const isCategoryPage = segments.length === 1 &&
-  categorySlugs.has(segments[0]); if (!isHomepage && !isCategoryPage) { return targetLang === 'en' ? '/' : `/${targetLang}`; } if (targetLang === 'en') return
+  categorySlugs.has(segments[0]); const isSearchPage = segments.length >= 1 && segments[0] === 'search'; if (!isHomepage && !isCategoryPage &&
+  !isSearchPage) { return targetLang === 'en' ? '/' : `/${targetLang}`; } if (isSearchPage) { const currentSearch = window.location.search || ''; return
+  targetLang === 'en' ? `/search${currentSearch}` : `/${targetLang}/search${currentSearch}`; } if (targetLang === 'en') return
   basePath === '/' ? '/' : basePath; return basePath === '/' ? `/${targetLang}` : `/${targetLang}${basePath}`; } langButtons.forEach((button) => {
   button.addEventListener('click', () => { const targetLang = button.getAttribute('data-lang'); if (!targetLang) return; updateActiveButton(targetLang); const
   targetPath = getTargetPathForLanguage(targetLang); if (targetPath) window.location.href = targetPath; }); });
