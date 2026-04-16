@@ -258,6 +258,10 @@ function registerHelpers(): void {
       return `${baseTitle} | fifthbell`;
     }
 
+    if (page.layout === 'search-page') {
+      return 'Search | fifthbell';
+    }
+
     if (page.layout === 'article-page') {
       const baseTitle = page.title?.trim() || 'Article';
       return `${baseTitle} | fifthbell`;
@@ -333,7 +337,7 @@ export function renderWithAssets(doc: CanonicalArticle, assets: RendererAssets):
 
   const requestedLayout = (doc as { layout?: string }).layout;
   if (!requestedLayout || !layoutCache.has(requestedLayout as LayoutName)) {
-    throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: article-page, homepage, category-page, 404, live-story`);
+    throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: article-page, homepage, category-page, search-page, 404, live-story`);
   }
 
   const parsed = canonicalArticleSchema.parse(normalizeDocument(doc));

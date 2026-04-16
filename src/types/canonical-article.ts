@@ -128,7 +128,14 @@ export const canonicalArticleSchema = z
   .object({
     id: z.coerce.string(),
     slug: z.string(),
-    layout: z.enum(['article-page', 'homepage', 'category-page', '404', 'live-story']),
+    layout: z.enum([
+      'article-page',
+      'homepage',
+      'category-page',
+      'search-page',
+      '404',
+      'live-story',
+    ]),
     canonicalUrl: z.string(),
     contentVersion: isoDateTime,
     publishedAt: isoDateTime,

@@ -5,6 +5,8 @@ const config: StorybookConfig = {
     '../stories/ArticlePage.stories.ts',
     '../stories/Homepage.stories.ts',
     '../stories/CategoryPage.stories.ts',
+    '../stories/SearchPage.stories.ts',
+    '../stories/LiveStoryPage.stories.ts',
     '../stories/partials/*.stories.ts'
   ],
   addons: [
