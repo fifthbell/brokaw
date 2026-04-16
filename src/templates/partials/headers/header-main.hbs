@@ -386,8 +386,12 @@
   categorySlugs.has(segments[0]); const isSearchPage = segments.length >= 1 && segments[0] === 'search'; if (!isHomepage && !isCategoryPage &&
   !isSearchPage) { return targetLang === 'en' ? '/' : `/${targetLang}`; } if (isSearchPage) { const currentSearch = window.location.search || ''; return
   targetLang === 'en' ? `/search${currentSearch}` : `/${targetLang}/search${currentSearch}`; } if (targetLang === 'en') return
-  basePath === '/' ? '/' : basePath; return basePath === '/' ? `/${targetLang}` : `/${targetLang}${basePath}`; } langButtons.forEach((button) => {
-  button.addEventListener('click', () => { const targetLang = button.getAttribute('data-lang'); if (!targetLang) return; updateActiveButton(targetLang); const
+  basePath === '/' ? '/' : basePath; return basePath === '/' ? `/${targetLang}` : `/${targetLang}${basePath}`; } function closeMenuIfOpen() { const menuButton =
+  document.getElementById('menu-button'); const dropdownMenu = document.getElementById('dropdown-menu'); if (!(menuButton instanceof HTMLElement) ||
+  !(dropdownMenu instanceof HTMLElement)) return; const isExpanded = menuButton.getAttribute('aria-expanded') === 'true'; if (!isExpanded) return;
+  menuButton.setAttribute('aria-expanded', 'false'); dropdownMenu.style.pointerEvents = 'none'; dropdownMenu.style.transform = 'translateX(-100%)';
+  dropdownMenu.style.opacity = '0'; document.body.style.overflow = ''; } langButtons.forEach((button) => { button.addEventListener('click', () => { const
+  targetLang = button.getAttribute('data-lang'); if (!targetLang) return; updateActiveButton(targetLang); closeMenuIfOpen(); const
   targetPath = getTargetPathForLanguage(targetLang); if (targetPath) window.location.href = targetPath; }); });
   updateActiveButton(getCurrentLanguageFromPath()); })();
 </script>

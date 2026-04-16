@@ -20,4 +20,13 @@ export default meta;
 
 type Story = StoryObj;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Language buttons switch locale path and explicitly close the menu overlay before navigation.'
+      }
+    }
+  }
+};
