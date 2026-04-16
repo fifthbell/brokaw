@@ -55,7 +55,7 @@ export const ClientSideOnly: Story = {
     docs: {
       description: {
         story:
-          'When rendered on /search, submit updates query params and reruns results client-side. If rendered outside search route context, normal navigation is allowed.'
+          'When rendered on /search, submit updates query params and reruns results client-side. Matching results are shown newest-first by published date. If rendered outside search route context, normal navigation is allowed.'
       }
     }
   }

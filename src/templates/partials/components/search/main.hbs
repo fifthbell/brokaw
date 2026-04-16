@@ -281,6 +281,9 @@
         })
         .filter(Boolean)
         .sort((a, b) => {
+          const aPublished = Number.isNaN(Date.parse(a.publishedAt || '')) ? 0 : Date.parse(a.publishedAt || '');
+          const bPublished = Number.isNaN(Date.parse(b.publishedAt || '')) ? 0 : Date.parse(b.publishedAt || '');
+          if (bPublished !== aPublished) return bPublished - aPublished;
           if (b.score !== a.score) return b.score - a.score;
           return a.position - b.position;
         });
