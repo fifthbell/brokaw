@@ -281,6 +281,23 @@ function registerHelpers(): void {
     const baseTitle = page.title?.trim() || 'fifthbell';
     return `${baseTitle} | fifthbell`;
   });
+  Handlebars.registerHelper('socialImageUrl', (value: unknown) => {
+    if (typeof value !== 'string') return '';
+    const raw = value.trim();
+    if (!raw) return '';
+
+    const normalizePath = (pathname: string): string =>
+      pathname.replace(/\.avif$/i, '.jpg');
+
+    try {
+      const parsed = new URL(raw);
+      parsed.pathname = normalizePath(parsed.pathname);
+      return parsed.toString();
+    } catch {
+      // Support relative URLs in template data.
+      return normalizePath(raw);
+    }
+  });
 }
 
 function registerPartials(partials: Record<string, string>): void {

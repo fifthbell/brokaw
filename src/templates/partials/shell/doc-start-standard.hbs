@@ -22,15 +22,19 @@
     {{else}}
       <meta property='og:type' content='website' />
     {{/if}}
-    {{#if featuredImage.url}}
-      <meta property='og:image' content='{{featuredImage.url}}' />
-    {{/if}}
-    <meta name='twitter:card' content='{{#if featuredImage.url}}summary_large_image{{else}}summary{{/if}}' />
+    {{#with (socialImageUrl (coalesce seo.ogImage featuredImage.url)) as |socialImage|}}
+      {{#if socialImage}}
+        <meta property='og:image' content='{{socialImage}}' />
+        <meta property='og:image:type' content='image/jpeg' />
+      {{/if}}
+      <meta name='twitter:card' content='{{#if socialImage}}summary_large_image{{else}}summary{{/if}}' />
+      {{#if socialImage}}
+        <meta name='twitter:image' content='{{socialImage}}' />
+        <meta name='twitter:image:src' content='{{socialImage}}' />
+      {{/if}}
+    {{/with}}
     <meta name='twitter:title' content='{{resolveHeadTitle this}}' />
     <meta name='twitter:description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
-    {{#if featuredImage.url}}
-      <meta name='twitter:image' content='{{featuredImage.url}}' />
-    {{/if}}
     <title>{{resolveHeadTitle this}}</title>
     <style>{{{styles}}}</style>
     <!-- Google tag (gtag.js) -->
