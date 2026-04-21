@@ -17,6 +17,7 @@
     <meta property='og:title' content='{{resolveHeadTitle this}}' />
     <meta property='og:description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
     <meta property='og:url' content='{{canonicalUrl}}' />
+    <meta property='og:site_name' content='fifthbell' />
     {{#if (eq layout 'article-page')}}
       <meta property='og:type' content='article' />
     {{else}}
@@ -26,13 +27,18 @@
       {{#if socialImage}}
         <meta property='og:image' content='{{socialImage}}' />
         <meta property='og:image:type' content='image/jpeg' />
+        <meta property='og:image:width' content='1200' />
+        <meta property='og:image:height' content='630' />
+        <meta property='og:image:alt' content='{{#if featuredImage.alt}}{{featuredImage.alt}}{{else}}{{resolveHeadTitle this}}{{/if}}' />
       {{/if}}
       <meta name='twitter:card' content='{{#if socialImage}}summary_large_image{{else}}summary{{/if}}' />
       {{#if socialImage}}
         <meta name='twitter:image' content='{{socialImage}}' />
         <meta name='twitter:image:src' content='{{socialImage}}' />
+        <meta name='twitter:image:alt' content='{{#if featuredImage.alt}}{{featuredImage.alt}}{{else}}{{resolveHeadTitle this}}{{/if}}' />
       {{/if}}
     {{/with}}
+    <meta name='twitter:site' content='@thisisfifthbell' />
     <meta name='twitter:title' content='{{resolveHeadTitle this}}' />
     <meta name='twitter:description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
     <title>{{resolveHeadTitle this}}</title>
