@@ -14,6 +14,23 @@
     {{/if}}
     <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
     <link rel='canonical' href='{{canonicalUrl}}' />
+    <meta property='og:title' content='{{resolveHeadTitle this}}' />
+    <meta property='og:description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
+    <meta property='og:url' content='{{canonicalUrl}}' />
+    {{#if (eq layout 'article-page')}}
+      <meta property='og:type' content='article' />
+    {{else}}
+      <meta property='og:type' content='website' />
+    {{/if}}
+    {{#if featuredImage.url}}
+      <meta property='og:image' content='{{featuredImage.url}}' />
+    {{/if}}
+    <meta name='twitter:card' content='{{#if featuredImage.url}}summary_large_image{{else}}summary{{/if}}' />
+    <meta name='twitter:title' content='{{resolveHeadTitle this}}' />
+    <meta name='twitter:description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
+    {{#if featuredImage.url}}
+      <meta name='twitter:image' content='{{featuredImage.url}}' />
+    {{/if}}
     <title>{{resolveHeadTitle this}}</title>
     <style>{{{styles}}}</style>
     <!-- Google tag (gtag.js) -->
