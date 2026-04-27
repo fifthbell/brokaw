@@ -1,6 +1,6 @@
 import { BellRing } from 'lucide-react';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
-import type { Event } from '../events';
+import type { Event } from '../events.js';
 
 interface MarqueeProps {
   events: Event[];

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Cloud, CloudRain, Sun, Wind } from 'lucide-react';
 import { FastAverageColor } from 'fast-average-color';
-import { FIFTHBELL_ASSETS } from '../assets';
-import type { Segment } from './types';
-import { t, type SupportedLanguage } from '../i18n';
+import { FIFTHBELL_ASSETS } from '../assets.js';
+import type { Segment } from './types.js';
+import { t, type SupportedLanguage } from '../i18n.js';
 
 export interface WeatherCityData {
   name: string;
