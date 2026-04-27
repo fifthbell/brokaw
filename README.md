@@ -1,6 +1,6 @@
 # @fifthbell/brokaw
 
-Server-side renderer and Handlebars template bundle for Fifth Bell pages.
+Server-side renderer and Handlebars template bundle for fifthbell pages.
 
 ## What it does
 
