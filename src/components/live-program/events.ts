@@ -1,4 +1,4 @@
-import type { SupportedLanguage } from './i18n';
+import type { SupportedLanguage } from './i18n.js';
 
 export interface EventPost {
   id: number;

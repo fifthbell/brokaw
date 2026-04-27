@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { PlaylistConfig, PlaylistState, Segment } from './types';
+import type { PlaylistConfig, PlaylistState, Segment } from './types.js';
 
 const DEFAULT_DURATION_MS = 10000;
 const DEFAULT_UPDATE_INTERVAL_MS = 100;
@@ -26,11 +26,11 @@ export function usePlaylistEngine(config: PlaylistConfig) {
   }, [segments, state.currentSegmentIndex]);
 
   const pause = useCallback(() => {
-    setState((prev) => ({ ...prev, isPaused: true }));
+    setState((prev: any) => ({ ...prev, isPaused: true }));
   }, []);
 
   const resume = useCallback(() => {
-    setState((prev) => ({ ...prev, isPaused: false }));
+    setState((prev: any) => ({ ...prev, isPaused: false }));
   }, []);
 
   const reset = useCallback(() => {
@@ -70,7 +70,7 @@ export function usePlaylistEngine(config: PlaylistConfig) {
   );
 
   const advanceToNext = useCallback(() => {
-    setState((prevState) => calculateNextState(prevState));
+    setState((prevState: any) => calculateNextState(prevState));
   }, [calculateNextState]);
 
   useEffect(() => {
@@ -86,7 +86,7 @@ export function usePlaylistEngine(config: PlaylistConfig) {
 
       const nextSegmentIndex = (currentSegmentIndex + 1) % segments.length;
       const nextSegment = segments[nextSegmentIndex];
-      nextSegment?.prefetch?.().catch((error) => {
+      nextSegment?.prefetch?.().catch((error: any) => {
         console.error(`[Playlist] Failed to prefetch ${nextSegment.label}:`, error);
       });
 
@@ -116,7 +116,7 @@ export function usePlaylistEngine(config: PlaylistConfig) {
     const progressIncrement = (updateIntervalMs / duration) * 100;
 
     const timer = setInterval(() => {
-      setState((prevState) => {
+      setState((prevState: any) => {
         if (prevState.progress >= 100) {
           return calculateNextState(prevState);
         }

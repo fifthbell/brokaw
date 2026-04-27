@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArticleSlide, type NewsItem } from '../components/slides/ArticleSlide';
-import type { Segment } from './types';
-import { t, type SupportedLanguage } from '../i18n';
+import { ArticleSlide, type NewsItem } from '../components/slides/ArticleSlide.js';
+import type { Segment } from './types.js';
+import { t, type SupportedLanguage } from '../i18n.js';
 
 interface ApiArticle {
   id: number;

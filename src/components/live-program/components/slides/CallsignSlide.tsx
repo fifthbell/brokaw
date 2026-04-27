@@ -1,7 +1,7 @@
 import { BellRing } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FastAverageColor } from 'fast-average-color';
-import { FIFTHBELL_ASSETS } from '../../assets';
+import { FIFTHBELL_ASSETS } from '../../assets.js';
 
 interface CallsignSlideProps {
   currentTime: Date;
