@@ -94,20 +94,26 @@ export function WorldClocks({
   useEffect(() => {
     let timeoutId: number | undefined;
 
-    const interval = setInterval(() => {
-      setIsAnimating(true);
-      timeoutId = window.setTimeout(() => {
-        setCurrentCityIndex((prevIndex) => {
-          const nextIndex = prevIndex + 1;
-          if (nextIndex >= cityPool.length) {
-            setCityPool(shuffleCities ? shuffleArray(activeCities) : [...activeCities]);
-            return 0;
-          }
-          return nextIndex;
-        });
-        setIsAnimating(false);
-      }, Math.max(0, transitionDurationMs));
-    }, Math.max(500, rotateIntervalMs));
+    const interval = setInterval(
+      () => {
+        setIsAnimating(true);
+        timeoutId = window.setTimeout(
+          () => {
+            setCurrentCityIndex((prevIndex) => {
+              const nextIndex = prevIndex + 1;
+              if (nextIndex >= cityPool.length) {
+                setCityPool(shuffleCities ? shuffleArray(activeCities) : [...activeCities]);
+                return 0;
+              }
+              return nextIndex;
+            });
+            setIsAnimating(false);
+          },
+          Math.max(0, transitionDurationMs)
+        );
+      },
+      Math.max(500, rotateIntervalMs)
+    );
 
     return () => {
       clearInterval(interval);
@@ -140,7 +146,10 @@ export function WorldClocks({
       <div className='text-white font-bold text-6xl tracking-tight leading-none text-center' style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
         {formatTime(currentCity.timezone)}
       </div>
-      <div className='text-white/50 text-2xl font-bold tracking-wider leading-none uppercase text-center' style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <div
+        className='text-white/50 text-2xl font-bold tracking-wider leading-none uppercase text-center'
+        style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
+      >
         {cityLabel}
       </div>
     </div>
