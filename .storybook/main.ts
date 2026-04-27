@@ -11,12 +11,7 @@ const config: StorybookConfig = {
     '../stories/partials/*.stories.ts',
     '../stories/react/**/*.stories.tsx'
   ],
-  addons: [
-    '@chromatic-com/storybook',
-    '@storybook/addon-vitest',
-    '@storybook/addon-a11y',
-    '@storybook/addon-docs'
-  ],
+  addons: ['@chromatic-com/storybook', '@storybook/addon-vitest', '@storybook/addon-a11y', '@storybook/addon-docs'],
   framework: '@storybook/html-vite',
   async viteFinal(config) {
     return {
