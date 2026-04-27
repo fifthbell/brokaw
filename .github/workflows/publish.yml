@@ -9,9 +9,10 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: brokaw
     permissions:
       contents: read
-      packages: write
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -20,10 +21,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22.14.0'
           cache: 'npm'
-          registry-url: 'https://npm.pkg.github.com'
+          registry-url: 'https://registry.npmjs.org'
           scope: '@fifthbell'
+
+      - name: Upgrade npm CLI for trusted publishing
+        run: npm install --global npm@^11.5.1
+
+      - name: Show tool versions
+        run: |
+          node --version
+          npm --version
 
       - name: Install dependencies
         run: npm ci
@@ -32,9 +41,7 @@ jobs:
         run: npm run build
 
       - name: Publish
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+        run: npm publish --access public --provenance
 
       - name: Summary
         run: |
@@ -42,5 +49,5 @@ jobs:
           echo "- **Package**: @fifthbell/brokaw" >> $GITHUB_STEP_SUMMARY
           VERSION=$(node -p 'require("./package.json").version')
           echo "- **Version**: ${VERSION}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Registry**: GitHub Packages" >> $GITHUB_STEP_SUMMARY
+          echo "- **Registry**: npmjs" >> $GITHUB_STEP_SUMMARY
           echo "- **Status**: ✅ Published" >> $GITHUB_STEP_SUMMARY
