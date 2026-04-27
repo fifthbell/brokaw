@@ -4,6 +4,7 @@ import categoryLayoutHbs from './templates/layouts/category-page.hbs?raw';
 import searchLayoutHbs from './templates/layouts/search-page.hbs?raw';
 import notFoundLayoutHbs from './templates/layouts/404.hbs?raw';
 import liveStoryLayoutHbs from './templates/layouts/live-story.hbs?raw';
+import linkInBioLayoutHbs from './templates/layouts/link-in-bio.hbs?raw';
 
 import headerMainHbs from './templates/partials/headers/header-main.hbs?raw';
 import headerMinimalHbs from './templates/partials/headers/header-minimal.hbs?raw';
@@ -71,7 +72,8 @@ const assets: RendererAssets = {
     'category-page': categoryLayoutHbs,
     'search-page': searchLayoutHbs,
     '404': notFoundLayoutHbs,
-    'live-story': liveStoryLayoutHbs
+    'live-story': liveStoryLayoutHbs,
+    'link-in-bio': linkInBioLayoutHbs
   },
   partials: {
     'headers/header-main': headerMainHbs,

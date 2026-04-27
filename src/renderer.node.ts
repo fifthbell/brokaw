@@ -10,7 +10,8 @@ const layoutFiles: Record<LayoutName, string> = {
   'category-page': 'category-page.hbs',
   'search-page': 'search-page.hbs',
   '404': '404.hbs',
-  'live-story': 'live-story.hbs'
+  'live-story': 'live-story.hbs',
+  'link-in-bio': 'link-in-bio.hbs'
 };
 
 function getPaths() {
