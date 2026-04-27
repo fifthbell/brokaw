@@ -1,5 +1,7 @@
 export const outletConfig = {
   siteName: 'fifthbell',
+  publicSiteUrl: 'https://fifthbell.com',
+  cdnUrl: 'https://cdn.fifthbell.com',
   defaultLanguage: 'en',
   supportedLanguages: ['en', 'es', 'it'],
   prefixDefaultLocale: false,
