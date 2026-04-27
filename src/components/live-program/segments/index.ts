@@ -1,6 +1,6 @@
-export * from './types';
-export * from './usePlaylistEngine';
-export { createArticlesSegment, fetchArticles, type NewsItem } from './ArticlesSegment';
-export { createWeatherSegment, fetchWeatherData, type WeatherRegionData, type WeatherCityData } from './WeatherSegment';
-export { createEarthquakeSegment, fetchEarthquakes, type EarthquakeData } from './EarthquakeSegment';
-export * from './MarketsSegment';
+export * from './types.js';
+export * from './usePlaylistEngine.js';
+export { createArticlesSegment, fetchArticles, type NewsItem } from './ArticlesSegment.js';
+export { createWeatherSegment, fetchWeatherData, type WeatherRegionData, type WeatherCityData } from './WeatherSegment.js';
+export { createEarthquakeSegment, fetchEarthquakes, type EarthquakeData } from './EarthquakeSegment.js';
+export * from './MarketsSegment.js';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { t, type SupportedLanguage } from '../i18n';
-import type { GlobalTimeOverride } from '../utils/broadcastTime';
-import { getOverrideClockParts } from '../utils/broadcastTime';
+import { t, type SupportedLanguage } from '../i18n.js';
+import type { GlobalTimeOverride } from '../utils/broadcastTime.js';
+import { getOverrideClockParts } from '../utils/broadcastTime.js';
 
 interface CityTime {
   city: string;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSSE } from './hooks/useSSE';
+import { useSSE } from './hooks/useSSE.js';
 
 // Hardcoded API Base URL for Fifthbell
 function getApiBaseUrl(): string {
@@ -14,14 +14,14 @@ function apiUrl(path: string): string {
   return `${getApiBaseUrl()}${normalizedPath}`;
 }
 
-import { FIFTHBELL_ASSETS } from './assets';
-import { MarqueeCurtain } from './components/MarqueeCurtain';
-import Marquee from './components/Marquee';
-import { DEFAULT_WORLD_CLOCK_CITIES } from './components/WorldClocks';
-import { CallsignSlide } from './components/slides/CallsignSlide';
-import { slideStyles } from './components/slides/slideStyles';
-import { fetchEvents, getCachedEvents, hasEventChanges, type Event } from './events';
-import { type SupportedLanguage } from './i18n';
+import { FIFTHBELL_ASSETS } from './assets.js';
+import { MarqueeCurtain } from './components/MarqueeCurtain.js';
+import Marquee from './components/Marquee.js';
+import { DEFAULT_WORLD_CLOCK_CITIES } from './components/WorldClocks.js';
+import { CallsignSlide } from './components/slides/CallsignSlide.js';
+import { slideStyles } from './components/slides/slideStyles.js';
+import { fetchEvents, getCachedEvents, hasEventChanges, type Event } from './events.js';
+import { type SupportedLanguage } from './i18n.js';
 import {
   createArticlesSegment,
   createEarthquakeSegment,
@@ -36,7 +36,7 @@ import {
   type NewsItem,
   type WeatherRegionData,
   usePlaylistEngine
-} from './segments';
+} from './segments/index.js';
 
 interface Layout {
   id: number;
@@ -458,7 +458,7 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   useSSE({
     url: apiUrl(`/program/${encodedProgramId}/events`),
     enabled: !controlledBySceneRenderer,
-    onMessage: (data) => {
+    onMessage: (data: any) => {
       if ((data.type === 'scene_change' || data.type === 'program_scenes_changed') && data.state) {
         setState(data.state);
       } else if (data.type === 'scene_update') {
@@ -564,7 +564,7 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
     return weatherData
       .map((region) => ({
         ...region,
-        cities: region.cities.filter((city) => allowed.has(normalizeCityKey(city.name)))
+        cities: region.cities.filter((city: any) => allowed.has(normalizeCityKey(city.name)))
       }))
       .filter((region) => region.cities.length > 0);
   }, [config.weatherCities, weatherData]);
