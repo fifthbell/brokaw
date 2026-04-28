@@ -252,3 +252,4 @@ export const canonicalArticleSchema = z
 
 export type SelfReference = z.infer<typeof articleReferenceSchema>;
 export type CanonicalArticle = z.infer<typeof canonicalArticleSchema>;
+export type CanonicalDocument = CanonicalArticle;

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { CanonicalArticle } from './types/canonical-article.js';
+import type { CanonicalDocument } from './types/canonical-article.js';
 import { renderWithAssets, type RendererAssets, type LayoutName } from './renderer.core.js';
 
 const layoutFiles: Record<LayoutName, string> = {
@@ -84,6 +84,6 @@ function getAssets(): RendererAssets {
   return cachedAssets;
 }
 
-export function render(doc: CanonicalArticle): string {
-  return renderWithAssets(doc, getAssets());
+export function render(document: CanonicalDocument): string {
+  return renderWithAssets(document, getAssets());
 }

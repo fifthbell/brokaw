@@ -1,7 +1,7 @@
 {
   "name": "@fifthbell/brokaw",
   "description": "Server-side Handlebars renderer and templates for fifthbell pages.",
-  "version": "0.1.41",
+  "version": "0.1.42",
   "license": "MIT",
   "author": "fifthbell",
   "repository": {
@@ -29,9 +29,16 @@
     "src/styles/compiled.css"
   ],
   "type": "module",
+  "types": "./dist/renderer.d.ts",
   "exports": {
-    ".": "./dist/renderer.js",
-    "./components/live-program": "./dist/components/live-program/LiveProgram.js",
+    ".": {
+      "types": "./dist/renderer.d.ts",
+      "import": "./dist/renderer.js"
+    },
+    "./components/live-program": {
+      "types": "./dist/components/live-program/LiveProgram.d.ts",
+      "import": "./dist/components/live-program/LiveProgram.js"
+    },
     "./partial-deps.json": "./src/partial-deps.json"
   },
   "scripts": {
