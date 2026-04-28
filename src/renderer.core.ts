@@ -1,9 +1,9 @@
 import Handlebars from 'handlebars';
-import { canonicalArticleSchema, type CanonicalArticle } from './types/canonical-article.js';
+import { canonicalArticleSchema, type CanonicalDocument } from './types/canonical-article.js';
 import { distributeHomepageArticles } from './homepage-distributor.js';
 import { buildSofascoreAttackMomentumUrl, buildSofascoreMatchUrl } from './utils/sofascore.js';
 
-export type LayoutName = CanonicalArticle['layout'];
+export type LayoutName = CanonicalDocument['layout'];
 
 export type RendererAssets = {
   layouts: Record<LayoutName, string>;
@@ -15,7 +15,7 @@ let initialized = false;
 const layoutCache = new Map<LayoutName, HandlebarsTemplateDelegate>();
 let runtimeStyles = '';
 const removedBlockTypes = new Set(['truthSocial', 'truthsocial', 'truth-social', 'truth_social']);
-const siteTitlesByLanguage: Record<CanonicalArticle['language'], string> = {
+const siteTitlesByLanguage: Record<CanonicalDocument['language'], string> = {
   en: 'fifthbell - Breaking News & Current Events',
   es: 'fifthbell - Noticias de última hora y actualidad',
   it: 'fifthbell - Ultime notizie e attualità'
@@ -110,7 +110,7 @@ function resolveArticleUrl(input: {
   return buildLocalePath('/', input.language);
 }
 
-function normalizeDocument(doc: CanonicalArticle): CanonicalArticle {
+function normalizeDocument(doc: CanonicalDocument): CanonicalDocument {
   const rawBody = (doc as { body?: unknown }).body;
   if (!Array.isArray(rawBody)) return doc;
 
@@ -120,7 +120,7 @@ function normalizeDocument(doc: CanonicalArticle): CanonicalArticle {
       if (!block || typeof block !== 'object') return true;
       const type = (block as { type?: unknown }).type;
       return typeof type !== 'string' || !removedBlockTypes.has(type);
-    }) as CanonicalArticle['body']
+    }) as CanonicalDocument['body']
   };
 }
 
@@ -245,7 +245,7 @@ function registerHelpers(): void {
   });
   Handlebars.registerHelper('resolveHeadTitle', (doc: unknown) => {
     if (!doc || typeof doc !== 'object') return 'fifthbell';
-    const page = doc as Partial<CanonicalArticle>;
+    const page = doc as Partial<CanonicalDocument>;
 
     if (page.layout === 'homepage') {
       const language = page.language === 'es' || page.language === 'it' ? page.language : 'en';
@@ -352,7 +352,7 @@ export function initializeHandlebars(assets: RendererAssets): void {
   initialized = true;
 }
 
-export function renderWithAssets(doc: CanonicalArticle, assets: RendererAssets): string {
+export function renderWithAssets(doc: CanonicalDocument, assets: RendererAssets): string {
   if (!initialized) {
     initializeHandlebars(assets);
   }

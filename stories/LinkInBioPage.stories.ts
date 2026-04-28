@@ -27,7 +27,7 @@ export const DenseGrid: Story = {
       ...(linkInBioFixture.articles || []),
       ...(linkInBioFixture.articles || []).map((article, index) => ({
         ...article,
-        id: `${article.id}-extra-${index}`,
+        id: `70000000-0000-4000-8000-00000000000${index + 5}`,
         title: `${article.title} update`
       }))
     ]
