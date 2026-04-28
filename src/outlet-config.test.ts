@@ -66,8 +66,8 @@ describe('outletConfig', () => {
   });
 
   it('uses Fifthbell production integration values expected by Cronkite', () => {
-    expect(outletConfig.contentPath).toBe('/json');
-    expect(outletConfig.inventoryFilename).toBe('inventory.json');
+    expect(outletConfig.contentPath).toBe('/content');
+    expect(outletConfig.inventoryFilename).toBe('cronkite-inventory.json');
     expect(outletConfig.socialImageExport).toBe('buildInstagramImageHtml');
     expect(outletConfig.hashtagServiceBaseUrl).toBe('http://192.168.0.99:8000');
   });
