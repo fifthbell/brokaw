@@ -62,7 +62,7 @@ import componentUiStatusBadgeHbs from './templates/partials/components/ui/status
 
 import styles from './styles/compiled.css?raw';
 
-import type { CanonicalArticle } from './types/canonical-article.js';
+import type { CanonicalDocument } from './types/canonical-article.js';
 import { renderWithAssets, type RendererAssets } from './renderer.core.js';
 
 const assets: RendererAssets = {
@@ -131,6 +131,6 @@ const assets: RendererAssets = {
   styles
 };
 
-export function render(doc: CanonicalArticle): string {
-  return renderWithAssets(doc, assets);
+export function render(document: CanonicalDocument): string {
+  return renderWithAssets(document, assets);
 }

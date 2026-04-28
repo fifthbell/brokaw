@@ -2,6 +2,8 @@ export const outletConfig = {
   siteName: 'fifthbell',
   publicSiteUrl: 'https://fifthbell.com',
   cdnUrl: 'https://cdn.fifthbell.com',
+  contentPath: '/json',
+  inventoryFilename: 'inventory.json',
   defaultLanguage: 'en',
   supportedLanguages: ['en', 'es', 'it'],
   prefixDefaultLocale: false,
@@ -21,5 +23,7 @@ export const outletConfig = {
     it: 'Cerca notizie Fifthbell.'
   },
   socialLanguages: ['en'],
-  socialUserAgent: 'Cronkite/1.0'
+  socialUserAgent: 'Cronkite/1.0',
+  socialImageExport: 'buildInstagramImageHtml',
+  hashtagServiceBaseUrl: 'http://192.168.0.99:8000'
 } as const;
