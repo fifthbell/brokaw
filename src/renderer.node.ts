@@ -11,7 +11,8 @@ const layoutFiles: Record<LayoutName, string> = {
   'search-page': 'search-page.hbs',
   '404': '404.hbs',
   'live-story': 'live-story.hbs',
-  'link-in-bio': 'link-in-bio.hbs'
+  'link-in-bio': 'link-in-bio.hbs',
+  'media-page': 'media-page.hbs'
 };
 
 function getPaths() {

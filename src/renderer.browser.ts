@@ -5,6 +5,7 @@ import searchLayoutHbs from './templates/layouts/search-page.hbs?raw';
 import notFoundLayoutHbs from './templates/layouts/404.hbs?raw';
 import liveStoryLayoutHbs from './templates/layouts/live-story.hbs?raw';
 import linkInBioLayoutHbs from './templates/layouts/link-in-bio.hbs?raw';
+import mediaPageLayoutHbs from './templates/layouts/media-page.hbs?raw';
 
 import headerMainHbs from './templates/partials/headers/header-main.hbs?raw';
 import headerMinimalHbs from './templates/partials/headers/header-minimal.hbs?raw';
@@ -52,6 +53,7 @@ import componentCategoryMoreGridHbs from './templates/partials/components/catego
 import componentSearchMainHbs from './templates/partials/components/search/main.hbs?raw';
 import componentNotFoundMainHbs from './templates/partials/components/not-found/main.hbs?raw';
 import componentLiveStoryMainHbs from './templates/partials/components/live-story/main.hbs?raw';
+import componentMediaMainHbs from './templates/partials/components/media/main.hbs?raw';
 import componentUiAccordionHbs from './templates/partials/components/ui/accordion.hbs?raw';
 import componentUiBreadcrumbHbs from './templates/partials/components/ui/breadcrumb.hbs?raw';
 import componentUiIconButtonHbs from './templates/partials/components/ui/icon-button.hbs?raw';
@@ -73,7 +75,8 @@ const assets: RendererAssets = {
     'search-page': searchLayoutHbs,
     '404': notFoundLayoutHbs,
     'live-story': liveStoryLayoutHbs,
-    'link-in-bio': linkInBioLayoutHbs
+    'link-in-bio': linkInBioLayoutHbs,
+    'media-page': mediaPageLayoutHbs
   },
   partials: {
     'headers/header-main': headerMainHbs,
@@ -120,6 +123,7 @@ const assets: RendererAssets = {
     'components/search/main': componentSearchMainHbs,
     'components/not-found/main': componentNotFoundMainHbs,
     'components/live-story/main': componentLiveStoryMainHbs,
+    'components/media/main': componentMediaMainHbs,
     'components/ui/accordion': componentUiAccordionHbs,
     'components/ui/breadcrumb': componentUiBreadcrumbHbs,
     'components/ui/icon-button': componentUiIconButtonHbs,
