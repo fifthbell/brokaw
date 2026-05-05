@@ -8,6 +8,7 @@ const config: StorybookConfig = {
     '../stories/SearchPage.stories.ts',
     '../stories/LiveStoryPage.stories.ts',
     '../stories/LinkInBioPage.stories.ts',
+    '../stories/MediaPage.stories.ts',
     '../stories/partials/*.stories.ts',
     '../stories/react/**/*.stories.tsx'
   ],
