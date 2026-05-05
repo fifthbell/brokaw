@@ -1,0 +1,124 @@
+<main id='main-content' class='flex-1 bg-slate-50 dark:bg-slate-950' data-media-page>
+  <section class='mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8'>
+    <div class='mb-6 flex flex-col gap-3 border-b border-slate-200 pb-5 dark:border-slate-800 md:flex-row md:items-end md:justify-between'>
+      <div>
+        <p class='text-xs font-semibold uppercase tracking-widest text-red-700 dark:text-red-400'>Assignment Media</p>
+        <h1 id='media-title' class='mt-2 font-serif text-4xl font-bold leading-tight text-slate-950 dark:text-white md:text-5xl'>Photos</h1>
+        <p id='media-meta' class='mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400'>Loading assignment photos.</p>
+      </div>
+      <a id='media-refresh' href='' class='inline-flex items-center justify-center border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-slate-950 hover:text-slate-950 dark:border-slate-700 dark:text-slate-200 dark:hover:border-white dark:hover:text-white'>Refresh</a>
+    </div>
+    <div id='media-status' class='border border-slate-200 bg-white p-6 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300'>Loading photos.</div>
+    <div id='media-grid' class='hidden grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'></div>
+  </section>
+</main>
+<script>
+  (function () {
+    var page = document.querySelector('[data-media-page]');
+    if (!page) return;
+
+    var title = document.getElementById('media-title');
+    var meta = document.getElementById('media-meta');
+    var status = document.getElementById('media-status');
+    var grid = document.getElementById('media-grid');
+    var refresh = document.getElementById('media-refresh');
+
+    function text(value, fallback) {
+      if (typeof value !== 'string') return fallback || '';
+      var trimmed = value.trim();
+      return trimmed || fallback || '';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function assignmentIdFromPath() {
+      var match = window.location.pathname.match(/^\/media\/([^/]+)\/?$/);
+      return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      var date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+
+    function setStatus(message) {
+      status.textContent = message;
+      status.classList.remove('hidden');
+      grid.classList.add('hidden');
+    }
+
+    function imageUrl(item) {
+      return text(item && (item.url || item.jpgUrl || item.originalUrl), '');
+    }
+
+    function render(data) {
+      var assignment = data.assignment || data;
+      var photos = Array.isArray(data.photos) ? data.photos : Array.isArray(data.media) ? data.media : [];
+      var name = text(assignment.name, 'Assignment photos');
+      var generatedAt = formatDate(data.generatedAt);
+
+      title.textContent = name;
+      meta.textContent = photos.length + ' photo' + (photos.length === 1 ? '' : 's') + (generatedAt ? ' updated ' + generatedAt : '');
+
+      if (!photos.length) {
+        setStatus('No photos have been published for this assignment yet.');
+        return;
+      }
+
+      grid.innerHTML = photos
+        .map(function (item) {
+          var url = imageUrl(item);
+          var alt = text(item.alt || item.caption || item.originalFilename || item.filename, 'Assignment photo');
+          var caption = text(item.caption || item.originalFilename || item.filename, '');
+          if (!url) return '';
+          return (
+            '<figure class="group overflow-hidden border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">' +
+              '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer" class="block bg-slate-200 dark:bg-slate-800">' +
+                '<img src="' + escapeHtml(url) + '" alt="' + escapeHtml(alt) + '" loading="lazy" class="aspect-[4/3] h-full w-full object-cover transition duration-200 group-hover:scale-[1.02]" />' +
+              '</a>' +
+              (caption ? '<figcaption class="px-3 py-2 text-xs leading-snug text-slate-600 dark:text-slate-400">' + escapeHtml(caption) + '</figcaption>' : '') +
+            '</figure>'
+          );
+        })
+        .join('');
+
+      status.classList.add('hidden');
+      grid.classList.remove('hidden');
+      grid.classList.add('grid');
+    }
+
+    var assignmentId = assignmentIdFromPath();
+    if (!assignmentId) {
+      setStatus('Missing assignment id.');
+      return;
+    }
+
+    refresh.href = window.location.href;
+    fetch('https://cdn.fifthbell.com/contents/assignments/' + encodeURIComponent(assignmentId) + '.json', {
+      cache: 'no-store'
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error(String(response.status));
+        return response.json();
+      })
+      .then(render)
+      .catch(function () {
+        setStatus('We could not load this assignment right now.');
+      });
+  })();
+</script>

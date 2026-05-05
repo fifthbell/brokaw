@@ -359,7 +359,7 @@ export function renderWithAssets(doc: CanonicalDocument, assets: RendererAssets)
 
   const requestedLayout = (doc as { layout?: string }).layout;
   if (!requestedLayout || !layoutCache.has(requestedLayout as LayoutName)) {
-    throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: article-page, homepage, category-page, search-page, 404, live-story, link-in-bio`);
+    throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: article-page, homepage, category-page, search-page, 404, live-story, link-in-bio, media-page`);
   }
 
   const parsed = canonicalArticleSchema.parse(normalizeDocument(doc));
