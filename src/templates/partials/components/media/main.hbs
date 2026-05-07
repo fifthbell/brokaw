@@ -10,10 +10,12 @@
     </div>
     <div id='media-status' class='border border-slate-200 bg-white p-6 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300'>Loading photos.</div>
     <div id='media-grid' class='hidden grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'></div>
+    <nav id='media-pagination' aria-label='Pagination' class='mt-8 hidden items-center justify-center gap-6'></nav>
   </section>
 </main>
 <script>
   (function () {
+    var PAGE_SIZE = 48;
     var page = document.querySelector('[data-media-page]');
     if (!page) return;
 
@@ -21,7 +23,9 @@
     var meta = document.getElementById('media-meta');
     var status = document.getElementById('media-status');
     var grid = document.getElementById('media-grid');
+    var pagination = document.getElementById('media-pagination');
     var refresh = document.getElementById('media-refresh');
+    var loadedData = null;
 
     function text(value, fallback) {
       if (typeof value !== 'string') return fallback || '';
@@ -60,27 +64,104 @@
       status.textContent = message;
       status.classList.remove('hidden');
       grid.classList.add('hidden');
+      pagination.classList.add('hidden');
+      pagination.classList.remove('flex');
     }
 
     function imageUrl(item) {
       return text(item && (item.url || item.jpgUrl || item.originalUrl), '');
     }
 
+    function currentPageFromUrl() {
+      var value = new URL(window.location.href).searchParams.get('page') || '1';
+      var pageNumber = parseInt(value, 10);
+      return Number.isFinite(pageNumber) && pageNumber > 0 ? pageNumber : 1;
+    }
+
+    function pageHref(pageNumber) {
+      var url = new URL(window.location.href);
+      if (pageNumber <= 1) {
+        url.searchParams.delete('page');
+      } else {
+        url.searchParams.set('page', String(pageNumber));
+      }
+      return url.pathname + url.search + url.hash;
+    }
+
+    function paginationPages(currentPage, totalPages) {
+      var pages = [];
+      var lastAdded = 0;
+
+      function addPage(pageNumber) {
+        if (pageNumber < 1 || pageNumber > totalPages || pageNumber === lastAdded) return;
+        if (lastAdded && pageNumber > lastAdded + 1) pages.push({ ellipsis: true });
+        pages.push({ label: pageNumber, page: pageNumber, current: pageNumber === currentPage });
+        lastAdded = pageNumber;
+      }
+
+      addPage(1);
+      for (var pageNumber = currentPage - 2; pageNumber <= currentPage + 2; pageNumber += 1) {
+        addPage(pageNumber);
+      }
+      addPage(totalPages);
+
+      return pages;
+    }
+
+    function renderPagination(currentPage, totalPages) {
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        pagination.classList.add('hidden');
+        pagination.classList.remove('flex');
+        return;
+      }
+
+      var prev = currentPage > 1
+        ? '<a href="' + escapeHtml(pageHref(currentPage - 1)) + '" class="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition-colors hover:text-[#b21100] dark:text-slate-400 dark:hover:text-[#ff2e1a]" aria-label="Previous page"><svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>Prev</a>'
+        : '<span class="inline-flex items-center gap-1 text-sm font-medium text-slate-300 dark:text-slate-700" aria-disabled="true"><svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>Prev</span>';
+
+      var items = paginationPages(currentPage, totalPages)
+        .map(function (item) {
+          if (item.ellipsis) {
+            return '<li><span class="inline-flex h-9 w-9 items-center justify-center text-sm text-slate-400 dark:text-slate-500">...</span></li>';
+          }
+          if (item.current) {
+            return '<li><span aria-current="page" class="inline-flex h-9 w-9 items-center justify-center border-b-2 border-[#b21100] text-sm font-bold text-[#b21100] dark:border-[#ff2e1a] dark:text-[#ff2e1a]">' + item.label + '</span></li>';
+          }
+          return '<li><a href="' + escapeHtml(pageHref(item.page)) + '" class="inline-flex h-9 w-9 items-center justify-center text-sm font-medium text-slate-600 transition-colors hover:text-[#b21100] dark:text-slate-300 dark:hover:text-[#ff2e1a]">' + item.label + '</a></li>';
+        })
+        .join('');
+
+      var next = currentPage < totalPages
+        ? '<a href="' + escapeHtml(pageHref(currentPage + 1)) + '" class="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition-colors hover:text-[#b21100] dark:text-slate-400 dark:hover:text-[#ff2e1a]" aria-label="Next page">Next<svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 1 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></a>'
+        : '<span class="inline-flex items-center gap-1 text-sm font-medium text-slate-300 dark:text-slate-700" aria-disabled="true">Next<svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 1 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></span>';
+
+      pagination.innerHTML = prev + '<ol class="flex items-center gap-0.5">' + items + '</ol>' + next;
+      pagination.classList.remove('hidden');
+      pagination.classList.add('flex');
+    }
+
     function render(data) {
+      loadedData = data;
       var assignment = data.assignment || data;
       var photos = Array.isArray(data.photos) ? data.photos : Array.isArray(data.media) ? data.media : [];
       var name = text(assignment.name, 'Assignment photos');
       var generatedAt = formatDate(data.generatedAt);
+      var totalPages = Math.max(1, Math.ceil(photos.length / PAGE_SIZE));
+      var currentPage = Math.min(currentPageFromUrl(), totalPages);
+      var start = (currentPage - 1) * PAGE_SIZE;
+      var visiblePhotos = photos.slice(start, start + PAGE_SIZE);
 
       title.textContent = name;
-      meta.textContent = photos.length + ' photo' + (photos.length === 1 ? '' : 's') + (generatedAt ? ' updated ' + generatedAt : '');
+      meta.textContent = photos.length + ' photo' + (photos.length === 1 ? '' : 's') + (totalPages > 1 ? ' - Page ' + currentPage + ' of ' + totalPages : '') + (generatedAt ? ' updated ' + generatedAt : '');
+      refresh.href = window.location.href;
 
       if (!photos.length) {
         setStatus('No photos have been published for this assignment yet.');
         return;
       }
 
-      grid.innerHTML = photos
+      grid.innerHTML = visiblePhotos
         .map(function (item) {
           var url = imageUrl(item);
           var alt = text(item.alt || item.caption || item.originalFilename || item.filename, 'Assignment photo');
@@ -100,6 +181,7 @@
       status.classList.add('hidden');
       grid.classList.remove('hidden');
       grid.classList.add('grid');
+      renderPagination(currentPage, totalPages);
     }
 
     var assignmentId = assignmentIdFromPath();
@@ -109,6 +191,20 @@
     }
 
     refresh.href = window.location.href;
+    pagination.addEventListener('click', function (event) {
+      var target = event.target;
+      if (!(target instanceof Element)) return;
+      var anchor = target.closest('a[href]');
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      event.preventDefault();
+      window.history.pushState({}, '', anchor.getAttribute('href') || window.location.href);
+      render(loadedData);
+    });
+
+    window.addEventListener('popstate', function () {
+      if (loadedData) render(loadedData);
+    });
+
     fetch('https://cdn.fifthbell.com/contents/assignments/' + encodeURIComponent(assignmentId) + '.json', {
       cache: 'no-store'
     })
