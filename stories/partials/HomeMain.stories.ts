@@ -11,6 +11,7 @@ import homeLandingHbs from '../../src/templates/partials/components/home/landing
 import homeMustReadHbs from '../../src/templates/partials/components/home/must-read.hbs?raw';
 import homeMoreStoriesHbs from '../../src/templates/partials/components/home/more-stories.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
+import scrollAreaHbs from '../../src/templates/partials/components/ui/scroll-area.hbs?raw';
 import { loadHomepagePreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
@@ -25,6 +26,7 @@ Handlebars.registerPartial('components/home/landing', homeLandingHbs);
 Handlebars.registerPartial('components/home/must-read', homeMustReadHbs);
 Handlebars.registerPartial('components/home/more-stories', homeMoreStoriesHbs);
 Handlebars.registerPartial('components/snack', snackHbs);
+Handlebars.registerPartial('components/ui/scroll-area', scrollAreaHbs);
 
 const template = Handlebars.compile(homeMainHbs);
 

@@ -1,8 +1,8 @@
-<section class='flex flex-col h-full'>
-  <div class='bg-white dark:bg-slate-900 xl:rounded-lg xl:px-8 px-6 pt-8 pb-6 flex flex-col h-full'>
+<section class='flex flex-col h-full min-h-0 max-h-full overflow-hidden xl:[contain:size]'>
+  <div class='bg-white dark:bg-slate-900 xl:rounded-lg xl:px-8 px-6 pt-8 pb-6 flex flex-col h-full min-h-0 max-h-full overflow-hidden'>
     <h2 class='text-lg font-medium leading-6 text-slate-900 dark:text-slate-100 mb-6' style='font-variant: small-caps;'>live updates</h2>
 
-    {{#> 'ui/scroll-area' className='flex-1 min-h-0 w-full'}}
+    {{#> components/ui/scroll-area className='flex-1 min-h-0 max-h-full w-full'}}
       <div class='flex flex-col w-full gap-0'>
         {{#each updates}}
           <div class='flex gap-4 w-full xl:pb-6 pb-8'>
@@ -24,6 +24,6 @@
           <p class='text-base leading-[22px] text-slate-600 dark:text-slate-400'>No live updates yet.</p>
         {{/each}}
       </div>
-    {{/ 'ui/scroll-area'}}
+    {{/ components/ui/scroll-area}}
   </div>
 </section>
