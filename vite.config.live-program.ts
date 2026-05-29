@@ -10,6 +10,7 @@ const outDir = resolve(__dirname, 'dist', 'live-program-page');
 
 export default defineConfig({
   base: './',
+  publicDir: resolve(__dirname, 'src/live-program/public'),
   envDir: 'src/live-program',
   plugins: [
     tailwindcss(),
