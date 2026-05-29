@@ -88,3 +88,35 @@ function getAssets(): RendererAssets {
 export function render(document: CanonicalDocument): string {
   return renderWithAssets(document, getAssets());
 }
+
+function liveProgramPageDir(): string {
+  const currentFile = fileURLToPath(import.meta.url);
+  const currentDir = path.dirname(currentFile);
+  return path.join(currentDir, 'live-program-page');
+}
+
+export function liveProgramPageHtml(): string {
+  const pageDir = liveProgramPageDir();
+  const htmlPath = path.join(pageDir, 'index.html');
+
+  if (!fs.existsSync(htmlPath)) {
+    throw new Error(
+      `live-program-page/index.html not found at ${htmlPath} — run npm run build:live-program first`
+    );
+  }
+
+  return fs.readFileSync(htmlPath, 'utf-8');
+}
+
+export function liveProgramPageAsset(filename: string): string {
+  const pageDir = liveProgramPageDir();
+  const assetPath = path.join(pageDir, filename);
+
+  if (!fs.existsSync(assetPath)) {
+    throw new Error(
+      `live-program-page/${filename} not found at ${assetPath} — run npm run build:live-program first`
+    );
+  }
+
+  return fs.readFileSync(assetPath, 'utf-8');
+}
