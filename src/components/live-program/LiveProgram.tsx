@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { BellRing } from 'lucide-react';
 import { useSSE } from './hooks/useSSE.js';
 
 import { FIFTHBELL_ASSETS } from './assets.js';
 import { MarqueeCurtain } from './components/MarqueeCurtain.js';
 import Marquee from './components/Marquee.js';
-import { DEFAULT_WORLD_CLOCK_CITIES } from './components/WorldClocks.js';
+import { WorldClocks, DEFAULT_WORLD_CLOCK_CITIES } from './components/WorldClocks.js';
 import { CallsignSlide } from './components/slides/CallsignSlide.js';
 import { slideStyles } from './components/slides/slideStyles.js';
 import { fetchEvents, getCachedEvents, hasEventChanges, type Event } from './events.js';
@@ -356,8 +357,7 @@ function normalizeLaunchDate(rawDate: string): Date {
   return parsed;
 }
 
-export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl }: LiveProgramProps) {
-  const encodedProgramId = encodeURIComponent(programId);
+export default function LiveProgram({ embedded = false, sceneMetadata, activeComponents, apiBaseUrl }: LiveProgramProps) {
   const [state, setState] = useState<ProgramState | null>(null);
   const [showLogoSlide, setShowLogoSlide] = useState(false);
   const [callsignTime, setCallsignTime] = useState(new Date());
@@ -378,6 +378,11 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   const updatePendingRef = useRef(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const lastFetchedItemRef = useRef<number>(-1);
+  const activeInstantAudioRef = useRef<HTMLAudioElement | null>(null);
+  const activeInstantAudiosRef = useRef<Set<HTMLAudioElement>>(new Set());
+  const sceneInstantTakeSequenceRef = useRef(0);
+  const mixerSettingsRef = useRef<Record<string, unknown>>({});
+  const songAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const controlledBySceneRenderer = sceneMetadata !== undefined;
   const effectiveSceneMetadata = useMemo(() => {
@@ -414,11 +419,11 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
       return;
     }
 
-    fetch(`${resolvedApiBaseUrl}/program/${encodedProgramId}/state`)
+    fetch(`${resolvedApiBaseUrl}/state`)
       .then((res) => res.json())
       .then((data) => setState(data))
       .catch((err) => console.error('Failed to fetch FifthBell program state:', err));
-  }, [controlledBySceneRenderer, encodedProgramId, resolvedApiBaseUrl]);
+  }, [controlledBySceneRenderer, resolvedApiBaseUrl]);
 
   const refreshAllData = useCallback(async () => {
     const [articlesData, weatherDataResult, earthquakesData, marketsData] = await Promise.all([
@@ -450,8 +455,40 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
     void refreshAllData();
   }, [refreshAllData]);
 
+  const stopSceneInstantAudio = useCallback((fadeMs = 0) => {
+    const audio = activeInstantAudioRef.current;
+    if (!audio) return;
+
+    if (fadeMs > 0) {
+      const initialVolume = audio.volume;
+      const startTime = performance.now();
+      const fadeStep = (timestamp: number) => {
+        const elapsed = timestamp - startTime;
+        if (elapsed >= fadeMs) {
+          audio.volume = 0;
+          audio.pause();
+          try { audio.currentTime = 0; } catch { /* no-op */ }
+          audio.onended = null;
+          audio.onerror = null;
+          activeInstantAudioRef.current = null;
+          return;
+        }
+        audio.volume = Math.max(0, initialVolume * (1 - elapsed / fadeMs));
+        requestAnimationFrame(fadeStep);
+      };
+      requestAnimationFrame(fadeStep);
+      return;
+    }
+
+    audio.pause();
+    try { audio.currentTime = 0; } catch { /* no-op */ }
+    audio.onended = null;
+    audio.onerror = null;
+    activeInstantAudioRef.current = null;
+  }, []);
+
   useSSE({
-    url: `${resolvedApiBaseUrl}/program/${encodedProgramId}/events`,
+    url: `${resolvedApiBaseUrl}/events`,
     enabled: !controlledBySceneRenderer,
     onMessage: (data: any) => {
       if ((data.type === 'scene_change' || data.type === 'program_scenes_changed') && data.state) {
@@ -473,6 +510,148 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
             activeScene: null
           };
         });
+      } else if (data.type === 'scene_instant_take' && data.instant?.audioUrl) {
+        console.log('[scene_instant_take]', data.instant.name, data.instant.audioUrl);
+        sceneInstantTakeSequenceRef.current += 1;
+        const takeSequence = sceneInstantTakeSequenceRef.current;
+        const ms = (mixerSettingsRef.current || {}) as any;
+        const masterVol = ms.sceneInstantMasterVolume ?? 1;
+        const muted = ms.sceneInstantMuted === true;
+        const baseVol = typeof data.instant.volume === 'number' ? Math.max(0, Math.min(1, data.instant.volume)) : 1;
+        const finalVol = muted ? 0 : Math.max(0, Math.min(1, baseVol * masterVol));
+
+        const playAudio = () => {
+          const audio = new Audio(data.instant.audioUrl);
+          audio.preload = 'auto';
+          audio.loop = data.loop !== false;
+          audio.volume = finalVol;
+          audio.onended = () => { activeInstantAudioRef.current = null; };
+          audio.onerror = () => { console.error('[scene_instant] audio error'); activeInstantAudioRef.current = null; };
+          activeInstantAudioRef.current = audio;
+          audio.play().catch((err) => { console.error('[scene_instant] play failed:', err); activeInstantAudioRef.current = null; });
+        };
+
+        const currentlyPlaying = activeInstantAudioRef.current;
+        if (currentlyPlaying && !currentlyPlaying.paused && !currentlyPlaying.ended) {
+          const switchFadeMs = 1500;
+          stopSceneInstantAudio(switchFadeMs);
+          window.setTimeout(() => {
+            if (sceneInstantTakeSequenceRef.current !== takeSequence) return;
+            playAudio();
+          }, switchFadeMs);
+          return;
+        }
+
+        stopSceneInstantAudio();
+        playAudio();
+      } else if (data.type === 'scene_instant_stop') {
+        stopSceneInstantAudio(data.fadeMs || 0);
+      } else if (data.type === 'scene_instant_state') {
+        console.log('[scene_instant_state]', data.playback?.isPlaying ? 'playing' : 'stopped');
+        const playback = data.playback;
+        if (playback?.isPlaying && playback?.instant?.audioUrl) {
+          const currentlyPlaying = activeInstantAudioRef.current;
+          if (currentlyPlaying && !currentlyPlaying.paused && !currentlyPlaying.ended) {
+            return;
+          }
+          stopSceneInstantAudio(1500);
+          window.setTimeout(() => {
+            const audio = new Audio(playback.instant.audioUrl);
+            audio.preload = 'auto';
+            audio.loop = true;
+            audio.volume = typeof playback.instant.volume === 'number' ? Math.max(0, Math.min(1, playback.instant.volume)) : 1;
+            audio.onended = () => { activeInstantAudioRef.current = null; };
+            audio.onerror = () => { console.error('[scene_instant] audio error'); activeInstantAudioRef.current = null; };
+            activeInstantAudioRef.current = audio;
+            audio.play().catch((err) => { console.error('[scene_instant] play failed:', err); activeInstantAudioRef.current = null; });
+          }, 1500);
+        } else {
+          stopSceneInstantAudio();
+        }
+      } else if (data.type === 'instant_play' && data.instant?.audioUrl) {
+        console.log('[instant_play]', data.instant.name, data.instant.audioUrl);
+        const ms = (mixerSettingsRef.current || {}) as any;
+        const masterVol = ms.instantMasterVolume ?? 1;
+        const muted = ms.instantMuted === true;
+        const baseVol = typeof data.instant.volume === 'number' ? Math.max(0, Math.min(1, data.instant.volume)) : 1;
+        const finalVol = muted ? 0 : Math.max(0, Math.min(1, baseVol * masterVol));
+        const audio = new Audio(data.instant.audioUrl);
+        audio.preload = 'auto';
+        audio.volume = finalVol;
+        const cleanup = () => {
+          activeInstantAudiosRef.current.delete(audio);
+        };
+        audio.onended = cleanup;
+        audio.onerror = () => { console.error('[instant_play] error'); cleanup(); };
+        activeInstantAudiosRef.current.add(audio);
+        audio.play().catch((err) => { console.error('[instant_play] play failed:', err); cleanup(); });
+      } else if (data.type === 'instant_stop_all') {
+        stopSceneInstantAudio();
+        for (const audio of activeInstantAudiosRef.current) {
+          audio.pause();
+          try { audio.currentTime = 0; } catch { /* no-op */ }
+          audio.onended = null;
+          audio.onerror = null;
+        }
+        activeInstantAudiosRef.current.clear();
+      } else if (data.type === 'audio_bus_update' && data.settings) {
+        const settings = data.settings;
+        mixerSettingsRef.current = settings.mixerSettings || {};
+        // Update scene instant volume
+        const current = activeInstantAudioRef.current;
+        if (current) {
+          const ms = mixerSettingsRef.current as any;
+          const vol = ms.sceneInstantMasterVolume ?? 1;
+          const muted = ms.sceneInstantMuted === true;
+          current.volume = muted ? 0 : Math.max(0, Math.min(1, vol));
+        }
+        // Update instant play volumes
+        const ms = (mixerSettingsRef.current || {}) as any;
+        const instantVol = ms.instantMasterVolume ?? 1;
+        const instantMuted = ms.instantMuted === true;
+        for (const audio of activeInstantAudiosRef.current) {
+          audio.volume = instantMuted ? 0 : Math.max(0, Math.min(1, instantVol));
+        }
+        // Handle song sequence playback
+        const songSeq = settings.songSequence;
+        const currentSong = songAudioRef.current;
+        const hasActiveSong = songSeq && songSeq.items && songSeq.items.length > 0 && songSeq.items.some((item: any) => item.audioUrl);
+        if (hasActiveSong) {
+          const activeItem = songSeq.items.find((item: any) => item.id === songSeq.activeItemId) || songSeq.items[0];
+          const songUrl = activeItem?.audioUrl;
+          if (songUrl) {
+            if (!currentSong || currentSong.src !== songUrl) {
+              if (currentSong) {
+                currentSong.pause();
+                currentSong.onended = null;
+                currentSong.onerror = null;
+              }
+              const audio = new Audio(songUrl);
+              audio.preload = 'auto';
+              audio.loop = songSeq.loop !== false;
+              const ms2 = (mixerSettingsRef.current || {}) as any;
+              const songMuted = ms2.songMuted === true;
+              const songVol = ms2.songMasterVolume ?? 1;
+              audio.volume = songMuted ? 0 : Math.max(0, Math.min(1, songVol));
+              audio.onerror = () => { console.error('[song] playback error'); };
+              songAudioRef.current = audio;
+              audio.play().catch((err) => { console.error('[song] play failed:', err); });
+            }
+          }
+        } else if (currentSong) {
+          currentSong.pause();
+          currentSong.onended = null;
+          currentSong.onerror = null;
+          songAudioRef.current = null;
+        }
+      } else if (data.type === 'song_off_air') {
+        const song = songAudioRef.current;
+        if (song) {
+          song.pause();
+          song.onended = null;
+          song.onerror = null;
+          songAudioRef.current = null;
+        }
       }
     }
   });
@@ -718,6 +897,29 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
                 heightPx={config.marqueeHeightPx}
               />
             ))}
+        </div>
+      )}
+
+      {(config.showWorldClocks || config.showBellIcon) && (
+        <div className='absolute top-16 right-24 z-50 flex items-start gap-6'>
+          {config.showWorldClocks && (
+            <div className='flex items-start pt-1.5'>
+              <WorldClocks
+                currentTime={callsignTime}
+                language={currentLanguage}
+                cities={config.worldClockCities}
+                rotateIntervalMs={config.worldClockRotateIntervalMs}
+                transitionDurationMs={config.worldClockTransitionMs}
+                shuffleCities={config.worldClockShuffle}
+                widthPx={config.worldClockWidthPx}
+              />
+            </div>
+          )}
+          {config.showBellIcon && (
+            <div className='bg-[#b21100] text-white p-6 shadow-2xl'>
+              <BellRing size={64} strokeWidth={2} />
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -11,6 +11,7 @@ export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = tru
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const onMessageRef = useRef(onMessage);
+  const bufferRef = useRef('');
 
   useEffect(() => {
     onMessageRef.current = onMessage;
@@ -24,46 +25,73 @@ export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = tru
     }
 
     let disposed = false;
-    let eventSource: EventSource | null = null;
+    let abortController: AbortController | null = null;
     let reconnectTimer: number | null = null;
+    let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
 
-    const connect = () => {
-      if (disposed) {
-        return;
+    const processLine = (line: string) => {
+      if (line.startsWith('data: ')) {
+        const dataStr = line.slice(6);
+        if (dataStr === '[DONE]') return;
+        try {
+          const data = JSON.parse(dataStr);
+          console.log('[SSE] message:', data.type);
+          onMessageRef.current?.(data);
+        } catch {
+          // partial data or non-JSON
+        }
       }
+    };
+
+    const onChunk = (chunk: string) => {
+      bufferRef.current += chunk;
+      const lines = bufferRef.current.split('\n');
+      bufferRef.current = lines.pop() || '';
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (trimmed) processLine(trimmed);
+      }
+    };
+
+    const connect = async () => {
+      if (disposed) return;
 
       try {
-        eventSource = new EventSource(url);
+        abortController = new AbortController();
+        const response = await fetch(url, {
+          signal: abortController.signal,
+          cache: 'no-store',
+        });
 
-        eventSource.onopen = () => {
-          if (disposed) {
-            return;
-          }
-          setIsConnected(true);
-          setError(null);
-        };
+        if (!response.ok) {
+          throw new Error(`SSE fetch failed: ${response.status}`);
+        }
 
-        eventSource.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            onMessageRef.current?.(data);
-          } catch (err) {
-            console.error('Failed to parse SSE data:', err);
-          }
-        };
+        if (!response.body) {
+          throw new Error('SSE response has no body');
+        }
 
-        eventSource.onerror = () => {
-          setIsConnected(false);
-          setError(new Error('SSE connection error'));
-          eventSource?.close();
-          eventSource = null;
+        console.log('[SSE] connected to', url);
+        setIsConnected(true);
+        setError(null);
 
-          if (!disposed) {
-            reconnectTimer = window.setTimeout(connect, reconnectInterval);
-          }
-        };
-      } catch (err) {
-        setError(err as Error);
+        reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (!disposed) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          onChunk(decoder.decode(value, { stream: true }));
+        }
+      } catch (err: any) {
+        if (disposed) return;
+        if (err.name === 'AbortError') return;
+        console.error('[SSE] error:', err);
+        setIsConnected(false);
+        setError(err instanceof Error ? err : new Error(String(err)));
+      } finally {
+        reader = null;
+        abortController = null;
         if (!disposed) {
           reconnectTimer = window.setTimeout(connect, reconnectInterval);
         }
@@ -77,7 +105,12 @@ export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = tru
       if (reconnectTimer !== null) {
         window.clearTimeout(reconnectTimer);
       }
-      eventSource?.close();
+      if (reader) {
+        try { reader.cancel(); } catch { /* no-op */ }
+      }
+      if (abortController) {
+        abortController.abort();
+      }
     };
   }, [enabled, url, reconnectInterval]);
 
