@@ -1,19 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSSE } from './hooks/useSSE.js';
 
-// Hardcoded API Base URL for Fifthbell
-function getApiBaseUrl(): string {
-  if (typeof window === 'undefined') return 'http://127.0.0.1:3000';
-  // Use the current host to dynamically target however they're accessing it
-  const hostname = window.location.hostname;
-  return `http://${hostname.includes(':') ? `[${hostname}]` : hostname}:3000`;
-}
-
-function apiUrl(path: string): string {
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${getApiBaseUrl()}${normalizedPath}`;
-}
-
 import { FIFTHBELL_ASSETS } from './assets.js';
 import { MarqueeCurtain } from './components/MarqueeCurtain.js';
 import Marquee from './components/Marquee.js';
@@ -71,6 +58,7 @@ interface LiveProgramProps {
   embedded?: boolean;
   sceneMetadata?: Record<string, unknown> | null;
   activeComponents?: string[];
+  apiBaseUrl?: string;
 }
 
 interface FifthBellConfig {
@@ -368,7 +356,7 @@ function normalizeLaunchDate(rawDate: string): Date {
   return parsed;
 }
 
-export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents }: LiveProgramProps) {
+export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl }: LiveProgramProps) {
   const encodedProgramId = encodeURIComponent(programId);
   const [state, setState] = useState<ProgramState | null>(null);
   const [showLogoSlide, setShowLogoSlide] = useState(false);
@@ -403,6 +391,13 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   const layerAvailability = useMemo(() => resolveFifthBellLayerAvailability(activeComponents), [activeComponents]);
   const languageRotation = config.languageRotation;
   const currentLanguage: SupportedLanguage = languageRotation[languageIndex] ?? languageRotation[0] ?? 'en';
+  const resolvedApiBaseUrl =
+    apiBaseUrl?.replace(/\/+$/, '') ||
+    (() => {
+      if (typeof window === 'undefined') return 'http://127.0.0.1:3000';
+      const hostname = window.location.hostname;
+      return `http://${hostname.includes(':') ? `[${hostname}]` : hostname}:3000`;
+    })();
 
   useEffect(() => {
     if (languageIndex >= languageRotation.length) {
@@ -419,11 +414,11 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
       return;
     }
 
-    fetch(apiUrl(`/program/${encodedProgramId}/state`))
+    fetch(`${resolvedApiBaseUrl}/program/${encodedProgramId}/state`)
       .then((res) => res.json())
       .then((data) => setState(data))
       .catch((err) => console.error('Failed to fetch FifthBell program state:', err));
-  }, [controlledBySceneRenderer, encodedProgramId]);
+  }, [controlledBySceneRenderer, encodedProgramId, resolvedApiBaseUrl]);
 
   const refreshAllData = useCallback(async () => {
     const [articlesData, weatherDataResult, earthquakesData, marketsData] = await Promise.all([
@@ -456,7 +451,7 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   }, [refreshAllData]);
 
   useSSE({
-    url: apiUrl(`/program/${encodedProgramId}/events`),
+    url: `${resolvedApiBaseUrl}/program/${encodedProgramId}/events`,
     enabled: !controlledBySceneRenderer,
     onMessage: (data: any) => {
       if ((data.type === 'scene_change' || data.type === 'program_scenes_changed') && data.state) {
@@ -481,18 +476,6 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
       }
     }
   });
-
-  useEffect(() => {
-    if (dataLoaded || config.dataLoadTimeoutMs <= 0) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      window.location.reload();
-    }, config.dataLoadTimeoutMs);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [dataLoaded, config.dataLoadTimeoutMs]);
 
   const refreshEvents = useCallback(async () => {
     await fetchEvents({
