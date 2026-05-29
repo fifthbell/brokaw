@@ -46,6 +46,8 @@ interface ProgramState {
   id: number;
   activeSceneId: number | null;
   activeScene: Scene | null;
+  stagedSceneId?: number | null;
+  stagedScene?: Scene | null;
   updatedAt: string;
 }
 
@@ -491,7 +493,16 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
     url: `${resolvedApiBaseUrl}/events`,
     enabled: !controlledBySceneRenderer,
     onMessage: (data: any) => {
-      if ((data.type === 'scene_change' || data.type === 'program_scenes_changed') && data.state) {
+      if (data.type === 'scene_staged') {
+        setState((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            stagedSceneId: typeof data.stagedSceneId === 'number' && Number.isFinite(data.stagedSceneId) ? data.stagedSceneId : null,
+            stagedScene: data.scene && typeof data.scene === 'object' ? (data.scene as Scene) : null,
+          };
+        });
+      } else if ((data.type === 'scene_change' || data.type === 'program_scenes_changed') && data.state) {
         setState(data.state);
       } else if (data.type === 'scene_update') {
         setState((prev) => {
@@ -510,6 +521,8 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
             activeScene: null
           };
         });
+      } else if (data.type === 'broadcast_settings_update') {
+        // broadcast settings stored for overlay display
       } else if (data.type === 'scene_instant_take' && data.instant?.audioUrl) {
         console.log('[scene_instant_take]', data.instant.name, data.instant.audioUrl);
         sceneInstantTakeSequenceRef.current += 1;
@@ -652,6 +665,20 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
           song.onerror = null;
           songAudioRef.current = null;
         }
+      } else if (data.type === 'program_reload') {
+        if (typeof window === 'undefined') return;
+        const reloadWithCacheBust = () => {
+          const nextUrl = new URL(window.location.href);
+          nextUrl.searchParams.set('_reload', Date.now().toString());
+          window.location.replace(nextUrl.toString());
+        };
+        if (!('caches' in window)) { reloadWithCacheBust(); return; }
+        void window.caches.keys()
+          .then((keys) => Promise.all(keys.map((key) => window.caches.delete(key))))
+          .catch((err) => { console.warn('[program_reload] cache clear failed:', err); })
+          .finally(() => { reloadWithCacheBust(); });
+      } else if (data.type === 'program_stingers_changed') {
+        // stinger video URLs for scene transitions — stored for transition system
       }
     }
   });
