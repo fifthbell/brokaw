@@ -15,3 +15,7 @@ export default meta;
 type Story = StoryObj;
 
 export const Default: Story = {};
+
+export const MourningMode: Story = {
+  args: { mourningMode: true },
+};
