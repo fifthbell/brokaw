@@ -13,14 +13,6 @@ export interface MarketData {
   changePercent: number;
 }
 
-interface ApiMarketData {
-  symbol: string;
-  price: number;
-  name: string;
-  change: number;
-  changesPercentage: number;
-}
-
 let marketCache: { data: MarketData[]; timestamp: number; updateTime: string } | null = null;
 const CACHE_DURATION_MS = 15 * 60 * 1000;
 
@@ -31,31 +23,20 @@ export async function fetchMarketData(): Promise<MarketData[]> {
   }
 
   try {
-    const response = await fetch(`https://financialmodelingprep.com/stable/most-actives?apikey=a8mpam9ffQSf9ROfBBKovbPHRw25qtNH&_=${Date.now()}`);
+    const response = await fetch(`https://api.monitor.gaulatti.com/broadcast/markets?_=${Date.now()}`);
     if (!response.ok) {
       return marketCache?.data || [];
     }
 
-    const data: ApiMarketData[] = await response.json();
-    const marketData = data
-      .filter((stock) => stock.price > 1 && Math.abs(stock.changesPercentage) < 200)
-      .sort((a, b) => Math.abs(b.changesPercentage) - Math.abs(a.changesPercentage))
-      .slice(0, 6)
-      .map((stock) => ({
-        symbol: stock.symbol,
-        name: stock.name,
-        price: stock.price,
-        change: stock.change,
-        changePercent: stock.changesPercentage
-      }));
+    const data: MarketData[] = await response.json();
 
     marketCache = {
-      data: marketData,
+      data,
       timestamp: now,
       updateTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
     };
 
-    return marketData;
+    return data;
   } catch (error) {
     console.error('[MarketsSegment] Failed to fetch market data:', error);
     return marketCache?.data || [];
