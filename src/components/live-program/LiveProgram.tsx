@@ -13,13 +13,16 @@ import { type SupportedLanguage } from './i18n.js';
 import {
   createArticlesSegment,
   createEarthquakeSegment,
+  createLiveEventSegment,
   createMarketsSegment,
   createWeatherSegment,
   fetchArticles,
   fetchEarthquakes,
+  fetchLiveEvent,
   fetchMarketData,
   fetchWeatherData,
   type EarthquakeData,
+  type LiveEventData,
   type MarketData,
   type NewsItem,
   type WeatherRegionData,
@@ -69,6 +72,7 @@ interface FifthBellConfig {
   showWeather: boolean;
   showEarthquakes: boolean;
   showMarkets: boolean;
+  showLiveEvents: boolean;
   showMarquee: boolean;
   showCallsignTake: boolean;
   weatherCities: string[];
@@ -114,6 +118,7 @@ const DEFAULT_FIFTHBELL_CONFIG: FifthBellConfig = {
   showWeather: true,
   showEarthquakes: true,
   showMarkets: true,
+  showLiveEvents: true,
   showMarquee: false,
   showCallsignTake: true,
   weatherCities: [],
@@ -314,6 +319,7 @@ function extractConfigFromMetadata(metadataInput: Record<string, unknown> | null
     showWeather: normalizeBoolean(contentProps.showWeather, DEFAULT_FIFTHBELL_CONFIG.showWeather),
     showEarthquakes: normalizeBoolean(contentProps.showEarthquakes, DEFAULT_FIFTHBELL_CONFIG.showEarthquakes),
     showMarkets: normalizeBoolean(contentProps.showMarkets, DEFAULT_FIFTHBELL_CONFIG.showMarkets),
+    showLiveEvents: normalizeBoolean(contentProps.showLiveEvents, DEFAULT_FIFTHBELL_CONFIG.showLiveEvents),
     showMarquee: normalizeBoolean(marqueeProps.showMarquee, DEFAULT_FIFTHBELL_CONFIG.showMarquee),
     showCallsignTake: normalizeBoolean(contentProps.showCallsignTake, DEFAULT_FIFTHBELL_CONFIG.showCallsignTake),
     weatherCities: normalizeStringArray(contentProps.weatherCities),
@@ -372,6 +378,7 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
   const [weatherData, setWeatherData] = useState<WeatherRegionData[]>([]);
   const [earthquakes, setEarthquakes] = useState<EarthquakeData[]>([]);
   const [markets, setMarkets] = useState<MarketData[]>([]);
+  const [liveEvent, setLiveEvent] = useState<LiveEventData | null>(null);
 
   const [stageEvents, setStageEvents] = useState<Event[]>([]);
   const [programEvents, setProgramEvents] = useState<Event[]>([]);
@@ -428,11 +435,12 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
   }, [controlledBySceneRenderer, resolvedApiBaseUrl]);
 
   const refreshAllData = useCallback(async () => {
-    const [articlesData, weatherDataResult, earthquakesData, marketsData] = await Promise.all([
+    const [articlesData, weatherDataResult, earthquakesData, marketsData, liveEventData] = await Promise.all([
       fetchArticles(currentLanguage),
       fetchWeatherData(),
       fetchEarthquakes(currentLanguage),
       fetchMarketData(),
+      fetchLiveEvent(currentLanguage),
       fetchEvents({
         language: currentLanguage,
         allowedLanguages: [currentLanguage]
@@ -443,6 +451,7 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
     setWeatherData(weatherDataResult);
     setEarthquakes(earthquakesData);
     setMarkets(marketsData);
+    setLiveEvent(liveEventData);
 
     const cachedEvents = getCachedEvents();
     if (cachedEvents) {
@@ -758,6 +767,12 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
       .filter((region) => region.cities.length > 0);
   }, [config.weatherCities, weatherData]);
 
+  const liveEventSegment = useMemo(() => {
+    const segment = createLiveEventSegment(liveEvent, setLiveEvent, currentLanguage);
+    segment.durationMsPerItem = 15000;
+    return segment;
+  }, [liveEvent, setLiveEvent, currentLanguage]);
+
   const weatherSegment = useMemo(() => {
     const segment = createWeatherSegment(filteredWeatherData, setWeatherData, currentLanguage);
     segment.durationMsPerItem = config.weatherDurationMs;
@@ -778,12 +793,13 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
 
   const segments = useMemo(() => {
     const nextSegments = [];
+    if (config.showLiveEvents) nextSegments.push(liveEventSegment);
     if (config.showArticles) nextSegments.push(articlesSegment);
     if (config.showWeather) nextSegments.push(weatherSegment);
     if (config.showEarthquakes) nextSegments.push(earthquakeSegment);
     if (config.showMarkets) nextSegments.push(marketsSegment);
     return nextSegments;
-  }, [articlesSegment, weatherSegment, earthquakeSegment, marketsSegment, config.showArticles, config.showWeather, config.showEarthquakes, config.showMarkets]);
+  }, [liveEventSegment, articlesSegment, weatherSegment, earthquakeSegment, marketsSegment, config.showLiveEvents, config.showArticles, config.showWeather, config.showEarthquakes, config.showMarkets]);
 
   const {
     state: playlistState,
