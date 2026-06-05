@@ -140,6 +140,16 @@ export function fontFiles(): FontFileEntry[] {
     });
   }
 
+  // Also include fonts.css
+  const cssPath = path.join(dir, 'fonts.css');
+  if (fs.existsSync(cssPath)) {
+    entries.push({
+      key: 'content/fonts/fonts.css',
+      body: fs.readFileSync(cssPath),
+      contentType: 'text/css',
+    });
+  }
+
   return entries;
 }
 

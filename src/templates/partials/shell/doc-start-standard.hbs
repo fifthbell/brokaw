@@ -4,11 +4,14 @@
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link href='https://cdn.fifthbell.com/content/fonts/fonts.css' rel='stylesheet' />
-    {{#if featuredImage.url}}
-      <link rel='preload' as='image' href='{{featuredImage.url}}' fetchpriority='high' />
-    {{/if}}
-    {{#if hero.url}}
-      <link rel='preload' as='image' href='{{hero.url}}' fetchpriority='high' />
+    {{#if (eq layout 'homepage')}}
+      {{#if hero.url}}
+        <link rel='preload' as='image' href='{{hero.url}}' fetchpriority='high' />
+      {{/if}}
+    {{else}}
+      {{#if featuredImage.url}}
+        <link rel='preload' as='image' href='{{featuredImage.url}}' fetchpriority='high' />
+      {{/if}}
     {{/if}}
     <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else if excerpt}}{{excerpt}}{{else}}{{resolveHeadTitle this}}{{/if}}' />
     <link rel='canonical' href='{{canonicalUrl}}' />
