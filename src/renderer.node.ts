@@ -120,3 +120,56 @@ export function liveProgramPageAsset(filename: string): string {
 
   return fs.readFileSync(assetPath, 'utf-8');
 }
+
+const CONTENT_TYPE_MAP: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'application/javascript',
+  '.css': 'text/css',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.ogg': 'audio/ogg',
+  '.mp3': 'audio/mpeg',
+};
+
+function contentTypeForFile(filename: string): string {
+  const ext = path.extname(filename).toLowerCase();
+  return CONTENT_TYPE_MAP[ext] || 'application/octet-stream';
+}
+
+export type LiveProgramFileEntry = {
+  key: string;
+  body: Buffer;
+  contentType: string;
+};
+
+export function liveProgramPageFiles(): LiveProgramFileEntry[] {
+  const pageDir = liveProgramPageDir();
+  if (!fs.existsSync(pageDir)) {
+    throw new Error(
+      `live-program-page directory not found at ${pageDir} — run npm run build:live-program first`
+    );
+  }
+
+  const entries: LiveProgramFileEntry[] = [];
+
+  function walk(dir: string, prefix: string) {
+    const items = fs.readdirSync(dir, { withFileTypes: true });
+    for (const item of items) {
+      const fullPath = path.join(dir, item.name);
+      const relativeKey = prefix ? `${prefix}/${item.name}` : item.name;
+      if (item.isDirectory()) {
+        walk(fullPath, relativeKey);
+      } else if (item.isFile()) {
+        entries.push({
+          key: relativeKey,
+          body: fs.readFileSync(fullPath),
+          contentType: contentTypeForFile(item.name),
+        });
+      }
+    }
+  }
+
+  walk(pageDir, '');
+  return entries;
+}

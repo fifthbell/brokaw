@@ -134,6 +134,21 @@ const translations: Translations = {
     es: 'Última actualización: {time}',
     it: 'Ultimo aggiornamento: {time}'
   },
+  'segment.liveEvent': {
+    en: 'Live Event',
+    es: 'Evento en Vivo',
+    it: 'Evento in Diretta'
+  },
+  'liveEvent.noUpdates': {
+    en: 'No updates yet',
+    es: 'Sin actualizaciones',
+    it: 'Nessun aggiornamento'
+  },
+  'liveEvent.noLiveEvents': {
+    en: 'No live events',
+    es: 'No hay eventos en vivo',
+    it: 'Nessun evento in diretta'
+  },
   'city.NEW YORK': {
     en: 'NEW YORK',
     es: 'NUEVA YORK',

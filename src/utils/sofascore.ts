@@ -19,11 +19,11 @@ export function normalizeSofascoreId(value: unknown): string | null {
   return null;
 }
 
-export function buildSofascoreAttackMomentumUrl(value: unknown): string {
+export function buildSofascoreAttackMomentumUrl(value: unknown, theme: 'light' | 'dark' = 'light'): string {
   const normalizedId = normalizeSofascoreId(value);
   if (!normalizedId) return '';
 
-  return `${SOFASCORE_WIDGET_BASE}?id=${normalizedId}&widgetTheme=light`;
+  return `${SOFASCORE_WIDGET_BASE}?id=${normalizedId}&widgetTheme=${theme}`;
 }
 
 export function buildSofascoreMatchUrl(value: unknown): string {

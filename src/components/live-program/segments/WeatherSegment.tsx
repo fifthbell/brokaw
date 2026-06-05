@@ -18,76 +18,6 @@ export interface WeatherRegionData {
   cities: WeatherCityData[];
 }
 
-const CITY_LOCATIONS = {
-  'New York': { lat: 40.7128, lon: -74.006 },
-  'San Juan': { lat: 18.4655, lon: -66.1057 },
-  'Los Angeles': { lat: 34.0522, lon: -118.2437 },
-  Honolulu: { lat: 21.3099, lon: -157.8581 },
-  'Mexico City': { lat: 19.4326, lon: -99.1332 },
-  Havana: { lat: 23.1136, lon: -82.3666 },
-  London: { lat: 51.5074, lon: -0.1278 },
-  Paris: { lat: 48.8566, lon: 2.3522 },
-  Berlin: { lat: 52.52, lon: 13.405 },
-  Rome: { lat: 41.9028, lon: 12.4964 },
-  Madrid: { lat: 40.4168, lon: -3.7038 },
-  Athens: { lat: 37.9838, lon: 23.7275 },
-  Santiago: { lat: -33.4489, lon: -70.6693 },
-  'Buenos Aires': { lat: -34.6037, lon: -58.3816 },
-  Rio: { lat: -22.9068, lon: -43.1729 },
-  Lima: { lat: -12.0464, lon: -77.0428 },
-  Caracas: { lat: 10.4806, lon: -66.9036 },
-  Bogotá: { lat: 4.711, lon: -74.0721 },
-  Tokyo: { lat: 35.6762, lon: 139.6503 },
-  Seoul: { lat: 37.5665, lon: 126.978 },
-  Shanghai: { lat: 31.2304, lon: 121.4737 },
-  'Hong Kong': { lat: 22.3193, lon: 114.1694 },
-  Bangkok: { lat: 13.7563, lon: 100.5018 },
-  Jakarta: { lat: -6.2088, lon: 106.8456 }
-} as const;
-
-const REGIONS = [
-  { region: 'North America', cities: ['New York', 'San Juan', 'Los Angeles', 'Honolulu', 'Mexico City', 'Havana'] },
-  { region: 'Europe', cities: ['Rome', 'Berlin', 'Paris', 'Madrid', 'London', 'Athens'] },
-  { region: 'South America', cities: ['Santiago', 'Buenos Aires', 'Rio', 'Lima', 'Caracas', 'Bogotá'] },
-  { region: 'Asia', cities: ['Tokyo', 'Seoul', 'Shanghai', 'Hong Kong', 'Bangkok', 'Jakarta'] }
-] as const;
-
-function getWeatherCondition(weatherCode: number): 'sunny' | 'cloudy' | 'rainy' | 'windy' {
-  if (weatherCode === 0 || weatherCode === 1) return 'sunny';
-  if (weatherCode === 2 || weatherCode === 3) return 'cloudy';
-  if (weatherCode >= 51 && weatherCode <= 67) return 'rainy';
-  if (weatherCode >= 71 && weatherCode <= 86) return 'rainy';
-  if (weatherCode >= 95) return 'rainy';
-  return 'cloudy';
-}
-
-async function fetchCityWeather(cityName: string): Promise<WeatherCityData | null> {
-  const location = CITY_LOCATIONS[cityName as keyof typeof CITY_LOCATIONS];
-  if (!location) return null;
-
-  try {
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${location.lat}&longitude=${location.lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&timezone=auto`
-    );
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-    return {
-      name: cityName,
-      temp: Math.round(data.current.temperature_2m),
-      condition: getWeatherCondition(data.current.weather_code),
-      high: Math.round(data.daily.temperature_2m_max[0]),
-      low: Math.round(data.daily.temperature_2m_min[0])
-    };
-  } catch (error) {
-    console.error(`Failed to fetch weather for ${cityName}:`, error);
-    return null;
-  }
-}
-
 let weatherCache: { data: WeatherRegionData[]; timestamp: number } | null = null;
 const CACHE_DURATION_MS = 60 * 60 * 1000;
 
@@ -97,17 +27,18 @@ export async function fetchWeatherData(): Promise<WeatherRegionData[]> {
     return weatherCache.data;
   }
 
-  const results: WeatherRegionData[] = [];
-  for (const regionDef of REGIONS) {
-    const cityResults = await Promise.all(regionDef.cities.map((city) => fetchCityWeather(city)));
-    const cities = cityResults.filter((city): city is WeatherCityData => city !== null);
-    if (cities.length > 0) {
-      results.push({ region: regionDef.region, cities });
+  try {
+    const response = await fetch('https://api.monitor.gaulatti.com/broadcast/weather');
+    if (!response.ok) {
+      return weatherCache?.data || [];
     }
+    const data: WeatherRegionData[] = await response.json();
+    weatherCache = { data, timestamp: now };
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch weather data:', error);
+    return weatherCache?.data || [];
   }
-
-  weatherCache = { data: results, timestamp: now };
-  return results;
 }
 
 function getWeatherIcon(condition: string, size = 48) {

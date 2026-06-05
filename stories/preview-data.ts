@@ -260,6 +260,10 @@ function extractLexicalText(node: unknown): string {
 
   if (typeof node === 'object') {
     const record = node as Record<string, unknown>;
+    if (record.root && typeof record.root === 'object') {
+      const rootRecord = record.root as Record<string, unknown>;
+      return extractLexicalText(rootRecord.children);
+    }
     const text = typeof record.text === 'string' ? record.text : '';
     const children = Array.isArray(record.children) ? extractLexicalText(record.children) : '';
     return [text, children].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
