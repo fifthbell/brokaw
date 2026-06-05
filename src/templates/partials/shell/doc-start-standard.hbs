@@ -3,16 +3,14 @@
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <link rel='preconnect' href='https://fonts.googleapis.com' />
-    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
-    <link
-      href='https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap&family=Encode+Sans:wght@100..900&family=Oswald:wght@200..700&display=swap'
-      rel='stylesheet'
-    />
+    <link href='https://cdn.fifthbell.com/content/fonts/fonts.css' rel='stylesheet' />
     {{#if featuredImage.url}}
       <link rel='preload' as='image' href='{{featuredImage.url}}' fetchpriority='high' />
     {{/if}}
-    <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />
+    {{#if hero.url}}
+      <link rel='preload' as='image' href='{{hero.url}}' fetchpriority='high' />
+    {{/if}}
+    <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else if excerpt}}{{excerpt}}{{else}}{{resolveHeadTitle this}}{{/if}}' />
     <link rel='canonical' href='{{canonicalUrl}}' />
     <meta property='og:title' content='{{resolveHeadTitle this}}' />
     <meta property='og:description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}{{excerpt}}{{/if}}' />

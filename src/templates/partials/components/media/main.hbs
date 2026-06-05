@@ -117,7 +117,7 @@
       }
 
       var prev = currentPage > 1
-        ? '<a href="' + escapeHtml(pageHref(currentPage - 1)) + '" class="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition-colors hover:text-[#b21100] dark:text-slate-400 dark:hover:text-[#ff2e1a]" aria-label="Previous page"><svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>Prev</a>'
+        ? '<a href="' + escapeHtml(pageHref(currentPage - 1)) + '" class="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition-colors hover:text-[#8f0d00] dark:text-slate-400 dark:hover:text-[#ff2e1a]" aria-label="Previous page"><svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>Prev</a>'
         : '<span class="inline-flex items-center gap-1 text-sm font-medium text-slate-300 dark:text-slate-700" aria-disabled="true"><svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd"/></svg>Prev</span>';
 
       var items = paginationPages(currentPage, totalPages)
@@ -126,14 +126,14 @@
             return '<li><span class="inline-flex h-9 w-9 items-center justify-center text-sm text-slate-400 dark:text-slate-500">...</span></li>';
           }
           if (item.current) {
-            return '<li><span aria-current="page" class="inline-flex h-9 w-9 items-center justify-center border-b-2 border-[#b21100] text-sm font-bold text-[#b21100] dark:border-[#ff2e1a] dark:text-[#ff2e1a]">' + item.label + '</span></li>';
+            return '<li><span aria-current="page" class="inline-flex h-9 w-9 items-center justify-center border-b-2 border-[#b21100] text-sm font-bold text-[#8f0d00] dark:border-[#ff2e1a] dark:text-[#ff2e1a]">' + item.label + '</span></li>';
           }
-          return '<li><a href="' + escapeHtml(pageHref(item.page)) + '" class="inline-flex h-9 w-9 items-center justify-center text-sm font-medium text-slate-600 transition-colors hover:text-[#b21100] dark:text-slate-300 dark:hover:text-[#ff2e1a]">' + item.label + '</a></li>';
+          return '<li><a href="' + escapeHtml(pageHref(item.page)) + '" class="inline-flex h-9 w-9 items-center justify-center text-sm font-medium text-slate-600 transition-colors hover:text-[#8f0d00] dark:text-slate-300 dark:hover:text-[#ff2e1a]">' + item.label + '</a></li>';
         })
         .join('');
 
       var next = currentPage < totalPages
-        ? '<a href="' + escapeHtml(pageHref(currentPage + 1)) + '" class="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition-colors hover:text-[#b21100] dark:text-slate-400 dark:hover:text-[#ff2e1a]" aria-label="Next page">Next<svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 1 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></a>'
+        ? '<a href="' + escapeHtml(pageHref(currentPage + 1)) + '" class="inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition-colors hover:text-[#8f0d00] dark:text-slate-400 dark:hover:text-[#ff2e1a]" aria-label="Next page">Next<svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 1 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></a>'
         : '<span class="inline-flex items-center gap-1 text-sm font-medium text-slate-300 dark:text-slate-700" aria-disabled="true">Next<svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 1 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg></span>';
 
       pagination.innerHTML = prev + '<ol class="flex items-center gap-0.5">' + items + '</ol>' + next;

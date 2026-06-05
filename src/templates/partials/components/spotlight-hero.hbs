@@ -17,12 +17,12 @@
     <div class='absolute right-0 top-20 flex items-center gap-4'>
       {{#if slides}}
         {{#each slides}}
-          <button class='carousel-dot w-3 h-3 rounded-full {{#if @first}}active{{/if}}' data-slide='{{@index}}'></button>
+          <button class='carousel-dot w-3 h-3 rounded-full {{#if @first}}active{{/if}}' data-slide='{{@index}}' aria-label='Go to slide {{add @index 1}}'></button>
         {{/each}}
       {{else}}
-        <button class='carousel-dot w-3 h-3 rounded-full active' data-slide='0'></button>
+        <button class='carousel-dot w-3 h-3 rounded-full active' data-slide='0' aria-label='Go to slide 1'></button>
       {{/if}}
-      <button class='carousel-next w-10 h-10 flex items-center justify-center'>
+      <button class='carousel-next w-10 h-10 flex items-center justify-center' aria-label='Next slide'>
         <svg width='15' height='27' viewBox='0 0 15 27' fill='none'>
           <path d='M1.5 1.5L13.5 13.5L1.5 25.5' stroke='#FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'></path>
         </svg>

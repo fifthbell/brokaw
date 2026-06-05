@@ -34,7 +34,7 @@
                   <div id='sections-links' class='space-y-3'>
                     <a
                       href='{{logoLink}}'
-                      class='block text-lg font-bold text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors'
+                      class='block text-lg font-bold text-black dark:text-white hover:text-[#8f0d00] dark:hover:text-[#ff2e1a] transition-colors'
                     >TOP STORIES</a>
                     <div id='category-links-container' class='space-y-3'>
                       <p class='text-sm text-slate-400 dark:text-slate-500'>Loading sections...</p>
@@ -300,13 +300,13 @@
   dark:text-slate-500'>Loading sections...</p>`; } function showCategoryLinksError() { if (!categoryLinksContainer) return; categoryLinksContainer.innerHTML =
   `<p class='text-sm text-red-500'>Failed to load sections</p>`; } function setActiveCategoryLink(categorySlug) { if (!sectionsLinks) return; activeCategorySlug
   = categorySlug || ''; const links = sectionsLinks.querySelectorAll('.category-link'); links.forEach((link) => { const isActive =
-  (link.getAttribute('data-category-slug') || '') === activeCategorySlug; if (isActive) { link.classList.add('text-[#b21100]', 'dark:text-[#ff2e1a]');
-  link.classList.remove('text-black', 'dark:text-white'); link.setAttribute('aria-current', 'page'); } else { link.classList.remove('text-[#b21100]',
+  (link.getAttribute('data-category-slug') || '') === activeCategorySlug; if (isActive) { link.classList.add('text-[#8f0d00]', 'dark:text-[#ff2e1a]');
+  link.classList.remove('text-black', 'dark:text-white'); link.setAttribute('aria-current', 'page'); } else { link.classList.remove('text-[#8f0d00]',
   'dark:text-[#ff2e1a]'); link.classList.add('text-black', 'dark:text-white'); link.setAttribute('aria-current', 'false'); } }); } function
   renderCategories(categories) { if (!categoryLinksContainer) return; if (!Array.isArray(categories) || categories.length === 0) {
   categoryLinksContainer.innerHTML = `<p class='text-sm text-slate-400 dark:text-slate-500'>No sections available</p>`; return; }
   categoryLinksContainer.innerHTML = categories .map( (category) => `<a href="${buildLocalePath(category.slug)}" class="category-link block text-lg font-bold
-  text-black dark:text-white hover:text-[#b21100] dark:hover:text-[#ff2e1a] transition-colors" data-category-slug="${category.slug}"
+  text-black dark:text-white hover:text-[#8f0d00] dark:hover:text-[#ff2e1a] transition-colors" data-category-slug="${category.slug}"
   aria-current="false">${String(category.name || '').toUpperCase()}</a>` ) .join(''); setActiveCategoryLink(activeCategorySlug); } function
   showMiniFeaturedLoading() { if (!miniFeatured) return; miniFeatured.innerHTML = ` <div class='flex flex-col items-center justify-center py-20'> <div
   class='animate-spin rounded-full h-12 w-12 border-b-2 border-slate-300 dark:border-slate-600'></div> <p class='text-slate-400 dark:text-slate-500
@@ -317,12 +317,12 @@
   <div class='relative mb-5'> <img src='${article?.featuredImage?.url || ''}' alt='${article?.featuredImage?.alt || article?.title || ''}' class='w-full h-50
   object-cover rounded' /> </div> <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-3'> <span class='uppercase font-bold
   tracking-wider'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span> <span class='mx-2'>•</span> <span>5 min</span> </div> <h2 class='text-xl
-  font-bold text-slate-900 dark:text-slate-100 leading-tight'> <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a]
+  font-bold text-slate-900 dark:text-slate-100 leading-tight'> <a href='${getArticleLeafPath(article)}' class='hover:text-[#8f0d00] dark:hover:text-[#ff2e1a]
   transition-colors'>${article?.title || ''}</a> </h2> </div> ` ) .join(''); const rows = []; for (let i = 0; i < grid.length; i += 3) { const row =
   grid.slice(i, i + 3); if (!row.length) continue; rows.push(` <div class='grid grid-cols-3 gap-6 ${i > 0 ? 'pt-6 border-t border-slate-200 dark:border-slate-800' : ''}'> ${row .map( (article, idx) => ` <div class='${idx === 0 ? 'pr-4 border-r border-slate-200 dark:border-slate-800' : idx === 1 ?
   'px-4 border-r border-slate-200 dark:border-slate-800' : 'pl-4'}'> <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-3'> <span
   class='uppercase font-bold'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span> </div> <h3 class='font-medium text-base leading-tight
-  text-slate-900 dark:text-slate-100'> <a href='${getArticleLeafPath(article)}' class='hover:text-[#b21100] dark:hover:text-[#ff2e1a]
+  text-slate-900 dark:text-slate-100'> <a href='${getArticleLeafPath(article)}' class='hover:text-[#8f0d00] dark:hover:text-[#ff2e1a]
   transition-colors'>${article?.title || ''}</a> </h3> </div> ` ) .join('')} </div> `); } miniFeatured.innerHTML = ` <h3 class='text-xs font-bold text-slate-400
   dark:text-slate-600 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'> ${(categoryName || 'Featured Stories').toUpperCase()}
   </h3> <div class='grid grid-cols-2 gap-8 mb-10'>${topHtml}</div> <div class='space-y-6'>${rows.join('')}</div> `; } function getCategoryName(payload,

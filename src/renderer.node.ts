@@ -108,6 +108,41 @@ export function liveProgramPageHtml(): string {
   return fs.readFileSync(htmlPath, 'utf-8');
 }
 
+function fontsDir(): string {
+  const currentFile = fileURLToPath(import.meta.url);
+  const currentDir = path.dirname(currentFile);
+  return path.join(currentDir, 'fonts');
+}
+
+export type FontFileEntry = {
+  key: string;
+  body: Buffer;
+  contentType: string;
+};
+
+export function fontFiles(): FontFileEntry[] {
+  const dir = fontsDir();
+  if (!fs.existsSync(dir)) {
+    throw new Error(
+      `fonts directory not found at ${dir} — run npm run build first`
+    );
+  }
+
+  const entries: FontFileEntry[] = [];
+  const items = fs.readdirSync(dir, { withFileTypes: true });
+  for (const item of items) {
+    if (!item.isFile()) continue;
+    const fullPath = path.join(dir, item.name);
+    entries.push({
+      key: `content/fonts/${item.name}`,
+      body: fs.readFileSync(fullPath),
+      contentType: contentTypeForFile(item.name),
+    });
+  }
+
+  return entries;
+}
+
 export function liveProgramPageAsset(filename: string): string {
   const pageDir = liveProgramPageDir();
   const assetPath = path.join(pageDir, filename);
