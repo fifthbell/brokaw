@@ -30,3 +30,15 @@ export const Default: Story = {
     }
   }
 };
+
+export const MourningMode: Story = {
+  args: { mourningMode: true },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Mourning mode: logo background is black, theme selector is hidden, dark mode is forced.'
+      }
+    }
+  }
+};

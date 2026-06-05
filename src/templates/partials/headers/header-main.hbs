@@ -99,6 +99,7 @@
                     </div>
                   </div>
 
+                  {{#unless mourningMode}}
                   <div class='mt-8 pt-6 border-t border-slate-200 dark:border-slate-800'>
                     <h3 class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-4'>THEME</h3>
                     <div class='flex items-center gap-2'>
@@ -171,6 +172,7 @@
                       </button>
                     </div>
                   </div>
+                  {{/unless}}
 
                   <div class='mt-8 pt-6 border-t border-slate-200 dark:border-slate-800'>
                     <h3 class='text-xs font-bold text-slate-400 dark:text-slate-600 uppercase tracking-wider mb-4'>LANGUAGE</h3>
@@ -215,7 +217,7 @@
         </div>
       </div>
 
-      <div class='absolute left-1/2 transform -translate-x-1/2 bg-[#b21100] text-white p-3'>
+      <div class='absolute left-1/2 transform -translate-x-1/2 {{#if mourningMode}}bg-black{{else}}bg-[#b21100]{{/if}} text-white p-3'>
         <a href='{{logoLink}}' aria-label='fifthbell - Home'>
           <svg class='w-7 h-7' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
             <path d='M10.268 21a2 2 0 0 0 3.464 0'></path>
@@ -356,7 +358,8 @@
 </script>
 
 <script>
-  (function () { const THEME_KEY = 'fifthbell_theme'; const themeButtons = document.querySelectorAll('.theme-btn'); if (!themeButtons.length) return; function
+  (function () { const MOURNING = {{#if mourningMode}}true{{else}}false{{/if}}; if (MOURNING) { document.documentElement.classList.add('dark'); return; }
+  const THEME_KEY = 'fifthbell_theme'; const themeButtons = document.querySelectorAll('.theme-btn'); if (!themeButtons.length) return; function
   getSystemTheme() { return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } function applyTheme(theme) { const actualTheme =
   theme === 'system' ? getSystemTheme() : theme; if (actualTheme === 'dark') { document.documentElement.classList.add('dark'); } else {
   document.documentElement.classList.remove('dark'); } } function updateActiveButton(theme) { themeButtons.forEach((button) => { const buttonTheme =
