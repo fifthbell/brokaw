@@ -3,21 +3,39 @@
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
-    <link href='https://cdn.fifthbell.com/content/fonts/fonts.css' rel='stylesheet' />
+    <link rel='preload' as='style' href='https://cdn.fifthbell.com/content/fonts/fonts.css' onload="this.rel='stylesheet';this.media='all'" />
+    <noscript><link href='https://cdn.fifthbell.com/content/fonts/fonts.css' rel='stylesheet' /></noscript>
     <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}Page not found{{/if}}' />
     <link rel='canonical' href='{{canonicalUrl}}' />
     <title>{{#if seo.metaTitle}}{{seo.metaTitle}}{{else}}404 - Page Not Found | fifthbell{{/if}}</title>
     <style>{{{styles}}}</style>
-    <!-- Google tag (gtag.js) -->
-    <script async src='https://www.googletagmanager.com/gtag/js?id=G-9SGVGCR4JL'></script>
+    {{#if rumConfig}}
+    <script>
+      (function(n,i,v,r,s,c,u,x,z){
+        x=window;z=x[s]=x[s]||function(){z.q.push(arguments)};z.q=[];u=i.createElement(v);
+        u.async=1;u.src=r;u.setAttribute('crossorigin','');i.head.appendChild(u);
+      })(window,document,'script','https://rum.aws.amazon.com/loader.js','RUM');
+      RUM('create', {{{jsonString rumConfig.appMonitorName}}}, {
+        identityPoolId: {{{jsonString rumConfig.identityPoolId}}},
+        guestRoleArn: {{{jsonString rumConfig.guestRoleArn}}},
+        sessionSampleRate: 1,
+        endpoint: {{{jsonString 'https://dataplane.rum.us-east-1.amazonaws.com'}}},
+        telemetries: ['performance', 'errors', 'http'],
+        allowCookies: true
+      });
+    </script>
+    {{/if}}
+    {{#if gaConfig}}
+    <script async src='https://www.googletagmanager.com/gtag/js?id={{{gaConfig.measurementId}}}'></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-9SGVGCR4JL', {
+      gtag('config', {{{jsonString gaConfig.measurementId}}}, {
         content_group: '404'
       });
     </script>
+    {{/if}}
   </head>
   <body class='bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors'>
     <div class='min-h-screen flex flex-col'>

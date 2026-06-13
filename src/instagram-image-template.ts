@@ -47,9 +47,7 @@ export function buildInstagramImageHtml(params: InstagramImageTemplateParams): s
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1080, initial-scale=1.0" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&family=Encode+Sans:wght@100..900" rel="stylesheet">
+  <link href="https://cdn.fifthbell.com/content/fonts/fonts.css" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
