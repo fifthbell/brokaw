@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, initial-scale=1.0" />
+  <link href="https://cdn.fifthbell.com/content/fonts/fonts.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1350px;
+      overflow: hidden;
+      background-color: #000;
+      position: relative;
+    }
+
+    .hero-image {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      background-color: #000;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.9;
+    }
+
+    .card-container {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .card-container header {
+      display: flex;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.70);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .card-container header .category-label {
+      margin-left: 32px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 32px;
+      background-color: #b21100;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .qr-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      background-color: #ffffff;
+    }
+
+    .qr-code {
+      width: 119px;
+      height: 119px;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .qr-code svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .card-container main {
+      display: flex;
+      flex-direction: column;
+      background-color: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 110px;
+      padding-top: 36px;
+    }
+
+    .accent-bar {
+      width: 64px;
+      height: 6px;
+      background-color: #b21100;
+      margin-bottom: 24px;
+    }
+
+    .category-label {
+      font-family: 'Encode Sans Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 80px;
+      line-height: 119px;
+      font-weight: 600;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .title-text {
+      font-family: 'Encode Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 68px;
+      line-height: 1.1;
+      font-weight: 700;
+      color: #ffffff;
+      text-wrap: balance;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-image">
+    <img src="{{imageUrl}}" alt="Featured Image" />
+  </div>
+
+  <div class="card-container">
+    <header>
+      <div class="logo-container">
+        <div class="brand-logo">{{{logoSvg}}}</div>
+      </div>
+      {{{qrCodeHtml}}}
+      <div class="category-label">{{categoryName}}</div>
+    </header>
+    <main>
+      <div class="accent-bar"></div>
+      <h1 class="title-text">{{title}}</h1>
+    </main>
+  </div>
+
+  <script>
+    window.onload = () => {
+      if (document.fonts) {
+        document.fonts.ready.then(() => {
+          setTimeout(() => { document.body.setAttribute('data-ready', '1'); }, 300);
+        });
+      } else {
+        setTimeout(() => { document.body.setAttribute('data-ready', '1'); }, 1000);
+      }
+    };
+  </script>
+</body>
+</html>
