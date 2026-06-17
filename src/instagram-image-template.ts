@@ -1,3 +1,4 @@
+import Handlebars from 'handlebars';
 import qrcode from 'qrcode-generator';
 
 export type InstagramImageTemplateParams = {
@@ -8,31 +9,48 @@ export type InstagramImageTemplateParams = {
   url?: string;
 };
 
-function escapeHtml(input: string): string {
-  return input.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g, '&quot;').replace(/'/g, '&#039;');
+function isNodeRuntime(): boolean {
+  return typeof process !== 'undefined' && typeof process.versions?.node === 'string';
 }
 
-export function buildInstagramImageHtml(params: InstagramImageTemplateParams): string {
-  const safeImageUrl = escapeHtml(params.imageUrl);
-  const safeTitle = escapeHtml(params.title);
-  const categoryName = params.category
-    ? escapeHtml(params.category.toUpperCase())
-    : params.slug
-      ? escapeHtml(params.slug.replace(/-/g, ' ').toUpperCase())
-      : 'LATEST STORY';
+async function loadTemplateSource(): Promise<string> {
+  if (isNodeRuntime()) {
+    const [{ readFileSync }, pathModule, { fileURLToPath }] = await Promise.all([
+      import('node:fs'),
+      import('node:path'),
+      import('node:url'),
+    ]);
 
-  // Create inline QR code SVG if a post URL is provided
-  let qrCodeHtml = '';
-  if (params.url) {
-    const qr = qrcode(0, 'M');
-    qr.addData(params.url);
-    qr.make();
-    const qrSvg = qr.createSvgTag(5, 0);
-    qrCodeHtml = `<div class="qr-container"><div class="qr-code" aria-label="QR Code">${qrSvg}</div></div>`;
+    const currentFile = fileURLToPath(import.meta.url);
+    const currentDir = pathModule.dirname(currentFile);
+    const projectRoot = pathModule.resolve(currentDir, '..');
+    const filePath = pathModule.join(
+      projectRoot,
+      'src',
+      'templates',
+      'layouts',
+      'instagram-image.hbs',
+    );
+
+    return readFileSync(filePath, 'utf8');
   }
 
-  // SVG for the actual Brokaw logo (red box with white bell)
-  const logoSvg = `<div style="color: white; width: 140px; height: 119px; display: flex; align-items: center; justify-content: end;">
+  const module = await import('./templates/layouts/instagram-image.hbs?raw');
+  return module.default as string;
+}
+
+const template = Handlebars.compile(await loadTemplateSource());
+
+function buildQrCodeHtml(url: string): string {
+  const qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  const qrSvg = qr.createSvgTag(5, 0);
+  return `<div class="qr-container"><div class="qr-code" aria-label="QR Code">${qrSvg}</div></div>`;
+}
+
+function buildLogoSvg(): string {
+  return `<div style="color: white; width: 140px; height: 119px; display: flex; align-items: center; justify-content: end;">
       <svg width="61" height="61" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M10.268 21a2 2 0 0 0 3.464 0"></path>
         <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path>
@@ -40,172 +58,26 @@ export function buildInstagramImageHtml(params: InstagramImageTemplateParams): s
         <path d="M22 8a10 10 0 0 0-2-6"></path>
       </svg>
     </div>`;
+}
 
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1080, initial-scale=1.0" />
-  <link href="https://cdn.fifthbell.com/content/fonts/fonts.css" rel="stylesheet">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      width: 1080px;
-      height: 1350px;
-      overflow: hidden;
-      background-color: #000;
-      position: relative;
-    }
+function resolveCategoryName(params: InstagramImageTemplateParams): string {
+  if (params.category) {
+    return params.category.toUpperCase();
+  }
+  if (params.slug) {
+    return params.slug.replace(/-/g, ' ').toUpperCase();
+  }
+  return 'LATEST STORY';
+}
 
-    .hero-image {
-      position: absolute;
-      inset: 0;
-      height: 100%;
-      background-color: #000;
-    }
+export function buildInstagramImageHtml(params: InstagramImageTemplateParams): string {
+  const qrCodeHtml = params.url ? buildQrCodeHtml(params.url) : '';
 
-    .hero-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.9;
-    }
-
-
-    .card-container {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: flex;
-      flex-direction: column;
-      z-index: 10;
-    }
-
-    .card-container header {
-      display: flex;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.70);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-    }
-
-    .card-container header .category-label {
-      margin-left: 32px;
-    }
-
-    .logo-container {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 0 32px;
-      background-color: #b21100;
-    }
-
-    .brand-logo {
-      display: flex;
-      align-items: center;
-    }
-
-    .qr-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 16px;
-      background-color: #ffffff;
-    }
-
-    .qr-code {
-      width: 119px;
-      height: 119px;
-      padding: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .qr-code svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .card-container main {
-      display: flex;
-      flex-direction: column;
-      background-color: rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      padding: 110px;
-      padding-top: 36px;
-    }
-
-    .accent-bar {
-      width: 64px;
-      height: 6px;
-      background-color: #b21100;
-      margin-bottom: 24px;
-    }
-
-    .category-label {
-      font-family: 'Encode Sans Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      font-size: 80px;
-      line-height: 119px;
-      font-weight: 600;
-      color: #ffffff;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    .title-text {
-      font-family: 'Encode Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-      font-size: 68px;
-      line-height: 1.1;
-      font-weight: 700;
-      color: #ffffff;
-      text-wrap: balance;
-      display: -webkit-box;
-      -webkit-line-clamp: 5;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-  </style>
-</head>
-<body>
-  <div class="hero-image">
-    <img src="${safeImageUrl}" alt="Featured Image" />
-  </div>
-
-  <div class="card-container">
-    <header>
-      <div class="logo-container">
-        <div class="brand-logo">${logoSvg}</div>
-      </div>
-      ${qrCodeHtml}
-      <div class="category-label">${categoryName}</div>
-    </header>
-    <main>
-      <div class="accent-bar"></div>
-      <h1 class="title-text">${safeTitle}</h1>
-    </main>
-  </div>
-
-  <script>
-    window.onload = () => {
-      if (document.fonts) {
-        document.fonts.ready.then(() => {
-          setTimeout(() => { document.body.setAttribute('data-ready', '1'); }, 300);
-        });
-      } else {
-        setTimeout(() => { document.body.setAttribute('data-ready', '1'); }, 1000);
-      }
-    };
-  </script>
-</body>
-</html>
-    `.trim();
+  return template({
+    imageUrl: params.imageUrl,
+    title: params.title,
+    categoryName: resolveCategoryName(params),
+    qrCodeHtml,
+    logoSvg: buildLogoSvg(),
+  }).trim();
 }
