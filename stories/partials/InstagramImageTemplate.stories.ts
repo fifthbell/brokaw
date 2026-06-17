@@ -10,7 +10,7 @@ type InstagramTemplateArgs = {
 };
 
 const meta = {
-  title: 'Partials/Instagram Image Template',
+  title: 'Templates/Instagram Image',
   render: (args) => buildInstagramImageHtml(args as InstagramTemplateArgs),
   args: {
     imageUrl: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1080&h=1350&q=80',
