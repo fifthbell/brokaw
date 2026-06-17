@@ -28,14 +28,14 @@ async function loadTemplateSource(): Promise<string> {
       projectRoot,
       'src',
       'templates',
-      'layouts',
+      'templates',
       'instagram-image.hbs',
     );
 
     return readFileSync(filePath, 'utf8');
   }
 
-  const module = await import('./templates/layouts/instagram-image.hbs?raw');
+  const module = await import('./templates/templates/instagram-image.hbs?raw');
   return module.default as string;
 }
 
