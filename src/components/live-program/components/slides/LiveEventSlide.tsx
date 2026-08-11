@@ -32,7 +32,7 @@ function LatestUpdates({ updates, language }: { updates: LiveEventUpdate[]; lang
 
   if (latest.length === 0) {
     return (
-      <p className="text-white/50 font-['Libre_Franklin'] text-xl">{t('liveEvent.noUpdates', language)}</p>
+      <p className='text-white/50 font-secondary text-xl'>{t('liveEvent.noUpdates', language)}</p>
     );
   }
 
@@ -43,12 +43,12 @@ function LatestUpdates({ updates, language }: { updates: LiveEventUpdate[]; lang
           <div className='w-2 h-2 rounded-full bg-[#4FC3F7] flex-shrink-0 mt-2' />
           <div className='flex flex-col gap-0.5 min-w-0'>
             {formatUpdateTime(update) && (
-              <span className="text-sm font-semibold text-[#0ea5e9] font-['Libre_Franklin']">{formatUpdateTime(update)}</span>
+              <span className='text-sm font-semibold text-[#0ea5e9] font-secondary'>{formatUpdateTime(update)}</span>
             )}
             {update.html ? (
-              <div className="text-white/90 text-lg leading-snug font-['Libre_Franklin'] [&_img]:hidden">{update.html.replace(/<[^>]*>/g, '')}</div>
+              <div className='text-white/90 text-lg leading-snug font-secondary [&_img]:hidden'>{update.html.replace(/<[^>]*>/g, '')}</div>
             ) : update.text ? (
-              <p className="text-white/90 text-lg leading-snug font-['Libre_Franklin'] truncate">{update.text}</p>
+              <p className='text-white/90 text-lg leading-snug font-secondary truncate'>{update.text}</p>
             ) : null}
           </div>
         </div>
@@ -86,7 +86,7 @@ function ScrollingTimeline({ updates, language }: { updates: LiveEventUpdate[]; 
   if (updates.length === 0) {
     return (
       <div className='flex items-center justify-center h-full'>
-        <p className="text-white/50 font-['Libre_Franklin'] text-2xl">{t('liveEvent.noUpdates', language)}</p>
+        <p className='text-white/50 font-secondary text-2xl'>{t('liveEvent.noUpdates', language)}</p>
       </div>
     );
   }
@@ -98,12 +98,12 @@ function ScrollingTimeline({ updates, language }: { updates: LiveEventUpdate[]; 
           <div className='w-3 h-3 rounded-full bg-[#4FC3F7] flex-shrink-0 mt-1.5 shadow-[0_0_12px_rgba(79,195,247,0.5)]' />
           <div className='flex flex-col gap-1 min-w-0 flex-1'>
             {formatUpdateTime(update) && (
-              <span className="text-sm font-semibold text-[#4FC3F7] font-['Libre_Franklin'] tracking-wide">{formatUpdateTime(update)}</span>
+              <span className='text-sm font-semibold text-[#4FC3F7] font-secondary tracking-wide'>{formatUpdateTime(update)}</span>
             )}
             {update.html ? (
-              <div className="text-white text-xl leading-snug font-['Libre_Franklin'] font-light [&_img]:hidden [&_a]:text-[#4FC3F7] [&_a]:underline">{update.html.replace(/<[^>]*>/g, '')}</div>
+              <div className='text-white text-xl leading-snug font-secondary font-light [&_img]:hidden [&_a]:text-[#4FC3F7] [&_a]:underline'>{update.html.replace(/<[^>]*>/g, '')}</div>
             ) : update.text ? (
-              <p className="text-white text-xl leading-snug font-['Libre_Franklin'] font-light line-clamp-2">{update.text}</p>
+              <p className='text-white text-xl leading-snug font-secondary font-light line-clamp-2'>{update.text}</p>
             ) : null}
           </div>
         </div>
@@ -148,12 +148,12 @@ export function LiveEventSlide({ event, progress, language }: LiveEventSlideProp
         <div className='relative z-10 grid grid-cols-12 h-full'>
           <div className='col-span-5 flex flex-col justify-center p-16 relative bg-black/35 backdrop-blur-2xl'>
             <div className='animate-slide-up flex flex-col items-start'>
-              <span className="inline-flex items-center px-4 py-1.5 bg-[#cc0000] text-white text-xl font-bold tracking-[0.08em] uppercase font-['Encode_Sans_Condensed'] mb-4">LIVE</span>
-              <span className="text-white/80 text-2xl font-semibold uppercase tracking-wider mb-2 font-['Encode_Sans_Condensed']">{event.category}</span>
+              <span className='inline-flex items-center px-4 py-1.5 bg-[#cc0000] text-white text-xl font-bold tracking-[0.08em] uppercase font-encode mb-4'>LIVE</span>
+              <span className='text-white/80 text-2xl font-bold uppercase tracking-wider mb-2 font-encode'>{event.category}</span>
               <div className='w-16 h-1.5 bg-[#b21100] mb-6' />
-              <h1 className="text-4xl font-bold leading-tight mb-4 tracking-tight line-clamp-5 font-['Encode_Sans'] [text-wrap:balance] text-white">{event.title}</h1>
+              <h1 className='text-4xl font-bold leading-tight mb-4 tracking-tight line-clamp-5 font-encode [text-wrap:balance] text-white'>{event.title}</h1>
               {event.excerpt && (
-                <p className="text-2xl font-light leading-relaxed opacity-80 line-clamp-3 font-['Libre_Franklin'] text-white mb-6">{event.excerpt}</p>
+                <p className='text-2xl font-light leading-relaxed opacity-80 line-clamp-3 font-secondary text-white mb-6'>{event.excerpt}</p>
               )}
               <LatestUpdates updates={event.updates} language={language} />
             </div>
@@ -214,12 +214,12 @@ export function LiveEventSlide({ event, progress, language }: LiveEventSlideProp
       <div className='relative z-10 grid grid-cols-12 h-full'>
         <div className='col-span-5 flex flex-col justify-center p-16 relative bg-black/35 backdrop-blur-2xl'>
           <div className='animate-slide-up flex flex-col items-start'>
-            <span className="inline-flex items-center px-4 py-1.5 bg-[#cc0000] text-white text-xl font-bold tracking-[0.08em] uppercase font-['Encode_Sans_Condensed'] mb-4">LIVE</span>
-            <span className="text-white/80 text-2xl font-semibold uppercase tracking-wider mb-2 font-['Encode_Sans_Condensed']">{event.category}</span>
+            <span className='inline-flex items-center px-4 py-1.5 bg-[#cc0000] text-white text-xl font-bold tracking-[0.08em] uppercase font-encode mb-4'>LIVE</span>
+            <span className='text-white/80 text-2xl font-bold uppercase tracking-wider mb-2 font-encode'>{event.category}</span>
             <div className='w-16 h-1.5 bg-[#b21100] mb-6' />
-            <h1 className="text-4xl font-bold leading-tight mb-4 tracking-tight line-clamp-5 font-['Encode_Sans'] [text-wrap:balance] text-white">{event.title}</h1>
+            <h1 className='text-4xl font-bold leading-tight mb-4 tracking-tight line-clamp-5 font-encode [text-wrap:balance] text-white'>{event.title}</h1>
             {event.excerpt && (
-              <p className="text-2xl font-light leading-relaxed opacity-80 line-clamp-3 font-['Libre_Franklin'] text-white">{event.excerpt}</p>
+              <p className='text-2xl font-light leading-relaxed opacity-80 line-clamp-3 font-secondary text-white'>{event.excerpt}</p>
             )}
           </div>
         </div>
@@ -229,7 +229,7 @@ export function LiveEventSlide({ event, progress, language }: LiveEventSlideProp
             <div className='bg-[#b21100] text-white px-4 py-2 shadow-lg'>
               <SecondBellIcon size={32} />
             </div>
-            <h2 className="text-white/60 text-2xl font-semibold uppercase tracking-[0.12em] font-['Encode_Sans_Condensed']">LIVE UPDATES</h2>
+            <h2 className='text-white/60 text-2xl font-bold uppercase tracking-[0.12em] font-encode'>LIVE UPDATES</h2>
           </div>
           <ScrollingTimeline updates={event.updates} language={language} />
           <div className='absolute bottom-8 right-8 z-30'>

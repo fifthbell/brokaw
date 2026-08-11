@@ -116,8 +116,8 @@ export function Marquee({
               style={{
                 color: '#ffffff',
                 fontSize: '2rem',
-                fontWeight: '600',
-                fontFamily: 'Encode Sans, sans-serif'
+                fontWeight: '700',
+                fontFamily: 'var(--font-encode, "Encode Sans", sans-serif)'
               }}
             >
               {event.title}

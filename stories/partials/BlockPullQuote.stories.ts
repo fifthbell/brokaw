@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
 import pullQuoteHbs from '../../src/templates/partials/blocks/pull-quote.hbs?raw';
-import { articleFixture } from '../fixtures/article.fixture';
+import { loadContentBlockPreviewData } from '../preview-data';
 
 const template = Handlebars.compile(pullQuoteHbs);
 
 const meta = {
   title: 'Partials/Blocks/PullQuote',
-  render: (args) => template(args),
-  args: articleFixture.body.find((block) => block.type === 'pullQuote') ?? { text: 'Sample quote' },
+  loaders: [async () => ({ block: await loadContentBlockPreviewData('pullQuote') })],
+  render: (args, { loaded }) => template({ ...loaded.block, ...args }),
 } satisfies Meta;
 
 export default meta;

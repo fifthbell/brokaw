@@ -136,8 +136,8 @@ function WeatherSlide({ weatherData, progress, unit, language }: WeatherSlidePro
       <div className='relative z-10 h-full flex flex-col justify-center px-24'>
         <div className='mb-12 animate-slide-up'>
           <div className='w-32 h-2 bg-white mb-12' />
-          <h1 className="text-5xl font-bold tracking-tight mb-8 leading-tight font-['Encode_Sans']">{t('weather.header', language)}</h1>
-          <h2 className='text-3xl font-light opacity-90 leading-relaxed'>{t(`region.${weatherData.region}`, language)}</h2>
+          <h1 className='text-5xl font-bold tracking-tight mb-8 leading-tight font-encode'>{t('weather.header', language)}</h1>
+          <p className='text-3xl font-light font-secondary opacity-90 leading-relaxed'>{t(`region.${weatherData.region}`, language)}</p>
         </div>
 
         <div className='grid grid-cols-2 gap-8 animate-slide-up'>
@@ -154,13 +154,13 @@ function WeatherSlide({ weatherData, progress, unit, language }: WeatherSlidePro
               >
                 <div className='shrink-0'>{getWeatherIcon(city.condition, 48)}</div>
                 <div className='flex-1'>
-                  <h3 className="text-3xl font-bold mb-2 font-['Encode_Sans']">{city.name}</h3>
-                  <span className="text-5xl font-bold transition-opacity duration-300 font-['Encode_Sans']" style={{ opacity: isTransitioning ? 0 : 1 }}>
+                  <h3 className='text-3xl font-bold mb-2 font-encode'>{city.name}</h3>
+                  <span className='text-5xl font-bold transition-opacity duration-300 font-encode' style={{ opacity: isTransitioning ? 0 : 1 }}>
                     {temp}
                     {unitLabel}
                   </span>
                 </div>
-                <div className='flex flex-col items-end space-y-1'>
+                <div className='flex flex-col items-end space-y-1 font-secondary'>
                   <span className='text-2xl opacity-70 transition-opacity duration-300' style={{ opacity: isTransitioning ? 0 : 0.7 }}>
                     {t('weather.high', language)} {high}
                     {unitLabel}
@@ -188,7 +188,7 @@ function WeatherLoadingSlide({ language }: { language: SupportedLanguage }) {
     <div className='absolute inset-0'>
       <div className='absolute inset-0 opacity-75' style={{ background: 'linear-gradient(to bottom right, #1e40af, #000000)' }} />
       <div className='relative z-10 h-full flex items-center justify-center'>
-        <div className='text-4xl font-light animate-pulse'>{t('weather.loading', language)}</div>
+        <div className='text-4xl font-light font-secondary animate-pulse'>{t('weather.loading', language)}</div>
       </div>
     </div>
   );

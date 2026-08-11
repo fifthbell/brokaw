@@ -129,7 +129,7 @@ function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: Ear
       <div className='absolute inset-0'>
         <div className='absolute inset-0 opacity-75' style={{ background: 'linear-gradient(to bottom right, #7c2d12, #000000)' }} />
         <div className='relative z-10 h-full flex items-center justify-center'>
-          <div className='text-4xl font-light'>{t('earthquakes.noData', language)}</div>
+          <div className='text-4xl font-light font-secondary'>{t('earthquakes.noData', language)}</div>
         </div>
       </div>
     );
@@ -158,9 +158,9 @@ function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: Ear
           <div className='w-32 h-2 bg-white mb-8' />
           <div className='flex items-center space-x-4 mb-4'>
             <AlertTriangle size={56} className='text-orange-500' strokeWidth={2} />
-            <h1 className="text-5xl font-bold tracking-tight leading-tight font-['Encode_Sans']">{t('earthquakes.header', language)}</h1>
+            <h1 className='text-5xl font-bold tracking-tight leading-tight font-encode'>{t('earthquakes.header', language)}</h1>
           </div>
-          <h2 className='text-2xl font-light opacity-90 leading-relaxed'>{t('earthquakes.subtitle', language)}</h2>
+          <p className='text-2xl font-light font-secondary opacity-90 leading-relaxed'>{t('earthquakes.subtitle', language)}</p>
         </div>
 
         <div className='grid grid-cols-2 gap-6 animate-slide-up'>
@@ -193,10 +193,10 @@ function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: Ear
                   <div className='text-5xl font-bold leading-none'>M{quake.magnitude.toFixed(1)}</div>
                 </div>
                 <div className='flex flex-col justify-center min-w-0'>
-                  <h3 className="text-3xl font-bold mb-2 line-clamp-2 leading-tight font-['Encode_Sans']" title={quake.location}>
+                  <h3 className='text-3xl font-bold mb-2 line-clamp-2 leading-tight font-encode' title={quake.location}>
                     {quake.location}
                   </h3>
-                  <div className='grid grid-cols-2 gap-x-4 gap-y-1.5 text-xl'>
+                  <div className='grid grid-cols-2 gap-x-4 gap-y-1.5 text-xl font-secondary'>
                     <div className='flex items-center space-x-2'>
                       <Clock size={16} className='opacity-70 shrink-0' />
                       <span className='truncate'>{quake.time}</span>
@@ -239,7 +239,7 @@ function EarthquakeLoadingSlide({ language }: { language: SupportedLanguage }) {
     <div className='absolute inset-0'>
       <div className='absolute inset-0 opacity-75' style={{ background: 'linear-gradient(to bottom right, #7c2d12, #000000)' }} />
       <div className='relative z-10 h-full flex items-center justify-center'>
-        <div className='text-4xl font-light animate-pulse'>{t('earthquakes.loading', language)}</div>
+        <div className='text-4xl font-light font-secondary animate-pulse'>{t('earthquakes.loading', language)}</div>
       </div>
     </div>
   );

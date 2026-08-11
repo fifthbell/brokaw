@@ -5,7 +5,7 @@ import categoryHeaderHbs from '../../src/templates/partials/components/category/
 import categoryMainGridHbs from '../../src/templates/partials/components/category/main-grid.hbs?raw';
 import categoryMoreGridHbs from '../../src/templates/partials/components/category/more-grid.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
-import { categoryFixture } from '../fixtures/category.fixture';
+import { loadCategoryPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -18,8 +18,8 @@ const template = Handlebars.compile(categoryMainHbs);
 
 const meta = {
   title: 'Partials/Category/Main',
-  render: (args) => template(args),
-  args: categoryFixture,
+  loaders: [async () => ({ category: await loadCategoryPreviewData('sports') })],
+  render: (args, { loaded }) => template({ ...loaded.category, ...args }),
 } satisfies Meta;
 
 export default meta;

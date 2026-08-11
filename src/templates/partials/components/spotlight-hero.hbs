@@ -2,12 +2,12 @@
   <div class='carousel-background absolute inset-0 w-full h-full'>
     {{#if slides}}
       {{#each slides}}
-        <div class='carousel-slide {{#if @first}}active opacity-100{{else}}hidden opacity-0{{/if}} absolute inset-0 bg-cover bg-center transition-opacity duration-700' style='background-image: radial-gradient(71.75% 69.5% at 50% 47.39%, rgba(0, 0, 0, 0) 0%, #000000 100%), url({{image}});'></div>
+        <div class='carousel-slide {{#if @first}}active opacity-100{{else}}hidden opacity-0{{/if}} absolute inset-0 bg-cover bg-center transition-opacity duration-300' style='background-image: radial-gradient(71.75% 69.5% at 50% 47.39%, rgba(0, 0, 0, 0) 0%, #000000 100%), url({{image}});'></div>
       {{/each}}
     {{else if hero.url}}
-      <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-700' style='background-image: radial-gradient(71.75% 69.5% at 50% 47.39%, rgba(0, 0, 0, 0) 0%, #000000 100%), url({{hero.url}});'></div>
+      <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-300' style='background-image: radial-gradient(71.75% 69.5% at 50% 47.39%, rgba(0, 0, 0, 0) 0%, #000000 100%), url({{hero.url}});'></div>
     {{else}}
-      <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-700' style='background-image: radial-gradient(71.75% 69.5% at 50% 47.39%, rgba(0, 0, 0, 0) 0%, #000000 100%), url(https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=1440&h=882&fit=crop);'></div>
+      <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-300' style='background-image: radial-gradient(71.75% 69.5% at 50% 47.39%, rgba(0, 0, 0, 0) 0%, #000000 100%), url(https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=1440&h=882&fit=crop);'></div>
     {{/if}}
   </div>
 
@@ -30,10 +30,10 @@
     </div>
 
     <div class='w-full max-w-[592px] border-l border-white pl-4 md:pl-10 flex flex-col gap-4 md:gap-6 mb-8 md:mb-12'>
-      <h1 class='text-3xl md:text-[44px] leading-tight md:leading-[56px] font-normal text-white font-sans'>
+      <h1 class='text-3xl md:text-[44px] leading-tight md:leading-[56px] font-bold text-white font-encode'>
         <a href='{{articleUrl slug=slug categories=categories language=@root.language}}' class='hover:text-slate-300 transition-colors'>{{title}}</a>
       </h1>
-      <p class='text-xl md:text-2xl leading-7 md:leading-8 text-white self-stretch font-serif'>{{excerpt}}</p>
+      <p class='font-secondary text-xl md:text-2xl leading-7 md:leading-8 text-white self-stretch'>{{excerpt}}</p>
       <a href='{{articleUrl slug=slug categories=categories language=@root.language}}' class='border border-[#717273] rounded-md px-4 py-[11px] h-11 flex items-center justify-center whitespace-nowrap self-start hover:bg-white/10 transition-colors'>
         <span class='text-white text-base font-medium leading-[22px] font-sans'>Read More</span>
       </a>
@@ -49,7 +49,7 @@
             timestamp=(coalesce updatedAt publishedAt)
             image=image
             featuredImage=featuredImage
-            titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-[#F9FAFB] font-sans'
+            titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-bold text-[#F9FAFB] font-encode'
             imageFallbackBgClass='bg-slate-700'
           }}
         {{/each}}

@@ -68,7 +68,7 @@ function MarketSlide({ progress, marketData, language }: { progress: number; mar
       <div className='absolute inset-0'>
         <div className='absolute inset-0 opacity-75' style={{ background: 'linear-gradient(to bottom right, #065f46, #000000)' }} />
         <div className='relative z-10 h-full flex items-center justify-center'>
-          <div className='text-4xl font-light animate-pulse'>{t('markets.loading', language)}</div>
+          <div className='text-4xl font-light font-secondary animate-pulse'>{t('markets.loading', language)}</div>
         </div>
       </div>
     );
@@ -95,8 +95,8 @@ function MarketSlide({ progress, marketData, language }: { progress: number; mar
       <div className='relative z-10 h-full flex flex-col justify-center px-24'>
         <div className='mb-12 animate-slide-up'>
           <div className='w-32 h-2 bg-white mb-12' />
-          <h1 className="text-5xl font-bold tracking-tight mb-8 leading-tight font-['Encode_Sans']">{t('markets.header', language)}</h1>
-          <h2 className='text-3xl font-light opacity-90 leading-relaxed'>{t('markets.subtitle', language)}</h2>
+          <h1 className='text-5xl font-bold tracking-tight mb-8 leading-tight font-encode'>{t('markets.header', language)}</h1>
+          <p className='text-3xl font-light font-secondary opacity-90 leading-relaxed'>{t('markets.subtitle', language)}</p>
         </div>
 
         <div className='grid grid-cols-2 gap-4 animate-slide-up'>
@@ -115,11 +115,11 @@ function MarketSlide({ progress, marketData, language }: { progress: number; mar
                 style={{ animationDelay: `${index * 0.05}s`, backgroundColor }}
               >
                 <div className='flex flex-col'>
-                  <span className="text-4xl font-bold mb-1 font-['Encode_Sans']">{stock.symbol}</span>
-                  <span className='text-2xl opacity-70'>{stock.name}</span>
+                  <span className='text-4xl font-bold mb-1 font-encode'>{stock.symbol}</span>
+                  <span className='text-2xl font-secondary opacity-70'>{stock.name}</span>
                 </div>
                 <div className='flex flex-col items-end'>
-                  <div className="text-5xl font-bold mb-1 font-['Encode_Sans']">${stock.price.toFixed(2)}</div>
+                  <div className='text-5xl font-bold mb-1 font-encode'>${stock.price.toFixed(2)}</div>
                   <div className={`flex items-center space-x-2 ${changeColor}`}>
                     <Icon size={24} strokeWidth={2} />
                     <span className='text-3xl font-bold'>
@@ -137,7 +137,7 @@ function MarketSlide({ progress, marketData, language }: { progress: number; mar
           })}
         </div>
 
-        <div className='mt-6 mb-24 text-xl opacity-60 animate-fade-in-delay'>
+        <div className='mt-6 mb-24 text-xl font-secondary opacity-60 animate-fade-in-delay'>
           <p>{t('markets.lastUpdate', language, { time: getLastUpdateTime() })}</p>
         </div>
 

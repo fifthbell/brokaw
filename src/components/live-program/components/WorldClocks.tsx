@@ -143,13 +143,10 @@ export function WorldClocks({
 
   return (
     <div className='flex flex-col gap-1.5 transition-opacity duration-300' style={{ opacity: isAnimating ? 0 : 1, width: `${widthPx}px` }}>
-      <div className='text-white font-bold text-6xl tracking-tight leading-none text-center' style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <div className='text-white font-bold font-encode text-6xl tracking-tight leading-none text-center'>
         {formatTime(currentCity.timezone)}
       </div>
-      <div
-        className='text-white/50 text-2xl font-bold tracking-wider leading-none uppercase text-center'
-        style={{ fontFamily: 'system-ui, -apple-system, sans-serif' }}
-      >
+      <div className='text-white/50 text-2xl font-bold font-encode tracking-wider leading-none uppercase text-center'>
         {cityLabel}
       </div>
     </div>

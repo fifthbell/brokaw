@@ -1,25 +1,25 @@
-<div class='grid grid-cols-12 lg:grid-cols-12 gap-6 px-6'>
-  <div class='col-span-12 lg:col-span-9 xl:col-span-6 pt-6 lg:pt-8 space-y-12'>
+<div class='grid grid-cols-12 gap-6 px-6'>
+  <div class='col-span-12 space-y-12 pt-6 lg:col-span-9 lg:pt-8 xl:col-span-6'>
     {{#with homepageSlots.landing.headline1}}
-      <section class='lg:col-span-12 xl:col-span-8 flex flex-col'>
-        <a href='{{url}}' class='relative flex-shrink-0 block'>
-          <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-[400px] object-cover rounded' fetchpriority='high' />
+      <section class='flex flex-col'>
+        <a href='{{url}}' class='editorial-image relative block flex-shrink-0'>
+          <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='h-[400px] w-full object-cover' fetchpriority='high' />
         </a>
 
-        <div class='mt-4 flex-grow flex flex-col'>
-          <div class='flex items-center text-slate-500 dark:text-slate-400 text-xs mb-4'>
-            <span class='uppercase font-bold tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
-            <span class='mx-2'>•</span>
+        <div class='mt-4 flex flex-grow flex-col'>
+          <div class='editorial-meta mb-4 flex items-center'>
+            <span class='editorial-kicker'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+            <span class='mx-3 text-black/25 dark:text-white/25'>/</span>
             <span class='article-time' data-timestamp='{{updatedAt}}'>{{formatDate updatedAt}}</span>
           </div>
 
-          <h1 class='text-4xl font-bold font-encode text-slate-900 dark:text-slate-100 mb-4 leading-11'>
-            <a href='{{url}}' class='hover:text-[#8f0d00] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>
+          <h1 class='mb-4 font-encode text-4xl font-bold leading-11 tracking-[-0.025em] text-[var(--brokaw-ink)]'>
+            <a href='{{url}}' class='editorial-link'>{{title}}</a>
           </h1>
 
-          <p class='text-slate-600 dark:text-slate-400 text-2xl mb-4 font-serif leading-8'>{{excerpt}}</p>
+          <p class='mb-4 font-secondary text-2xl leading-8 text-[var(--brokaw-ink-muted)]'>{{excerpt}}</p>
 
-          <div class='grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 border-t border-slate-200 dark:border-slate-800 pt-6 flex-grow'>
+          <div class='editorial-rule mt-4 grid flex-grow grid-cols-1 gap-6 border-t pt-6 md:grid-cols-2'>
             {{#each ../homepageSlots.landing.sub1}}
               {{> components/snack
                 url=url
@@ -42,21 +42,21 @@
     {{/with}}
   </div>
 
-  <div class='col-span-12 md:col-span-7 lg:col-span-3 pt-6 lg:pt-8 space-y-12'>
+  <div class='col-span-12 space-y-12 pt-6 md:col-span-7 lg:col-span-3 lg:pt-8'>
     <section class='lg:col-span-1 xl:col-span-4 flex flex-col h-full justify-between'>
       {{#with homepageSlots.landing.card5}}
-        <div class='bg-black text-white mb-6 flex-grow flex flex-col'>
+        <div class='mb-6 flex flex-grow flex-col bg-[var(--brokaw-night)] text-white shadow-[var(--brokaw-shadow-raised)]'>
           <div class='flex-grow min-h-[250px] bg-cover bg-center flex flex-col justify-end' style='background-image: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0.7) 50%, transparent 100%), url("{{featuredImage.url}}");'>
             <div class='px-4'>
-              <span class='bg-[#b21100] text-white px-3 py-2 text-xs tracking-[1px] font-bold uppercase inline-block mb-2'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
-              <h2 class='text-2xl font-bold font-encode mb-2'>
+              <span class='mb-3 inline-block text-[11px] font-bold uppercase tracking-[0.14em] text-white/70'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+              <h2 class='mb-2 font-encode text-2xl font-bold leading-[1.08]'>
                 <a href='{{url}}' class='hover:text-slate-300 transition-colors'>{{title}}</a>
               </h2>
             </div>
           </div>
-          <div class='px-4 pb-4 flex-shrink-0'>
-            <p class='text-sm'>{{excerpt}}</p>
-            <span class='text-xs text-slate-500 dark:text-slate-400 mt-2 block'>{{formatDate updatedAt}}</span>
+          <div class='flex-shrink-0 px-4 pb-4 pt-3'>
+            <p class='font-secondary text-sm leading-5 text-white/75'>{{excerpt}}</p>
+            <span class='mt-2 block text-xs tabular-nums text-white/45'>{{formatDate updatedAt}}</span>
           </div>
         </div>
       {{/with}}
@@ -64,7 +64,7 @@
       {{#with homepageSlots.landing.headline6}}
         <div class='flex flex-col'>
           <a href='{{url}}' class='mb-4 flex-shrink-0 h-[180px] block'>
-            <img src='{{featuredImage.url}}' width='500' height='200' alt='{{featuredImage.alt}}' class='w-full h-full object-cover rounded' />
+            <img src='{{featuredImage.url}}' width='500' height='200' alt='{{featuredImage.alt}}' class='h-full w-full object-cover' />
           </a>
           <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-2'>
             <span class='uppercase font-bold'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
@@ -80,11 +80,11 @@
     </section>
   </div>
 
-  <aside class='col-span-12 md:col-span-5 lg:col-span-12 xl:col-span-3 pt-6'>
+  <aside class='col-span-12 pt-6 md:col-span-5 lg:col-span-12 xl:col-span-3'>
     <div class='space-y-10'>
       <div class='space-y-6'>
-        <div class='flex items-center justify-between border-b border-slate-300 dark:border-slate-700 pb-2'>
-          <h3 class='kicker text-red-700 dark:text-red-500 text-lg'>Top Stories</h3>
+        <div class='editorial-rule flex items-center justify-between border-b pb-3'>
+          <h3 class='editorial-kicker'>Top Stories</h3>
         </div>
       </div>
 
@@ -102,7 +102,7 @@
             imageClasses='bg-slate-200 grayscale hover:grayscale-0 transition-all'
             titleTextSize='text-xl'
             titleFontWeight='font-bold'
-            titleClasses='font-serif leading-snug'
+            titleClasses='font-encode leading-snug'
           }}
         {{/each}}
       </div>

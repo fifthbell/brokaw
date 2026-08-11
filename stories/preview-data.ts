@@ -3,6 +3,7 @@ import { homepageFixture } from './fixtures/homepage.fixture';
 import { liveStoryFixture } from './fixtures/live-story.fixture';
 import { categoryFixture } from './fixtures/category.fixture';
 import { articleFixture } from './fixtures/article.fixture';
+import { distributeHomepageArticles } from '../src/homepage-distributor';
 
 const HOMEPAGE_JSON_URL = 'https://cdn.fifthbell.com/content/homepage-current-en.json';
 const EVENTS_JSON_URL = 'https://cdn.fifthbell.com/content/events-current-en.json';
@@ -1103,6 +1104,119 @@ export async function loadHomepagePreviewData(): Promise<CanonicalArticle> {
   const payload = await getHomepagePayload();
   const breakingNews = await loadBreakingNewsPreviewData();
   return buildHomepagePreviewDocument(payload, breakingNews);
+}
+
+export async function loadHomepagePartialPreviewData(): Promise<CanonicalArticle & { homepageSlots: ReturnType<typeof distributeHomepageArticles> }> {
+  const homepage = await loadHomepagePreviewData();
+  return {
+    ...homepage,
+    homepageSlots: distributeHomepageArticles(
+      homepage.articles ?? [],
+      new Date(),
+      Boolean(homepage.breakingNews?.main)
+    )
+  };
+}
+
+export async function loadLinkInBioPreviewData(): Promise<CanonicalArticle> {
+  const homepage = await loadHomepagePreviewData();
+  return {
+    ...homepage,
+    id: 'storybook-link-in-bio-current',
+    slug: '/instagram',
+    layout: 'link-in-bio',
+    canonicalUrl: 'https://fifthbell.com/instagram',
+    title: 'Top Stories',
+    excerpt: 'Tap a story to read the full article.',
+    body: [],
+    featuredImage: homepage.articles?.[0]?.featuredImage ?? homepage.featuredImage,
+    seo: {
+      metaTitle: 'Top Stories | fifthbell',
+      metaDescription: 'Tap a story to read the full article.',
+      ogImage: homepage.articles?.[0]?.featuredImage?.url
+    }
+  };
+}
+
+export async function loadSearchPagePreviewData(): Promise<CanonicalArticle> {
+  const homepage = await loadHomepagePreviewData();
+  return {
+    ...homepage,
+    id: 'storybook-search-current',
+    slug: '/search',
+    layout: 'search-page',
+    canonicalUrl: 'https://fifthbell.com/search',
+    title: 'Search',
+    excerpt: 'Search current-language stories from Fifthbell.',
+    body: [],
+    seo: {
+      metaTitle: 'Search | fifthbell',
+      metaDescription: 'Search current-language stories from Fifthbell.'
+    }
+  };
+}
+
+export async function loadMediaPagePreviewData(): Promise<CanonicalArticle> {
+  const homepage = await loadHomepagePreviewData();
+  return {
+    ...homepage,
+    id: 'storybook-media-current',
+    slug: '/media/assignment-storybook',
+    layout: 'media-page',
+    canonicalUrl: 'https://fifthbell.com/media/assignment-storybook',
+    title: 'Media Assignment',
+    excerpt: 'Current Fifthbell media assignment.',
+    body: []
+  };
+}
+
+export async function loadContentBlockPreviewData(type: CanonicalArticle['body'][number]['type']): Promise<Record<string, unknown>> {
+  const article = await loadArticlePreviewData();
+  const directBlock = article.body.find((block) => block.type === type);
+  if (directBlock) return directBlock as unknown as Record<string, unknown>;
+
+  if (type === 'liveUpdate') {
+    const liveStory = await loadLiveStoryPreviewData();
+    const liveUpdate = liveStory.body.find((block) => block.type === 'liveUpdate');
+    if (liveUpdate) return liveUpdate as unknown as Record<string, unknown>;
+  }
+
+  const relatedTitles = (article.articles ?? []).map((item) => item.title).filter(Boolean);
+  const firstRichText = article.body.find((block) => block.type === 'richText') as { html?: string } | undefined;
+  const categoryName = article.categories?.[0]?.name ?? 'Top Stories';
+
+  switch (type) {
+    case 'heading':
+      return { type, text: article.title, level: 2 };
+    case 'image':
+      return {
+        type,
+        url: article.featuredImage?.url ?? '',
+        alt: article.featuredImage?.alt ?? article.title,
+        caption: article.excerpt
+      };
+    case 'list':
+      return { type, ordered: false, items: relatedTitles.slice(0, 4) };
+    case 'infoBox':
+      return { type, tone: 'info', title: categoryName, html: `<p>${escapeHtml(article.excerpt)}</p>` };
+    case 'keyPoints':
+      return { type, title: 'Key Points', points: relatedTitles.slice(0, 3) };
+    case 'dataTable':
+      return {
+        type,
+        caption: `Current ${categoryName} stories`,
+        headers: ['Story', 'Updated'],
+        rows: (article.articles ?? []).slice(0, 4).map((item) => [item.title, item.updatedAt ?? item.publishedAt ?? ''])
+      };
+    case 'pullQuote':
+      return { type, text: article.excerpt, attribution: article.authors?.[0]?.name };
+    case 'richText':
+      return { type, html: firstRichText?.html ?? `<p>${escapeHtml(article.excerpt)}</p>` };
+    default: {
+      const fixtureBlock = articleFixture.body.find((block) => block.type === type);
+      return (fixtureBlock ?? { type }) as unknown as Record<string, unknown>;
+    }
+  }
 }
 
 export async function loadCategoryPreviewData(categorySlug = DEFAULT_CURRENT_CATEGORY_SLUG): Promise<CanonicalArticle> {

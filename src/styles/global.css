@@ -1,11 +1,12 @@
-@import "tailwindcss";
 @import './fonts.css';
+@import "tailwindcss";
 @tailwind utilities;
 
 @theme {
-  --font-sans: "Libre Franklin", "sans-serif";
+  --font-sans: "Encode Sans", sans-serif;
+  --font-secondary: "Libre Franklin", sans-serif;
   --font-serif: "EB Garamond";
-  --font-encode: "Encode Sans", "sans-serif";
+  --font-encode: "Encode Sans", sans-serif;
 }
 
 @variant dark (.dark &);
@@ -52,7 +53,7 @@
   }
 
   .deck {
-    font-family: var(--font-serif);
+    font-family: var(--font-secondary);
     font-size: 1.125rem;
     line-height: 1.5;
     color: var(--muted-foreground);
@@ -109,9 +110,13 @@
   }
 
   .headline {
-    font-family: var(--font-serif);
+    font-family: var(--font-encode);
     font-weight: 700;
     line-height: 1.1;
+  }
+
+  .font-secondary {
+    font-family: var(--font-secondary);
   }
 
   /* Remove all rounded corners utility override */
@@ -122,6 +127,20 @@
 
 @layer base {
   :root {
+    --brokaw-paper: #fcfbf8;
+    --brokaw-paper-deep: #f3f0e9;
+    --brokaw-ink: #171717;
+    --brokaw-ink-muted: #64615b;
+    --brokaw-rule: rgb(23 23 23 / 12%);
+    --brokaw-signal: #a31308;
+    --brokaw-signal-dark: #d92b1c;
+    --brokaw-night: #121519;
+    --brokaw-shadow-surface: 0 1px 2px rgb(28 24 20 / 3%), 0 18px 50px -34px rgb(28 24 20 / 28%);
+    --brokaw-shadow-raised: 0 24px 64px -34px rgb(28 24 20 / 34%), 0 4px 14px rgb(28 24 20 / 5%);
+    --brokaw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --brokaw-motion-fast: 150ms;
+    --brokaw-motion-control: 200ms;
+    --brokaw-motion-surface: 280ms;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -158,6 +177,13 @@
   }
 
   .dark {
+    --brokaw-paper: #121519;
+    --brokaw-paper-deep: #1a1e23;
+    --brokaw-ink: #f5f2eb;
+    --brokaw-ink-muted: #aaa69e;
+    --brokaw-rule: rgb(255 255 255 / 11%);
+    --brokaw-shadow-surface: none;
+    --brokaw-shadow-raised: 0 24px 64px -34px rgb(0 0 0 / 70%);
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -197,10 +223,148 @@
 @layer base {
   html {
     color-scheme: light;
+    background: var(--brokaw-paper);
+    color: var(--brokaw-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   html.dark {
     color-scheme: dark;
+  }
+
+  body {
+    background: var(--brokaw-paper);
+    color: var(--brokaw-ink);
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-encode);
+    font-weight: 700;
+  }
+
+  ::selection {
+    background: rgb(163 19 8 / 18%);
+  }
+}
+
+/* Brokaw editorial system: quiet surfaces, generous pacing, exact motion. */
+.editorial-kicker {
+  color: var(--brokaw-signal);
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.dark .editorial-kicker {
+  color: var(--brokaw-signal-dark);
+}
+
+.editorial-rule {
+  border-color: var(--brokaw-rule);
+}
+
+.editorial-meta {
+  color: var(--brokaw-ink-muted);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.editorial-link {
+  transition: color var(--brokaw-motion-control) var(--brokaw-ease);
+}
+
+.editorial-link:hover {
+  color: var(--brokaw-signal);
+}
+
+.editorial-image {
+  background: var(--brokaw-paper-deep);
+  box-shadow: var(--brokaw-shadow-surface);
+  overflow: hidden;
+}
+
+.editorial-image img {
+  transform: scale(1.001);
+  transition: transform var(--brokaw-motion-surface) var(--brokaw-ease), filter var(--brokaw-motion-surface) var(--brokaw-ease);
+}
+
+.editorial-image:hover img {
+  transform: scale(1.012);
+}
+
+.site-header {
+  background: color-mix(in srgb, var(--brokaw-paper) 94%, transparent);
+  border-color: var(--brokaw-rule);
+  backdrop-filter: blur(14px);
+}
+
+.site-header-action {
+  transition: background-color var(--brokaw-motion-control) var(--brokaw-ease), color var(--brokaw-motion-control) var(--brokaw-ease), border-color var(--brokaw-motion-control) var(--brokaw-ease), transform var(--brokaw-motion-fast) var(--brokaw-ease);
+}
+
+.site-header-action:active {
+  transform: translateY(1px);
+}
+
+.site-header #dropdown-menu {
+  color: var(--brokaw-ink);
+}
+
+.site-header #dropdown-menu h3,
+.site-header #dropdown-menu p {
+  color: var(--brokaw-ink-muted);
+}
+
+.site-header #dropdown-menu h3 {
+  border-color: var(--brokaw-rule);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+}
+
+.site-header #dropdown-menu #sections-links a,
+.site-header #dropdown-menu #category-links-container a {
+  color: var(--brokaw-ink);
+  font-family: var(--font-encode);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.site-header #dropdown-menu #sections-links a:hover,
+.site-header #dropdown-menu #category-links-container a:hover {
+  color: var(--brokaw-signal);
+}
+
+.article-prose {
+  font-size: 1.0625rem;
+  line-height: 1.78;
+}
+
+.article-prose > :first-child {
+  margin-top: 0;
+}
+
+/* Bleecker motion principle: short, low-distance, premium easing. */
+[class*='transition'] {
+  transition-timing-function: var(--brokaw-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editorial-image img,
+  .editorial-link,
+  .site-header-action {
+    transition-duration: 1ms !important;
   }
 }
 
@@ -222,11 +386,11 @@
 
 /* Main content transitions */
 ::view-transition-old(main-content) {
-  animation: 0.3s ease-out both fade-out-slide-left;
+  animation: var(--brokaw-motion-fast) ease-in both fade-out-slide-left;
 }
 
 ::view-transition-new(main-content) {
-  animation: 0.3s ease-out both fade-in-slide-right;
+  animation: 220ms var(--brokaw-ease) both fade-in-slide-right;
 }
 
 /* Keep header and footer static */
@@ -251,14 +415,14 @@
 
   to {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(-4px);
   }
 }
 
 @keyframes fade-in-slide-right {
   from {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(4px);
   }
 
   to {

@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
 import imageHbs from '../../src/templates/partials/blocks/image.hbs?raw';
-import { articleFixture } from '../fixtures/article.fixture';
+import { loadContentBlockPreviewData } from '../preview-data';
 
 const template = Handlebars.compile(imageHbs);
 
 const meta = {
   title: 'Partials/Blocks/Image',
-  render: (args) => template(args),
-  args: articleFixture.body.find((block) => block.type === 'image') ?? { url: '', alt: '' },
+  loaders: [async () => ({ block: await loadContentBlockPreviewData('image') })],
+  render: (args, { loaded }) => template({ ...loaded.block, ...args }),
 } satisfies Meta;
 
 export default meta;

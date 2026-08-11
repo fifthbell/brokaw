@@ -41,7 +41,15 @@ const breakingEvent: LiveEventData = {
 
 const meta: Meta = {
   title: 'React/LiveEventSlide',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          'Broadcast typography calibration: Encode Sans Bold carries titles, labels, and categories; the secondary sans is reserved for excerpts and live-update copy. Encode Sans Condensed is never rendered alongside Encode Sans.'
+      }
+    }
+  },
   argTypes: {
     variant: { control: 'select', options: ['sports', 'breaking'] },
     progress: { control: { type: 'range', min: 0, max: 100, step: 1 } },
@@ -68,4 +76,15 @@ export const Sports: StoryObj = {
 
 export const BreakingNews: StoryObj = {
   args: { variant: 'breaking', progress: 30 },
+};
+
+export const TypographyCalibration: StoryObj = {
+  args: { variant: 'breaking', progress: 68 },
+  parameters: {
+    docs: {
+      description: {
+        story: 'A focused check of the title, category, lede, and supporting-copy hierarchy in the React broadcast surface.'
+      }
+    }
+  }
 };

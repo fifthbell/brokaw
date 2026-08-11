@@ -12,7 +12,7 @@ import homeMustReadHbs from '../../src/templates/partials/components/home/must-r
 import homeMoreStoriesHbs from '../../src/templates/partials/components/home/more-stories.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
 import scrollAreaHbs from '../../src/templates/partials/components/ui/scroll-area.hbs?raw';
-import { loadHomepagePreviewData } from '../preview-data';
+import { loadHomepagePartialPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -42,7 +42,7 @@ const sectionControls = {
 
 const meta = {
   title: 'Partials/Home/Main',
-  loaders: [async () => ({ homepage: await loadHomepagePreviewData() })],
+  loaders: [async () => ({ homepage: await loadHomepagePartialPreviewData() })],
   render: (args, { loaded }) => template({ ...loaded.homepage, ...args }),
   args: {
     showHero: true,

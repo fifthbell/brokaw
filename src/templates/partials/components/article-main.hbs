@@ -1,7 +1,17 @@
-<main class='flex-1 container mx-auto px-4 grid gap-4 grid-cols-1 lg:grid-cols-12 mt-4'>
-  <div class='col-span-12 lg:col-span-4'>
+<main class='mx-auto grid max-w-7xl flex-1 grid-cols-1 gap-x-8 px-5 pb-20 pt-10 md:px-8 lg:grid-cols-12 lg:gap-x-10 lg:pt-16'>
+  <header class='editorial-rule col-span-12 grid grid-cols-1 gap-x-10 border-b pb-10 lg:grid-cols-12 lg:pb-14'>
+    <div class='lg:col-span-10 xl:col-span-9'>
+      <div class='mb-5'>
+        <span class='editorial-kicker'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
+      </div>
+
+      <h1 class='max-w-5xl font-encode text-[2.8rem] font-bold leading-[0.98] tracking-[-0.03em] text-[var(--brokaw-ink)] md:text-6xl lg:text-7xl'>{{title}}</h1>
+      <p class='font-secondary mt-6 max-w-3xl text-xl leading-8 text-[var(--brokaw-ink-muted)] md:text-2xl md:leading-9'>{{excerpt}}</p>
+      <p class='editorial-meta mt-6'><span class='article-time' data-timestamp='{{publishedAt}}'>{{formatDate publishedAt}}</span></p>
+    </div>
+
     {{#if featuredImage}}
-      <div class='mb-6 overflow-hidden aspect-video bg-slate-100'>
+      <div class='editorial-image mt-10 aspect-[16/9] lg:col-span-12 lg:mt-12'>
         <img
           src='{{featuredImage.url}}'
           alt='{{featuredImage.alt}}'
@@ -12,18 +22,12 @@
         />
       </div>
     {{/if}}
+  </header>
 
-    <div class='mb-3 lg:hidden'>
-      <span class='text-xs font-bold text-[#8f0d00] uppercase tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
-    </div>
-
-    <h1 class='text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4 leading-tight font-serif'>{{title}}</h1>
-    <p class='text-slate-600 dark:text-slate-400 text-xl mb-3 font-serif leading-relaxed'>{{excerpt}}</p>
-    <p class='text-sm text-slate-500 dark:text-slate-400'><span class='article-time' data-timestamp='{{publishedAt}}'>{{formatDate publishedAt}}</span></p>
-
-    <div class='mt-6 pt-6 border-t border-slate-200 dark:border-slate-800'>
-      <p class='text-xs uppercase tracking-wider text-slate-500 dark:text-slate-500 mb-3 font-sans'>Share</p>
-      <div class='flex items-center gap-3'>
+  <aside class='col-span-12 mt-8 lg:col-span-3 lg:mt-12'>
+    <div class='editorial-rule border-t pt-5 lg:sticky lg:top-28'>
+      <p class='editorial-kicker mb-4 text-[var(--brokaw-ink-muted)]'>Share</p>
+      <div class='flex flex-wrap items-center gap-2'>
         <a href='#' data-share='twitter' class='social-share-btn group p-2 rounded-full border border-slate-300 dark:border-slate-700 hover:border-slate-900 dark:hover:border-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-all' aria-label='Share on Twitter' title='Share on Twitter'>
           <svg class='w-4 h-4 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors' viewBox='0 0 24 24' fill='currentColor'>
             <path d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'></path>
@@ -67,13 +71,9 @@
         </a>
       </div>
     </div>
-  </div>
+  </aside>
 
-  <div class='hidden lg:flex col-span-1 items-start justify-center'>
-    <span class='text-4xl font-bold text-[#8f0d00] dark:text-[#ff2e1a] text-right md:[writing-mode:vertical-rl] md:[transform:rotate(180deg)]'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
-  </div>
-
-  <div class='col-span-12 lg:col-span-7 prose dark:prose-invert max-w-none'>
+  <article class='article-prose col-span-12 mt-10 max-w-none prose prose-neutral dark:prose-invert lg:col-span-7 lg:col-start-4 lg:mt-12 xl:col-span-6'>
     {{#each body}}
       {{> (lookup . 'type')}}
     {{/each}}
@@ -97,7 +97,7 @@
         </div>
       </section>
     {{/if}}
-  </div>
+  </article>
 </main>
 <script>
   (function () {

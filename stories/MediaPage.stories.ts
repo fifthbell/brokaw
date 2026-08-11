@@ -3,9 +3,9 @@ import { render } from '../src/renderer.browser';
 import type { CanonicalArticle } from '../src/types/canonical-article';
 import {
   mediaAssignmentFixture,
-  mediaPageFixture,
   type MediaAssignmentFixture
 } from './fixtures/media-page.fixture';
+import { loadMediaPagePreviewData } from './preview-data';
 
 const PAGE_SIZE = 48;
 
@@ -159,8 +159,8 @@ function createLargeAssignment(count: number): MediaAssignmentFixture {
 
 const meta = {
   title: 'Pages/MediaPage',
-  render: (args) => renderMediaStory(args as CanonicalArticle),
-  args: mediaPageFixture
+  loaders: [async () => ({ mediaPage: await loadMediaPagePreviewData() })],
+  render: (args, { loaded }) => renderMediaStory({ ...(loaded.mediaPage as CanonicalArticle), ...args })
 } satisfies Meta<CanonicalArticle>;
 
 export default meta;
@@ -170,8 +170,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const Empty: Story = {
-  render: (args) =>
-    renderMediaStory(args as CanonicalArticle, {
+  render: (_args, { loaded }) =>
+    renderMediaStory(loaded.mediaPage as CanonicalArticle, {
       ...mediaAssignmentFixture,
       generatedAt: '2026-05-05T14:15:00.000Z',
       assignment: {
@@ -183,5 +183,5 @@ export const Empty: Story = {
 };
 
 export const PaginatedLargeGallery: Story = {
-  render: (args) => renderMediaStory(args as CanonicalArticle, createLargeAssignment(1044), 11)
+  render: (_args, { loaded }) => renderMediaStory(loaded.mediaPage as CanonicalArticle, createLargeAssignment(1044), 11)
 };

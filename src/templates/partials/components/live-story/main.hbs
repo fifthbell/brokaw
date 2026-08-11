@@ -19,7 +19,7 @@
       >
         {{#if media}}
           <div data-carousel='live-story-hero' class='relative'>
-            <div class='carousel-slide active opacity-100 transition-opacity duration-700'>
+            <div class='carousel-slide active opacity-100 transition-opacity duration-300'>
               <img
                 src='{{featuredImage.url}}'
                 alt='{{featuredImage.alt}}'
@@ -29,7 +29,7 @@
               />
             </div>
             {{#each media}}
-            <div class='carousel-slide hidden opacity-0 transition-opacity duration-700'>
+            <div class='carousel-slide hidden opacity-0 transition-opacity duration-300'>
               <img
                 src='{{url}}'
                 alt='{{alt}}'
@@ -97,7 +97,7 @@
       </h1>
 
       {{#if excerpt}}
-      <p class='text-xl text-slate-600 dark:text-slate-400 font-serif leading-relaxed mb-6 max-w-3xl'>
+      <p class='font-secondary text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-6 max-w-3xl'>
         {{excerpt}}
       </p>
       {{/if}}
