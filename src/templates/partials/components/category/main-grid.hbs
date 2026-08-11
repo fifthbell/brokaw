@@ -3,7 +3,7 @@
     {{#with (lookup articles 0)}}
       <article class='mb-8'>
         <a href='{{url}}' class='block mb-4 overflow-hidden aspect-video bg-slate-100'>
-          <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 hover:scale-105' />
+          <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-300 hover:scale-[1.012]' />
         </a>
 
         <div class='flex items-center text-xs font-bold uppercase tracking-wider text-[#8f0d00] mb-3'>
@@ -14,7 +14,7 @@
           <a href='{{url}}' class='hover:underline decoration-[#b21100]'>{{title}}</a>
         </h2>
 
-        <p class='text-slate-600 dark:text-slate-400 font-serif leading-relaxed line-clamp-3 text-xl mb-3'>{{excerpt}}</p>
+        <p class='font-secondary text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3 text-xl mb-3'>{{excerpt}}</p>
         <span class='text-sm text-slate-500 dark:text-slate-400 block font-sans'>{{formatDate updatedAt}}</span>
       </article>
     {{/with}}
@@ -23,14 +23,14 @@
       {{#each (slice articles 1 3)}}
         <article class='group'>
           <a href='{{url}}' class='block mb-4 overflow-hidden aspect-[3/2] bg-slate-100'>
-            <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-500 group-hover:scale-105' />
+            <img src='{{featuredImage.url}}' alt='{{featuredImage.alt}}' class='w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.012]' />
           </a>
           <div class='space-y-2'>
             <span class='text-xs font-bold text-[#8f0d00] uppercase tracking-wider'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
-            <h3 class='text-2xl font-bold font-serif leading-tight text-slate-900 dark:text-slate-100 group-hover:underline'>
+            <h3 class='text-2xl font-bold font-encode leading-tight text-slate-900 dark:text-slate-100 group-hover:underline'>
               <a href='{{url}}'>{{title}}</a>
             </h3>
-            <p class='text-xl text-slate-500 dark:text-slate-400 line-clamp-3 font-serif'>{{excerpt}}</p>
+            <p class='font-secondary text-xl text-slate-500 dark:text-slate-400 line-clamp-3'>{{excerpt}}</p>
           </div>
         </article>
       {{/each}}

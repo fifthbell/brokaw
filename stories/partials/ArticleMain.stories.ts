@@ -16,7 +16,8 @@ import xHbs from '../../src/templates/partials/blocks/x.hbs?raw';
 import instagramHbs from '../../src/templates/partials/blocks/instagram.hbs?raw';
 import tiktokHbs from '../../src/templates/partials/blocks/tiktok.hbs?raw';
 import pullQuoteHbs from '../../src/templates/partials/blocks/pull-quote.hbs?raw';
-import { articleFixture } from '../fixtures/article.fixture';
+import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
+import { loadArticlePreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -35,13 +36,14 @@ Handlebars.registerPartial('x', xHbs);
 Handlebars.registerPartial('instagram', instagramHbs);
 Handlebars.registerPartial('tiktok', tiktokHbs);
 Handlebars.registerPartial('pullQuote', pullQuoteHbs);
+Handlebars.registerPartial('components/snack', snackHbs);
 
 const template = Handlebars.compile(articleMainHbs);
 
 const meta = {
   title: 'Partials/Article/Main',
-  render: (args) => template(args),
-  args: articleFixture,
+  loaders: [async () => ({ article: await loadArticlePreviewData() })],
+  render: (args, { loaded }) => template({ ...loaded.article, ...args }),
 } satisfies Meta;
 
 export default meta;
@@ -50,9 +52,15 @@ type Story = StoryObj;
 
 export const Default: Story = {};
 
+export const LongHeadline: Story = {
+  args: {
+    title: 'The decisions reshaping the city are being made far beyond the campaign trail',
+    excerpt: 'An examination of private influence, public consequence, and the institutions negotiating New York’s next decade.'
+  }
+};
+
 export const WithoutRelatedArticles: Story = {
   args: {
-    ...articleFixture,
     articles: [],
   },
 };

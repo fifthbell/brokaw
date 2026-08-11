@@ -6,7 +6,12 @@ import LiveProgram from '../../src/components/live-program/LiveProgram';
 const meta: Meta = {
   title: 'React/LiveProgram',
   parameters: {
-    layout: 'fullscreen'
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component: 'The complete React broadcast program, using Encode Sans as its primary face and the secondary sans only for supporting copy.'
+      }
+    }
   },
   argTypes: {
     programId: { control: 'text' },

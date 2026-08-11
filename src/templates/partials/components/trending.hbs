@@ -1,14 +1,10 @@
 <div class='container mx-auto px-4 flex justify-around'>
   <section class='inline-flex mx-auto my-6 gap-15 overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent'>
-    <article class='gap-1 flex items-center flex-none'>
-      <div class='flex flex-row items-center'>
-        <span class='h-2 w-2 rounded-full bg-[#b21100] mr-2'></span>
-        <span class='text-[#8f0d00] font-medium mr-1'>En vivo</span>
-      </div>
-      <span class='text-[#121212]'>Clásico Universitario</span>
-    </article>
-    <article class='gap-2 flex font-normal items-center flex-none'>Trending Up: Apagón en España</article>
-    <article class='gap-2 flex font-normal items-center flex-none'>Trending Up: Copa Libertadores</article>
-    <article class='gap-2 flex font-normal items-center flex-none'>Trending Up: Terremoto en Magallanes</article>
+    {{#each (slice articles 0 4)}}
+      <article class='flex flex-none items-center gap-2 font-normal'>
+        {{#if @first}}<span class='mr-1 h-2 w-2 bg-[#b21100]'></span>{{/if}}
+        <a href='{{url}}' class='editorial-link'>{{title}}</a>
+      </article>
+    {{/each}}
   </section>
 </div>

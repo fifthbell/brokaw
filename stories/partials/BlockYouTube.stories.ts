@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
 import youtubeHbs from '../../src/templates/partials/blocks/youtube.hbs?raw';
-import { articleFixture } from '../fixtures/article.fixture';
+import { loadContentBlockPreviewData } from '../preview-data';
 
 const template = Handlebars.compile(youtubeHbs);
 
 const meta = {
   title: 'Partials/Blocks/YouTube',
-  render: (args) => template(args),
-  args: articleFixture.body.find((block) => block.type === 'youtube') ?? { videoId: 'dQw4w9WgXcQ' },
+  loaders: [async () => ({ block: await loadContentBlockPreviewData('youtube') })],
+  render: (args, { loaded }) => template({ ...loaded.block, ...args }),
 } satisfies Meta;
 
 export default meta;

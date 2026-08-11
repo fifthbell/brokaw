@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { render } from '../src/renderer.browser';
 import type { CanonicalArticle } from '../src/types/canonical-article';
-import { linkInBioFixture } from './fixtures/link-in-bio.fixture';
+import { loadLinkInBioPreviewData } from './preview-data';
 
 const meta = {
   title: 'Pages/LinkInBioPage',
-  render: (args) => render(args as CanonicalArticle),
-  args: linkInBioFixture,
+  loaders: [async () => ({ linkInBio: await loadLinkInBioPreviewData() })],
+  render: (args, { loaded }) => render({ ...(loaded.linkInBio as CanonicalArticle), ...args }),
   parameters: {
     viewport: {
       defaultViewport: 'mobile1'
@@ -21,15 +21,12 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const DenseGrid: Story = {
-  args: {
-    ...linkInBioFixture,
-    articles: [
-      ...(linkInBioFixture.articles || []),
-      ...(linkInBioFixture.articles || []).map((article, index) => ({
-        ...article,
-        id: `70000000-0000-4000-8000-00000000000${index + 5}`,
-        title: `${article.title} update`
-      }))
-    ]
+  render: (_args, { loaded }) => {
+    const current = loaded.linkInBio as CanonicalArticle;
+    const articles = current.articles ?? [];
+    return render({
+      ...current,
+      articles: [...articles, ...articles.slice(0, 8).map((article, index) => ({ ...article, id: `${article.id}-dense-${index}` }))]
+    });
   }
 };

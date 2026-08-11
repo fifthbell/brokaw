@@ -14,4 +14,12 @@ export default meta;
 
 type Story = StoryObj;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'The full footer is the only site footer and is used by every page layout, including the 404 page.'
+      }
+    }
+  }
+};

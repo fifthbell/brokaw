@@ -10,7 +10,6 @@ import mediaPageLayoutHbs from './templates/layouts/media-page.hbs?raw';
 import headerMainHbs from './templates/partials/headers/header-main.hbs?raw';
 import headerMinimalHbs from './templates/partials/headers/header-minimal.hbs?raw';
 import footerFullHbs from './templates/partials/footers/footer-full.hbs?raw';
-import footerMinimalHbs from './templates/partials/footers/footer-minimal.hbs?raw';
 import navCategoriesHbs from './templates/partials/nav/nav-categories.hbs?raw';
 import shellDocStartStandardHbs from './templates/partials/shell/doc-start-standard.hbs?raw';
 import shellDocStart404Hbs from './templates/partials/shell/doc-start-404.hbs?raw';
@@ -82,7 +81,6 @@ const assets: RendererAssets = {
     'headers/header-main': headerMainHbs,
     'headers/header-minimal': headerMinimalHbs,
     'footers/footer-full': footerFullHbs,
-    'footers/footer-minimal': footerMinimalHbs,
     'nav/nav-categories': navCategoriesHbs,
     'shell/doc-start-standard': shellDocStartStandardHbs,
     'shell/doc-start-404': shellDocStart404Hbs,

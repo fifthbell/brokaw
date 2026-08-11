@@ -96,6 +96,7 @@ export function registerCommonHelpers(): void {
   if (initialized) return;
 
   Handlebars.registerHelper('eq', (a: unknown, b: unknown) => a === b);
+  Handlebars.registerHelper('add', (a: unknown, b: unknown) => Number(a) + Number(b));
 
   Handlebars.registerHelper('slice', (items: unknown, start: number, end?: number) => {
     if (!Array.isArray(items)) return [];

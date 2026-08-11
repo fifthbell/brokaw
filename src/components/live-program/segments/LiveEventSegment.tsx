@@ -15,7 +15,7 @@ function LiveEventSegmentRenderer({ event, progress, language }: LiveEventSegmen
   if (!event) {
     return (
       <div className='absolute inset-0 bg-black flex items-center justify-center'>
-        <p className="text-white/50 text-2xl font-['Libre_Franklin']">{t('liveEvent.noLiveEvents', language)}</p>
+        <p className='text-white/50 text-2xl font-secondary'>{t('liveEvent.noLiveEvents', language)}</p>
       </div>
     );
   }

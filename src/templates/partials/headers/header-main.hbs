@@ -1,29 +1,28 @@
 <header
-  class='border-b border-slate-200 dark:border-slate-700 relative z-[60] bg-white dark:bg-slate-900 transition-colors'
+  class='site-header sticky top-0 z-[60] border-b transition-colors'
   style='view-transition-name: site-header;'
 >
   <div class='container mx-auto px-4'>
-    <nav class='flex items-center justify-between h-16'>
-      <div class='flex items-center space-x-8'>
+    <nav class='relative flex h-[72px] items-center justify-between'>
+      <div class='flex items-center'>
         <div class='relative'>
           <button
             id='menu-button'
-            class='flex items-center space-x-2 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-black dark:text-white'
+            class='site-header-action flex h-10 w-10 items-center justify-center hover:bg-black/[0.04] dark:hover:bg-white/[0.06] text-[var(--brokaw-ink)]'
             aria-label='Menu'
             aria-expanded='false'
             type='button'
           >
-            <svg class='w-4 h-4' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
-              <line x1='3' y1='6' x2='21' y2='6'></line>
-              <line x1='3' y1='12' x2='21' y2='12'></line>
-              <line x1='3' y1='18' x2='21' y2='18'></line>
+            <svg class='h-5 w-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.75'>
+              <line x1='4' y1='8' x2='20' y2='8'></line>
+              <line x1='4' y1='16' x2='16' y2='16'></line>
             </svg>
           </button>
 
           <div
             id='dropdown-menu'
-            class='fixed top-16 left-0 right-0 bottom-0 bg-white/98 dark:bg-slate-900/98 backdrop-blur-md shadow-lg z-50 pointer-events-none border-t border-slate-200 dark:border-slate-700 overflow-hidden transition-colors'
-            style='opacity: 0; transform: translateX(-100%); transition: transform 600ms ease-out, opacity 300ms ease-out 300ms;'
+            class='fixed top-[72px] left-0 right-0 bottom-0 bg-[var(--brokaw-paper)]/98 backdrop-blur-xl shadow-[var(--brokaw-shadow-raised)] z-50 pointer-events-none border-t border-[var(--brokaw-rule)] overflow-hidden transition-colors'
+            style='opacity: 0; transform: translateX(-100%); transition: transform 360ms var(--brokaw-ease), opacity 180ms var(--brokaw-ease);'
           >
             <div class='container mx-auto px-4 py-4 md:py-8 h-full overflow-y-auto overscroll-contain'>
               <div class='grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8'>
@@ -217,21 +216,23 @@
         </div>
       </div>
 
-      <div class='absolute left-1/2 transform -translate-x-1/2 {{#if mourningMode}}bg-black{{else}}bg-[#b21100]{{/if}} text-white p-3'>
-        <a href='{{logoLink}}' aria-label='fifthbell - Home'>
-          <svg class='w-7 h-7' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>
+      <div class='absolute left-1/2 -translate-x-1/2'>
+        <a href='{{logoLink}}' class='site-header-action flex items-center gap-2.5 px-2 py-1 text-[var(--brokaw-ink)]' aria-label='fifthbell - Home'>
+          <span class='flex h-9 w-9 items-center justify-center {{#if mourningMode}}bg-black{{else}}bg-[var(--brokaw-signal)]{{/if}} text-white'>
+          <svg class='h-5 w-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'>
             <path d='M10.268 21a2 2 0 0 0 3.464 0'></path>
             <path d='M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326'></path>
             <path d='M4 2C2.8 3.7 2 5.7 2 8'></path>
             <path d='M22 8a10 10 0 0 0-2-6'></path>
-          </svg>
+          </svg></span>
+          <span class='hidden font-sans text-[17px] font-medium tracking-[-0.025em] sm:inline'>fifth<span class='font-bold'>bell</span></span>
         </a>
       </div>
 
-      <div class='flex items-center space-x-4'>
+      <div class='flex items-center gap-2'>
         <a
           href='{{#if (eq language "en")}}/search{{else}}/{{language}}/search{{/if}}'
-          class='flex items-center justify-center p-2 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-200'
+          class='site-header-action flex h-10 w-10 items-center justify-center hover:bg-black/[0.04] dark:hover:bg-white/[0.06] text-[var(--brokaw-ink)]'
           aria-label='Search'
         >
           <svg class='w-4 h-4' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
@@ -240,7 +241,7 @@
           </svg>
         </a>
         <form
-          class='hidden md:flex items-center'
+          class='hidden items-center'
           role='search'
           action='{{#if (eq language "en")}}/search{{else}}/{{language}}/search{{/if}}'
           method='get'
@@ -260,7 +261,7 @@
           href='https://www.youtube.com/watch?v=-eYi7dd8VRY'
           target='_blank'
           rel='noopener noreferrer'
-          class='hidden md:flex items-center space-x-2 {{#if mourningMode}}bg-gray-600 hover:bg-gray-500{{else}}bg-[#b21100] hover:bg-[#8f0d00]{{/if}} text-white px-4 py-2 rounded font-bold transition-colors uppercase tracking-wide text-sm'
+          class='site-header-action hidden items-center gap-2 border border-[var(--brokaw-rule)] px-4 py-2 font-sans text-[11px] font-bold uppercase tracking-[0.12em] text-[var(--brokaw-ink)] hover:border-[var(--brokaw-signal)] hover:text-[var(--brokaw-signal)] md:flex'
         >
           <svg class='w-5 h-5' viewBox='0 0 24 24' fill='currentColor'>
             <path d='M8 5v14l11-7z'></path>
@@ -321,7 +322,7 @@
   transition-colors'>${article?.title || ''}</a> </h2> </div> ` ) .join(''); const rows = []; for (let i = 0; i < grid.length; i += 3) { const row =
   grid.slice(i, i + 3); if (!row.length) continue; rows.push(` <div class='grid grid-cols-3 gap-6 ${i > 0 ? 'pt-6 border-t border-slate-200 dark:border-slate-800' : ''}'> ${row .map( (article, idx) => ` <div class='${idx === 0 ? 'pr-4 border-r border-slate-200 dark:border-slate-800' : idx === 1 ?
   'px-4 border-r border-slate-200 dark:border-slate-800' : 'pl-4'}'> <div class='flex items-center text-slate-500 dark:text-slate-400 text-sm mb-3'> <span
-  class='uppercase font-bold'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span> </div> <h3 class='font-medium text-base leading-tight
+  class='uppercase font-bold'>${article?.categories?.[0]?.name || categoryName || 'GENERAL'}</span> </div> <h3 class='font-bold font-encode text-base leading-tight
   text-slate-900 dark:text-slate-100'> <a href='${getArticleLeafPath(article)}' class='hover:text-[#8f0d00] dark:hover:text-[#ff2e1a]
   transition-colors'>${article?.title || ''}</a> </h3> </div> ` ) .join('')} </div> `); } miniFeatured.innerHTML = ` <h3 class='text-xs font-bold text-slate-400
   dark:text-slate-600 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'> ${(categoryName || 'Featured Stories').toUpperCase()}

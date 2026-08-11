@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
 import categoryMainGridHbs from '../../src/templates/partials/components/category/main-grid.hbs?raw';
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
-import { categoryFixture } from '../fixtures/category.fixture';
+import { loadCategoryPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -12,8 +12,8 @@ const template = Handlebars.compile(categoryMainGridHbs);
 
 const meta = {
   title: 'Partials/Category/MainGrid',
-  render: (args) => template(args),
-  args: categoryFixture,
+  loaders: [async () => ({ category: await loadCategoryPreviewData('sports') })],
+  render: (args, { loaded }) => template({ ...loaded.category, ...args }),
 } satisfies Meta;
 
 export default meta;

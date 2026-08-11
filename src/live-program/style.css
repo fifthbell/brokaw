@@ -1,1 +1,26 @@
+@import "../styles/fonts/fonts.css";
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Encode Sans", sans-serif;
+  --font-encode: "Encode Sans", sans-serif;
+  --font-secondary: "Libre Franklin", sans-serif;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-encode);
+    font-weight: 700;
+  }
+}
