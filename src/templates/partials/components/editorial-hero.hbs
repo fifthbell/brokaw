@@ -6,11 +6,11 @@
           Lead Story
         </span>
 
-        <h1 class='headline text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-[1] font-serif'>
+        <h1 class='headline text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 dark:text-slate-100 tracking-tight leading-[1] font-encode'>
           <a href='{{articleUrl slug=slug categories=categories language=@root.language}}' class='hover:underline decoration-4 decoration-[#b21100]/20 underline-offset-4'>{{title}}</a>
         </h1>
 
-        <p class='deck text-lg md:text-xl text-slate-600 dark:text-slate-400 font-serif leading-relaxed mt-4'>{{excerpt}}</p>
+        <p class='deck font-secondary text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mt-4'>{{excerpt}}</p>
 
         <div class='flex items-center space-x-4 pt-4 border-t border-slate-100 dark:border-slate-800 mt-4'>
           <span class='text-xs font-bold uppercase tracking-wider text-slate-500'>{{#with (lookup categories 0)}}{{name}}{{else}}Top Stories{{/with}}</span>
@@ -28,7 +28,7 @@
                 timestamp=(coalesce updatedAt publishedAt)
                 image=image
                 featuredImage=featuredImage
-                titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-slate-900 dark:text-slate-100 font-sans'
+                titleClass='text-sm lg:text-base leading-tight lg:leading-[22px] font-bold text-slate-900 dark:text-slate-100 font-encode'
               }}
             {{/each}}
           </div>
@@ -39,13 +39,13 @@
         <div class='carousel-background flex-1 w-full overflow-hidden bg-slate-100 dark:bg-slate-800 relative shadow-sm'>
           {{#if slides}}
             {{#each slides}}
-              <div class='carousel-slide {{#if @first}}active opacity-100{{else}}hidden opacity-0{{/if}} absolute inset-0 bg-cover bg-center transition-opacity duration-700' style='background-image: url({{image}});'></div>
+              <div class='carousel-slide {{#if @first}}active opacity-100{{else}}hidden opacity-0{{/if}} absolute inset-0 bg-cover bg-center transition-opacity duration-300' style='background-image: url({{image}});'></div>
             {{/each}}
           {{else}}
             {{#if hero.url}}
-              <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-700' style='background-image: url({{hero.url}});'></div>
+              <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-300' style='background-image: url({{hero.url}});'></div>
             {{else}}
-              <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-700' style='background-image: url(https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=1440&h=882&fit=crop);'></div>
+              <div class='carousel-slide active opacity-100 absolute inset-0 bg-cover bg-center transition-opacity duration-300' style='background-image: url(https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=1440&h=882&fit=crop);'></div>
             {{/if}}
           {{/if}}
         </div>

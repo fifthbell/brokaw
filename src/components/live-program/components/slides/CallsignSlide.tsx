@@ -96,7 +96,7 @@ export function CallsignSlide({ currentTime: initialTime }: CallsignSlideProps) 
         >
           {formatNyTime(displayTime)}
         </div>
-        <div className='text-white text-3xl opacity-75 mt-4 animate-fade-in-delay' style={{ opacity: showTime ? 1 : 0, transition: 'opacity 0.5s' }}>
+        <div className='text-white text-3xl font-bold font-encode opacity-75 mt-4 animate-fade-in-delay' style={{ opacity: showTime ? 1 : 0, transition: 'opacity 0.5s' }}>
           This is fifth<span className='font-bold'>bell</span>.
         </div>
       </div>

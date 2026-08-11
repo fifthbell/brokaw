@@ -66,15 +66,15 @@ export function ArticleSlide({ newsItem, progress }: ArticleSlideProps) {
           <div key={newsItem.id} className='animate-slide-up flex flex-col items-start'>
             {newsItem.category && (
               <span
-                className="text-white text-3xl font-semibold uppercase tracking-wider mb-8 font-['Encode_Sans_Condensed'] inline-block px-4 py-2"
+                className='text-white text-3xl font-bold uppercase tracking-wider mb-8 font-encode inline-block px-4 py-2'
                 style={{ backgroundColor: dominantColor }}
               >
                 {newsItem.category}
               </span>
             )}
             <div className='w-16 h-1.5 bg-[#b21100] mb-8' />
-            <h1 className="text-5xl font-bold leading-tight mb-8 tracking-tight line-clamp-6 font-['Encode_Sans'] [text-wrap:balance]">{newsItem.headline}</h1>
-            <p className="text-4xl font-light leading-relaxed opacity-90 line-clamp-6 font-['Libre_Franklin']">{newsItem.summary}</p>
+            <h1 className='text-5xl font-bold leading-tight mb-8 tracking-tight line-clamp-6 font-encode [text-wrap:balance]'>{newsItem.headline}</h1>
+            <p className='text-4xl font-light leading-relaxed opacity-90 line-clamp-6 font-secondary'>{newsItem.summary}</p>
           </div>
         </div>
 

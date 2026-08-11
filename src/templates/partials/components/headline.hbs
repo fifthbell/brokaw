@@ -4,7 +4,7 @@
   </div>
   <div class='flex gap-2 lg:gap-4 items-start'>
     <div class='flex-1'>
-      {{#if (eq headingLevel 'h2')}}<h2{{else}}<h3{{/if}} class='{{#if titleClass}}{{titleClass}}{{else}}text-sm lg:text-base leading-tight lg:leading-[22px] font-medium text-slate-900 dark:text-slate-100 font-sans{{/if}}'>
+      {{#if (eq headingLevel 'h2')}}<h2{{else}}<h3{{/if}} class='{{#if titleClass}}{{titleClass}}{{else}}text-sm lg:text-base leading-tight lg:leading-[22px] font-bold text-slate-900 dark:text-slate-100 font-encode{{/if}}'>
         <a href='{{url}}' class='{{#if linkClass}}{{linkClass}}{{else}}hover:text-[#8f0d00] dark:hover:text-[#ff2e1a] transition-colors{{/if}}'>{{title}}</a>
       {{#if (eq headingLevel 'h2')}}</h2{{else}}</h3{{/if}}>
     </div>

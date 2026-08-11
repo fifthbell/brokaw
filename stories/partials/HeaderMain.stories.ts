@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
 import headerMainHbs from '../../src/templates/partials/headers/header-main.hbs?raw';
 import navCategoriesHbs from '../../src/templates/partials/nav/nav-categories.hbs?raw';
-import { homepageFixture } from '../fixtures/homepage.fixture';
+import { loadHomepagePreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
 
 registerCommonHelpers();
@@ -12,8 +12,8 @@ const template = Handlebars.compile(headerMainHbs);
 
 const meta = {
   title: 'Partials/Headers/Main',
-  render: (args) => template(args),
-  args: { ...homepageFixture, logoLink: '/' },
+  loaders: [async () => ({ homepage: await loadHomepagePreviewData() })],
+  render: (args, { loaded }) => template({ ...loaded.homepage, logoLink: '/', ...args }),
 } satisfies Meta;
 
 export default meta;
@@ -25,7 +25,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'Language buttons switch locale path and explicitly close the menu overlay before navigation.'
+          'The restrained three-zone masthead keeps navigation left, the Fifthbell lockup centered, and search plus the live action right. Language controls remain in the editorial menu.'
       }
     }
   }
