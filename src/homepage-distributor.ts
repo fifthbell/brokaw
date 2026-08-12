@@ -77,16 +77,13 @@ export function distributeHomepageArticles(
     .sort((a, b) => articleDateMs(b) - articleDateMs(a));
 
   const featuredSlots = recentFeatured.slice(0, FEATURED_SLOT_COUNT);
-  const overflow = recentFeatured.slice(FEATURED_SLOT_COUNT);
 
   const usedIds = new Set(featuredSlots.map((a) => a.id));
 
-  // General queue: overflow featured articles (beyond the 6 slots) followed by
-  // all other articles, sorted newest-first.
+  // General queue: every article not assigned to a featured slot, including
+  // overflow featured articles, sorted newest-first.
   const others = articles.filter((a) => !usedIds.has(a.id));
-  const queue = [...overflow, ...others].sort(
-    (a, b) => articleDateMs(b) - articleDateMs(a)
-  );
+  const queue = others.sort((a, b) => articleDateMs(b) - articleDateMs(a));
 
   let qi = 0;
 
