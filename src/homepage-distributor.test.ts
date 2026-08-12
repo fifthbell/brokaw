@@ -134,6 +134,32 @@ describe('distributeHomepageArticles', () => {
       const unique = new Set(all);
       expect(unique.size).toBe(all.length);
     });
+
+    it('places overflow featured articles in the queue only once', () => {
+      const featured = Array.from({ length: 10 }, (_, i) =>
+        makeRef(i + 1, { featured: true, publishedAt: recent(i + 1) })
+      );
+      const queue = makeQueue(40);
+      const slots = distributeHomepageArticles([...featured, ...queue], NOW);
+
+      const all = [
+        slots.landing.headline1,
+        ...slots.landing.sub1,
+        slots.landing.card5,
+        slots.landing.headline6,
+        ...slots.landing.topStories,
+        slots.mustRead.lead,
+        slots.mustRead.headline16,
+        slots.mustRead.headline17,
+        ...slots.mustRead.sidebar,
+        ...slots.moreStories
+      ].filter((article): article is SelfReference => article !== undefined);
+
+      expect(new Set(all.map((article) => article.id)).size).toBe(all.length);
+      for (const article of featured.slice(6)) {
+        expect(all.filter((candidate) => candidate.id === article.id)).toHaveLength(1);
+      }
+    });
   });
 
   describe('queue fill order', () => {
