@@ -341,27 +341,12 @@
   display: none;
 }
 
-.weather-utility-credit,
 .weather-utility-country {
   color: color-mix(in srgb, var(--weather-bar-ink) 38%, transparent);
   font-family: var(--font-sans);
   font-size: 0.5625rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-.weather-utility-credit {
-  transition: color var(--brokaw-motion-control) var(--brokaw-ease);
-}
-
-.weather-utility-credit:hover {
-  color: color-mix(in srgb, var(--weather-bar-ink) 68%, transparent);
-}
-
-.weather-utility-rule {
-  background: color-mix(in srgb, var(--weather-bar-ink) 22%, transparent);
-  height: 0.75rem;
-  width: 1px;
 }
 
 .weather-utility-icon {
@@ -419,7 +404,6 @@
 }
 
 @media (max-width: 767px) {
-  .weather-utility-credit,
   .weather-utility-country {
     display: none;
   }
