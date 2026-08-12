@@ -310,6 +310,125 @@
   backdrop-filter: blur(14px);
 }
 
+.weather-utility-bar {
+  --weather-bar-ink: #f8f7f4;
+  background: #171717;
+  border-bottom: 1px solid color-mix(in srgb, var(--weather-bar-ink) 12%, transparent);
+  color: var(--weather-bar-ink);
+}
+
+.weather-utility-date {
+  color: color-mix(in srgb, var(--weather-bar-ink) 72%, transparent);
+  font-family: var(--font-secondary);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: 0.035em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weather-utility-current {
+  align-items: center;
+  display: flex;
+  gap: 0.625rem;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.weather-utility-current[hidden] {
+  display: none;
+}
+
+.weather-utility-credit,
+.weather-utility-country {
+  color: color-mix(in srgb, var(--weather-bar-ink) 38%, transparent);
+  font-family: var(--font-sans);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.weather-utility-credit {
+  transition: color var(--brokaw-motion-control) var(--brokaw-ease);
+}
+
+.weather-utility-credit:hover {
+  color: color-mix(in srgb, var(--weather-bar-ink) 68%, transparent);
+}
+
+.weather-utility-rule {
+  background: color-mix(in srgb, var(--weather-bar-ink) 22%, transparent);
+  height: 0.75rem;
+  width: 1px;
+}
+
+.weather-utility-icon {
+  color: #d4af37;
+  display: inline-flex;
+}
+
+.weather-utility-icon svg {
+  height: 1.0625rem;
+  width: 1.0625rem;
+}
+
+.weather-utility-city,
+.weather-utility-temperature {
+  font-family: var(--font-encode);
+  white-space: nowrap;
+}
+
+.weather-utility-city {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+}
+
+.weather-utility-temperature {
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.weather-utility-swap {
+  animation: weather-utility-swap 320ms var(--brokaw-ease);
+}
+
+@keyframes weather-utility-swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-utility-swap {
+    animation: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .weather-utility-credit,
+  .weather-utility-country {
+    display: none;
+  }
+
+  .weather-utility-city {
+    max-width: 8rem;
+  }
+}
+
 .site-header-action {
   transition: background-color var(--brokaw-motion-control) var(--brokaw-ease), color var(--brokaw-motion-control) var(--brokaw-ease), border-color var(--brokaw-motion-control) var(--brokaw-ease), transform var(--brokaw-motion-fast) var(--brokaw-ease);
 }
