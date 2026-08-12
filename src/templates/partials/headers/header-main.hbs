@@ -2,6 +2,24 @@
   class='site-header sticky top-0 z-[60] border-b transition-colors'
   style='view-transition-name: site-header;'
 >
+  <div class='weather-utility-bar' data-weather-utility-bar data-language='{{language}}'>
+    <div class='container mx-auto flex h-10 items-center justify-between gap-4 px-4'>
+      <time class='weather-utility-date' data-weather-date aria-label='Current date'></time>
+      <div class='weather-utility-current' data-weather-current aria-live='polite' aria-atomic='true' hidden>
+        <a
+          href='https://www.weatherapi.com/'
+          target='_blank'
+          rel='noopener noreferrer'
+          class='weather-utility-credit'
+        >WeatherAPI.com</a>
+        <span class='weather-utility-rule' aria-hidden='true'></span>
+        <span class='weather-utility-icon' data-weather-icon aria-hidden='true'></span>
+        <span class='weather-utility-city' data-weather-city></span>
+        <span class='weather-utility-temperature' data-weather-temperature></span>
+        <span class='weather-utility-country' data-weather-country></span>
+      </div>
+    </div>
+  </div>
   <div class='container mx-auto px-4'>
     <nav class='relative flex h-[72px] items-center justify-between'>
       <div class='flex items-center'>
@@ -21,8 +39,8 @@
 
           <div
             id='dropdown-menu'
-            class='fixed top-[72px] left-0 right-0 bottom-0 bg-[var(--brokaw-paper)]/98 backdrop-blur-xl shadow-[var(--brokaw-shadow-raised)] z-50 pointer-events-none border-t border-[var(--brokaw-rule)] overflow-hidden transition-colors'
-            style='height: calc(100dvh - 72px); opacity: 0; transform: translateX(-100%); transition: transform 360ms var(--brokaw-ease), opacity 180ms var(--brokaw-ease);'
+            class='fixed top-[112px] left-0 right-0 bottom-0 bg-[var(--brokaw-paper)]/98 backdrop-blur-xl shadow-[var(--brokaw-shadow-raised)] z-50 pointer-events-none border-t border-[var(--brokaw-rule)] overflow-hidden transition-colors'
+            style='height: calc(100dvh - 112px); opacity: 0; transform: translateX(-100%); transition: transform 360ms var(--brokaw-ease), opacity 180ms var(--brokaw-ease);'
           >
             <div class='container mx-auto px-4 py-4 md:py-8 h-full overflow-y-auto overscroll-contain'>
               <div class='grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8'>
@@ -274,11 +292,39 @@
 </header>
 
 <script>
-  (function () { const WEATHER_URL = 'https://cdn.fifthbell.com/content/weather-current.json'; const REFRESH_MS = 60 * 60 * 1000; async function
-  refreshWeather() { try { const response = await fetch(`${WEATHER_URL}?v=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`Weather
-  request failed with HTTP ${response.status}`); const payload = await response.json(); window.fifthbellWeather = payload; window.dispatchEvent(new
-  CustomEvent('fifthbell:weather', { detail: payload })); } catch (error) { console.error('Failed to refresh weather data:', error); } } void refreshWeather();
-  window.setInterval(refreshWeather, REFRESH_MS); })();
+  (function () { const WEATHER_URL = 'https://cdn.fifthbell.com/content/weather-current.json'; const REFRESH_MS = 60 * 60 * 1000; const PHASE_MS = 5 * 1000;
+  const barElement = document.querySelector('[data-weather-utility-bar]'); const dateElement = document.querySelector('[data-weather-date]'); const weatherElement = document.querySelector('[data-weather-current]'); const iconElement
+  = document.querySelector('[data-weather-icon]'); const cityElement = document.querySelector('[data-weather-city]'); const temperatureElement =
+  document.querySelector('[data-weather-temperature]'); const countryElement = document.querySelector('[data-weather-country]'); let cities = []; let phase =
+  0; let phaseTimer; function language() { const configured = barElement?.dataset.language; if (configured === 'es') return 'es-CL'; if (configured === 'it')
+  return 'it-IT'; const path = window.location.pathname || '/'; if (path === '/es' || path.startsWith('/es/')) return 'es-CL'; if (path === '/it' ||
+  path.startsWith('/it/')) return 'it-IT'; return 'en-US'; } function updateDate() { if (!dateElement) return; const now = new Date();
+  dateElement.dateTime = now.toISOString(); dateElement.textContent = new Intl.DateTimeFormat(language(), { day: 'numeric', month: 'long', year: 'numeric'
+  }).format(now); } function countryKey(city) { return String(city?.country || '').trim().toLocaleLowerCase(); } function arrangeCities(input) { const groups = new
+  Map(); const order = []; input.forEach((city) => { const key = countryKey(city); if (!key) return; if (!groups.has(key)) { groups.set(key, []); order.push(key);
+  } groups.get(key).push(city); }); const arranged = []; let previous = ''; while (arranged.length < input.length) { const candidates = order.filter((key) =>
+  groups.get(key)?.length && key !== previous).sort((a, b) => groups.get(b).length - groups.get(a).length); const key = candidates[0] || order.find((candidate) =>
+  groups.get(candidate)?.length); if (!key) break; arranged.push(groups.get(key).shift()); previous = key; } if (arranged.length > 2 && countryKey(arranged[0]) ===
+  countryKey(arranged[arranged.length - 1])) { for (let index = 1; index < arranged.length - 1; index += 1) { const candidate = arranged[index]; const last =
+  arranged[arranged.length - 1]; const before = arranged[index - 1]; const after = arranged[index + 1]; const beforeLast = arranged[arranged.length - 2]; if
+  (countryKey(candidate) !== countryKey(arranged[0]) && countryKey(candidate) !== countryKey(beforeLast) && countryKey(last) !== countryKey(before) &&
+  countryKey(last) !== countryKey(after)) { arranged[index] = last; arranged[arranged.length - 1] = candidate; break; } } } return arranged; } function iconSvg(condition)
+  { const common = `viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"`; const icons
+  = { sunny: `<svg ${common}><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>`, cloudy: `<svg ${common}><path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9Z"></path></svg>`, rainy: `<svg ${common}><path d="M16 13a4 4 0 1 0-3.8-5.2A5 5 0 1 0 6 15h10a4 4 0 0 0 0-8"></path><path d="m8 19-1 2m5-2-1 2m5-2-1 2"></path></svg>`, windy: `<svg ${common}><path d="M3 8h10a2 2 0 1 0-2-2M3 12h15a2 2 0 1 1-2 2M3 16h8"></path></svg>` }; return icons[condition] || icons.cloudy; }
+  function renderWeather() { if (!weatherElement || cities.length === 0) return; const city = cities[Math.floor(phase / 2) % cities.length]; const celsius = phase
+  % 2 === 0; const fahrenheit = Number(city.temp); const temperature = celsius ? Math.round((fahrenheit - 32) * 5 / 9) : Math.round(fahrenheit); cityElement.textContent
+  = city.name || ''; countryElement.textContent = city.country || ''; temperatureElement.textContent = `${temperature}°${celsius ? 'C' : 'F'}`;
+  iconElement.innerHTML = iconSvg(city.condition); weatherElement.hidden = false; weatherElement.dataset.weatherCity = city.name || '';
+  weatherElement.dataset.weatherCountry = city.country || ''; weatherElement.dataset.weatherUnit = celsius ? 'celsius' : 'fahrenheit';
+  weatherElement.classList.remove('weather-utility-swap'); void weatherElement.offsetWidth; weatherElement.classList.add('weather-utility-swap'); } function
+  setWeather(payload) { if (!Array.isArray(payload?.cities)) return; const valid = payload.cities.filter((city) => city && city.name && city.country &&
+  Number.isFinite(Number(city.temp))); cities = arrangeCities(valid); if (barElement) barElement.dataset.weatherSequence = cities.map((city) =>
+  city.country).join('|'); phase = 0; renderWeather(); window.clearInterval(phaseTimer); if (cities.length) phaseTimer =
+  window.setInterval(() => { phase += 1; renderWeather(); }, PHASE_MS); } async function refreshWeather() { try { const response = await
+  fetch(`${WEATHER_URL}?v=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`Weather request failed with HTTP ${response.status}`); const
+  payload = await response.json(); window.fifthbellWeather = payload; window.dispatchEvent(new CustomEvent('fifthbell:weather', { detail:
+  payload })); } catch (error) { console.error('Failed to refresh weather data:', error); } } window.addEventListener('fifthbell:weather', (event) =>
+  setWeather(event.detail)); updateDate(); window.setInterval(updateDate, 60 * 1000); void refreshWeather(); window.setInterval(refreshWeather, REFRESH_MS); })();
 </script>
 
 <script>
