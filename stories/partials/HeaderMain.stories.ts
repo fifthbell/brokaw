@@ -26,7 +26,7 @@ export const Default: Story = {
     docs: {
       description: {
         story:
-          'The restrained three-zone masthead keeps navigation left, the Fifthbell lockup centered, and search plus the live action right. Language controls remain in the editorial menu.'
+          'The restrained three-zone masthead keeps navigation left, the Fifthbell lockup centered, and search plus the live action right. Its standard page runtime also loads the shared weather JSON at startup and refreshes it hourly.'
       }
     }
   }
