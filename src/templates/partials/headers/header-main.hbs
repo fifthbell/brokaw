@@ -274,6 +274,14 @@
 </header>
 
 <script>
+  (function () { const WEATHER_URL = 'https://cdn.fifthbell.com/content/weather-current.json'; const REFRESH_MS = 60 * 60 * 1000; async function
+  refreshWeather() { try { const response = await fetch(`${WEATHER_URL}?v=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`Weather
+  request failed with HTTP ${response.status}`); const payload = await response.json(); window.fifthbellWeather = payload; window.dispatchEvent(new
+  CustomEvent('fifthbell:weather', { detail: payload })); } catch (error) { console.error('Failed to refresh weather data:', error); } } void refreshWeather();
+  window.setInterval(refreshWeather, REFRESH_MS); })();
+</script>
+
+<script>
   (function () { const menuButton = document.getElementById('menu-button'); const dropdownMenu = document.getElementById('dropdown-menu'); const sectionsLinks =
   document.getElementById('sections-links'); const categoryLinksContainer = document.getElementById('category-links-container'); const miniFeatured =
   document.getElementById('mini-featured'); if (!menuButton || !dropdownMenu) return; let isOpen = false; let contentLoaded = false; let currentCategoryKey =
