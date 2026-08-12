@@ -89,7 +89,11 @@ export const WeatherRotation: Story = {
     const sequence = canvasElement
       .querySelector<HTMLElement>('[data-weather-utility-bar]')
       ?.dataset.weatherSequence?.split('|') ?? [];
-    await expect(sequence.length).toBe(payload.cities.length);
+    const cities = canvasElement
+      .querySelector<HTMLElement>('[data-weather-utility-bar]')
+      ?.dataset.weatherCities?.split('|') ?? [];
+    await expect(cities.sort()).toEqual(['Antofagasta', 'New York City', 'Rome']);
+    await expect(sequence.length).toBe(cities.length);
     sequence.forEach((country, index) => {
       expect(country).not.toBe(sequence[(index + 1) % sequence.length]);
     });

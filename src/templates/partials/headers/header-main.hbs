@@ -286,6 +286,7 @@
 
 <script>
   (function () { const WEATHER_URL = 'https://cdn.fifthbell.com/content/weather-current.json'; const REFRESH_MS = 60 * 60 * 1000; const PHASE_MS = 5 * 1000;
+  const WEATHER_CITIES = new Set(['antofagasta', 'new york city', 'rome']);
   const barElement = document.querySelector('[data-weather-utility-bar]'); const dateElement = document.querySelector('[data-weather-date]'); const weatherElement = document.querySelector('[data-weather-current]'); const iconElement
   = document.querySelector('[data-weather-icon]'); const cityElement = document.querySelector('[data-weather-city]'); const temperatureElement =
   document.querySelector('[data-weather-temperature]'); const countryElement = document.querySelector('[data-weather-country]'); let cities = []; let phase =
@@ -311,8 +312,9 @@
   weatherElement.dataset.weatherCountry = city.country || ''; weatherElement.dataset.weatherUnit = celsius ? 'celsius' : 'fahrenheit';
   weatherElement.classList.remove('weather-utility-swap'); void weatherElement.offsetWidth; weatherElement.classList.add('weather-utility-swap'); } function
   setWeather(payload) { if (!Array.isArray(payload?.cities)) return; const valid = payload.cities.filter((city) => city && city.name && city.country &&
-  Number.isFinite(Number(city.temp))); cities = arrangeCities(valid); if (barElement) barElement.dataset.weatherSequence = cities.map((city) =>
-  city.country).join('|'); phase = 0; renderWeather(); window.clearInterval(phaseTimer); if (cities.length) phaseTimer =
+  WEATHER_CITIES.has(String(city.name).trim().toLocaleLowerCase()) && Number.isFinite(Number(city.temp))); cities = arrangeCities(valid); if (barElement) {
+  barElement.dataset.weatherSequence = cities.map((city) => city.country).join('|'); barElement.dataset.weatherCities = cities.map((city) =>
+  city.name).join('|'); } phase = 0; renderWeather(); window.clearInterval(phaseTimer); if (cities.length) phaseTimer =
   window.setInterval(() => { phase += 1; renderWeather(); }, PHASE_MS); } async function refreshWeather() { try { const response = await
   fetch(`${WEATHER_URL}?v=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`Weather request failed with HTTP ${response.status}`); const
   payload = await response.json(); window.fifthbellWeather = payload; window.dispatchEvent(new CustomEvent('fifthbell:weather', { detail:
