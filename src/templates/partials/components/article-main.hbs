@@ -24,6 +24,21 @@
     {{/if}}
   </header>
 
+  {{#if updatedVersion}}
+    <aside class='col-span-12 mt-8 rounded-sm border-l-4 border-[var(--brokaw-signal)] bg-[var(--brokaw-paper-deep)] px-5 py-4 lg:mt-10' aria-label='Updated version'>
+      <p class='font-secondary text-sm leading-6 text-[var(--brokaw-ink)]'>
+        {{#if (eq language 'es')}}Esta historia tiene una versión más reciente.
+        {{else if (eq language 'it')}}Questa storia ha una versione più recente.
+        {{else}}This story has a more recent update.{{/if}}
+        <a href='{{updatedVersion.url}}' class='ml-1 font-bold underline decoration-[var(--brokaw-signal)] decoration-2 underline-offset-4 hover:text-[var(--brokaw-signal)]'>
+          {{#if (eq language 'es')}}Lee la versión actualizada
+          {{else if (eq language 'it')}}Leggi la versione aggiornata
+          {{else}}Read the updated version{{/if}}
+        </a>.
+      </p>
+    </aside>
+  {{/if}}
+
   <aside class='col-span-12 mt-8 lg:col-span-3 lg:mt-12'>
     <div class='editorial-rule border-t pt-5 lg:sticky lg:top-28'>
       <p class='editorial-kicker mb-4 text-[var(--brokaw-ink-muted)]'>Share</p>

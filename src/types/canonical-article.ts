@@ -23,6 +23,12 @@ const heroSchema = z.object({
   alt: z.string()
 });
 
+const updatedVersionSchema = z.object({
+  id: z.coerce.string(),
+  title: z.string(),
+  url: z.string()
+});
+
 const bodyBlockSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('richText'),
@@ -136,7 +142,7 @@ export const canonicalArticleSchema = z
       '404',
       'live-story',
       'link-in-bio',
-      'media-page',
+      'media-page'
     ]),
     canonicalUrl: z.string(),
     contentVersion: isoDateTime,
@@ -149,6 +155,7 @@ export const canonicalArticleSchema = z
     language: z.enum(['en', 'es', 'it']),
     sofascore_id: z.number().int().positive().optional(),
     originalArticleId: z.string().optional(),
+    updatedVersion: updatedVersionSchema.optional(),
     featured: z.boolean(),
     authors: z.array(authorSchema),
     categories: z.array(categorySchema),
