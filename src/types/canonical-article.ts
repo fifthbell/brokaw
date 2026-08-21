@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { rumConfigSchema } from '../rum.js';
 
 const isoDateTime = z.string().datetime();
 
@@ -153,6 +154,7 @@ export const canonicalArticleSchema = z
     dek: z.string().optional(),
     excerpt: z.string().optional(),
     language: z.enum(['en', 'es', 'it']),
+    rumConfig: rumConfigSchema.optional(),
     sofascore_id: z.number().int().positive().optional(),
     originalArticleId: z.string().optional(),
     updatedVersion: updatedVersionSchema.optional(),
@@ -261,3 +263,4 @@ export const canonicalArticleSchema = z
 export type SelfReference = z.infer<typeof articleReferenceSchema>;
 export type CanonicalArticle = z.infer<typeof canonicalArticleSchema>;
 export type CanonicalDocument = CanonicalArticle;
+export type { RumConfig } from '../rum.js';
