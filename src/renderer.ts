@@ -4,3 +4,4 @@ export { buildInstagramImageHtml, registerInstagramImageHelpers, type InstagramI
 export { outletConfig } from './outlet-config.js';
 export { version } from './version.js';
 export type { CanonicalDocument } from './types/canonical-article.js';
+export type { RumConfig } from './types/canonical-article.js';
