@@ -1,0 +1,28 @@
+{{!--
+  Standalone page body: privacy policies, contact and about pages.
+
+  Deliberately plain. There is no hero, no related articles and no category
+  rail — evergreen legal and informational content should read as a document,
+  not as an article competing for attention.
+
+  Body blocks are restricted to a safe subset upstream in the pipeline. Third
+  party embeds are excluded on purpose: an embed inside a privacy policy is
+  itself a privacy problem.
+--}}
+<main class="mx-auto w-full max-w-3xl px-4 py-10 md:py-16">
+  <header class="mb-8 md:mb-12">
+    <h1 class="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{{title}}</h1>
+    {{#if dek}}
+      <p class="mt-3 text-lg text-slate-600 dark:text-slate-400">{{dek}}</p>
+    {{/if}}
+    {{#if updatedAt}}
+      <p class="mt-4 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{{formatDate updatedAt}}</p>
+    {{/if}}
+  </header>
+
+  <div class="prose dark:prose-invert max-w-none">
+    {{#each body}}
+      {{> (lookup . "type")}}
+    {{/each}}
+  </div>
+</main>
