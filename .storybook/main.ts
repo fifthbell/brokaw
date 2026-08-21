@@ -3,6 +3,7 @@ import type { StorybookConfig } from '@storybook/html-vite';
 const config: StorybookConfig = {
   stories: [
     '../stories/LuxuryCalibration.stories.ts',
+    '../stories/RumContract.stories.ts',
     '../stories/ArticlePage.stories.ts',
     '../stories/Homepage.stories.ts',
     '../stories/CategoryPage.stories.ts',
