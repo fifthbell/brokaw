@@ -142,7 +142,8 @@ export const canonicalArticleSchema = z
       '404',
       'live-story',
       'link-in-bio',
-      'media-page'
+      'media-page',
+      'standalone-page'
     ]),
     canonicalUrl: z.string(),
     contentVersion: isoDateTime,
