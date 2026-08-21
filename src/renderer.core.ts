@@ -2,6 +2,7 @@ import Handlebars from 'handlebars';
 import { canonicalArticleSchema, type CanonicalDocument } from './types/canonical-article.js';
 import { distributeHomepageArticles } from './homepage-distributor.js';
 import { buildSofascoreAttackMomentumUrl, buildSofascoreMatchUrl } from './utils/sofascore.js';
+import { renderRumLoader } from './rum.js';
 
 export type LayoutName = CanonicalDocument['layout'];
 
@@ -244,6 +245,7 @@ function registerHelpers(): void {
     if (value === undefined) return 'null';
     return JSON.stringify(value);
   });
+  Handlebars.registerHelper('rumLoader', renderRumLoader);
   Handlebars.registerHelper('resolveHeadTitle', (doc: unknown) => {
     if (!doc || typeof doc !== 'object') return 'fifthbell';
     const page = doc as Partial<CanonicalDocument>;

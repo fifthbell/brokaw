@@ -45,20 +45,7 @@
     <title>{{resolveHeadTitle this}}</title>
     <style>{{{styles}}}</style>
     {{#if rumConfig}}
-    <script>
-      (function(n,i,v,r,s,c,u,x,z){
-        x=window;z=x[s]=x[s]||function(){z.q.push(arguments)};z.q=[];u=i.createElement(v);
-        u.async=1;u.src=r;u.setAttribute('crossorigin','');i.head.appendChild(u);
-      })(window,document,'script','https://rum.aws.amazon.com/loader.js','RUM');
-      RUM('create', {{{jsonString rumConfig.appMonitorName}}}, {
-        identityPoolId: {{{jsonString rumConfig.identityPoolId}}},
-        guestRoleArn: {{{jsonString rumConfig.guestRoleArn}}},
-        sessionSampleRate: 1,
-        endpoint: {{{jsonString 'https://dataplane.rum.us-east-1.amazonaws.com'}}},
-        telemetries: ['performance', 'errors', 'http'],
-        allowCookies: true
-      });
-    </script>
+      {{{rumLoader rumConfig layout language}}}
     {{/if}}
     {{#if gaConfig}}
     <script async src='https://www.googletagmanager.com/gtag/js?id={{{gaConfig.measurementId}}}'></script>
