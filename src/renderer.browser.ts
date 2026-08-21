@@ -6,6 +6,7 @@ import notFoundLayoutHbs from './templates/layouts/404.hbs?raw';
 import liveStoryLayoutHbs from './templates/layouts/live-story.hbs?raw';
 import linkInBioLayoutHbs from './templates/layouts/link-in-bio.hbs?raw';
 import mediaPageLayoutHbs from './templates/layouts/media-page.hbs?raw';
+import standalonePageLayoutHbs from './templates/layouts/standalone-page.hbs?raw';
 
 import headerMainHbs from './templates/partials/headers/header-main.hbs?raw';
 import headerMinimalHbs from './templates/partials/headers/header-minimal.hbs?raw';
@@ -32,6 +33,7 @@ import blockTikTokHbs from './templates/partials/blocks/tiktok.hbs?raw';
 import blockPullQuoteHbs from './templates/partials/blocks/pull-quote.hbs?raw';
 
 import componentArticleMainHbs from './templates/partials/components/article-main.hbs?raw';
+import standaloneMainHbs from './templates/partials/components/standalone-main.hbs?raw';
 import componentBreakingNewsHbs from './templates/partials/components/breaking-news.hbs?raw';
 import componentBreakingNewsLiveUpdatesColumnHbs from './templates/partials/components/breaking-news/live-updates-column.hbs?raw';
 import componentSnackHbs from './templates/partials/components/snack.hbs?raw';
@@ -75,7 +77,8 @@ const assets: RendererAssets = {
     '404': notFoundLayoutHbs,
     'live-story': liveStoryLayoutHbs,
     'link-in-bio': linkInBioLayoutHbs,
-    'media-page': mediaPageLayoutHbs
+    'media-page': mediaPageLayoutHbs,
+    'standalone-page': standalonePageLayoutHbs
   },
   partials: {
     'headers/header-main': headerMainHbs,
@@ -101,6 +104,7 @@ const assets: RendererAssets = {
     'blocks/tiktok': blockTikTokHbs,
     'blocks/pull-quote': blockPullQuoteHbs,
     'components/article-main': componentArticleMainHbs,
+    'components/standalone-main': standaloneMainHbs,
     'components/breaking-news': componentBreakingNewsHbs,
     'components/breaking-news/live-updates-column': componentBreakingNewsLiveUpdatesColumnHbs,
     'components/snack': componentSnackHbs,
