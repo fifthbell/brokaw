@@ -1,7 +1,7 @@
 {
   "name": "@fifthbell/brokaw",
   "description": "Server-side Handlebars renderer and templates for fifthbell pages.",
-  "version": "0.1.63",
+  "version": "0.1.64",
   "license": "MIT",
   "author": "fifthbell",
   "repository": {
@@ -45,7 +45,7 @@
     "clean": "node -e \"require('node:fs').rmSync('dist',{ recursive: true, force: true })\"",
     "build:css": "tailwindcss -i src/styles/global.css -o src/styles/compiled.css --minify",
     "build:live-program": "vite build --config vite.config.live-program.ts",
-    "build": "npm run clean && npm run build:css && npm run build:live-program && tsc -p tsconfig.build.json && node -e \"require('node:fs').cpSync('src/styles/fonts','dist/fonts',{recursive:true})\"",
+    "build": "npm run clean && npm run build:css && npm run build:live-program && tsc -p tsconfig.build.json && node -e \"require('node:fs').cpSync('src/styles/fonts','dist/fonts',{recursive:true})\" && node scripts/verify-live-program.mjs",
     "storybook": "npm run build:css && storybook dev -p 6006",
     "build-storybook": "npm run build:css && storybook build",
     "typecheck": "tsc --noEmit -p tsconfig.json",

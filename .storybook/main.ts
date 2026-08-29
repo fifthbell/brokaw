@@ -14,6 +14,7 @@ const config: StorybookConfig = {
     '../stories/partials/*.stories.ts',
     '../stories/react/**/*.stories.tsx'
   ],
+  staticDirs: [{ from: '../src/live-program/public', to: '/' }],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest', '@storybook/addon-a11y', '@storybook/addon-docs'],
   framework: '@storybook/html-vite',
   async viteFinal(config) {
