@@ -1,6 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BellRing } from 'lucide-react';
 import { useSSE } from './hooks/useSSE.js';
+import {
+  isProgramStateEvent,
+  parseProgramEvent,
+  reconcileProgramEvent,
+  reconcileProgramSnapshot,
+  resolveProgramEndpoint,
+  type ProgramDiagnostic,
+  type ProgramState,
+} from './program-contract.js';
 
 import { FIFTHBELL_ASSETS } from './assets.js';
 import { MarqueeCurtain } from './components/MarqueeCurtain.js';
@@ -43,15 +52,6 @@ interface Scene {
   layout: Layout;
   chyronText: string | null;
   metadata: string | null;
-}
-
-interface ProgramState {
-  id: number;
-  activeSceneId: number | null;
-  activeScene: Scene | null;
-  stagedSceneId?: number | null;
-  stagedScene?: Scene | null;
-  updatedAt: string;
 }
 
 interface FifthBellWorldClockCity {
@@ -365,8 +365,10 @@ function normalizeLaunchDate(rawDate: string): Date {
   return parsed;
 }
 
-export default function LiveProgram({ embedded = false, sceneMetadata, activeComponents, apiBaseUrl }: LiveProgramProps) {
+export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl }: LiveProgramProps) {
   const [state, setState] = useState<ProgramState | null>(null);
+  const stateRef = useRef<ProgramState | null>(null);
+  const snapshotRequestRef = useRef(0);
   const [showLogoSlide, setShowLogoSlide] = useState(false);
   const [callsignTime, setCallsignTime] = useState(new Date());
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -405,13 +407,35 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
   const layerAvailability = useMemo(() => resolveFifthBellLayerAvailability(activeComponents), [activeComponents]);
   const languageRotation = config.languageRotation;
   const currentLanguage: SupportedLanguage = languageRotation[languageIndex] ?? languageRotation[0] ?? 'en';
-  const resolvedApiBaseUrl =
-    apiBaseUrl?.replace(/\/+$/, '') ||
-    (() => {
-      if (typeof window === 'undefined') return 'http://127.0.0.1:3000';
-      const hostname = window.location.hostname;
-      return `http://${hostname.includes(':') ? `[${hostname}]` : hostname}:3000`;
-    })();
+  const normalizedProgramId = programId.trim() || 'fifthbell';
+  const programEndpoint = resolveProgramEndpoint(apiBaseUrl, normalizedProgramId);
+
+  const reportProgramDiagnostic = useCallback((diagnostic: ProgramDiagnostic | string, payload?: unknown) => {
+    if (typeof diagnostic === 'string') {
+      console.warn(`[live-program] ${diagnostic}`, payload);
+      return;
+    }
+    console.warn(`[live-program:${diagnostic.code}] ${diagnostic.message}`, diagnostic.payload);
+  }, []);
+
+  const refreshProgramState = useCallback(async () => {
+    const requestId = ++snapshotRequestRef.current;
+    try {
+      const response = await fetch(`${programEndpoint}/state`, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Program snapshot failed: ${response.status}`);
+      const payload = await response.json();
+      if (requestId !== snapshotRequestRef.current) return;
+      const result = reconcileProgramSnapshot(stateRef.current, payload, normalizedProgramId);
+      if (result.accepted && result.state) {
+        stateRef.current = result.state;
+        setState(result.state);
+      } else if (result.diagnostic) {
+        reportProgramDiagnostic(result.diagnostic);
+      }
+    } catch (error) {
+      console.error('[live-program] Failed to fetch program snapshot:', error);
+    }
+  }, [normalizedProgramId, programEndpoint, reportProgramDiagnostic]);
 
   useEffect(() => {
     if (languageIndex >= languageRotation.length) {
@@ -428,11 +452,8 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
       return;
     }
 
-    fetch(`${resolvedApiBaseUrl}/state`)
-      .then((res) => res.json())
-      .then((data) => setState(data))
-      .catch((err) => console.error('Failed to fetch FifthBell program state:', err));
-  }, [controlledBySceneRenderer, resolvedApiBaseUrl]);
+    void refreshProgramState();
+  }, [controlledBySceneRenderer, refreshProgramState]);
 
   const refreshAllData = useCallback(async () => {
     const [articlesData, weatherDataResult, earthquakesData, marketsData, liveEventData] = await Promise.all([
@@ -499,38 +520,27 @@ export default function LiveProgram({ embedded = false, sceneMetadata, activeCom
   }, []);
 
   useSSE({
-    url: `${resolvedApiBaseUrl}/events`,
+    url: `${programEndpoint}/events`,
     enabled: !controlledBySceneRenderer,
-    onMessage: (data: any) => {
-      if (data.type === 'scene_staged') {
-        setState((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            stagedSceneId: typeof data.stagedSceneId === 'number' && Number.isFinite(data.stagedSceneId) ? data.stagedSceneId : null,
-            stagedScene: data.scene && typeof data.scene === 'object' ? (data.scene as Scene) : null,
-          };
-        });
-      } else if ((data.type === 'scene_change' || data.type === 'program_scenes_changed') && data.state) {
-        setState(data.state);
-      } else if (data.type === 'scene_update') {
-        setState((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            activeScene: data.scene ?? prev.activeScene
-          };
-        });
-      } else if (data.type === 'scene_cleared') {
-        setState((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            activeSceneId: null,
-            activeScene: null
-          };
-        });
-      } else if (data.type === 'broadcast_settings_update') {
+    onOpen: refreshProgramState,
+    onDiagnostic: reportProgramDiagnostic,
+    onMessage: (payload: unknown) => {
+      const parsed = parseProgramEvent(payload, normalizedProgramId);
+      if (!parsed.event) {
+        if (parsed.diagnostic) reportProgramDiagnostic(parsed.diagnostic);
+        return;
+      }
+      const data = parsed.event as any;
+      const stateResult = reconcileProgramEvent(stateRef.current, parsed.event);
+      if (stateResult.accepted && stateResult.state !== stateRef.current) {
+        stateRef.current = stateResult.state;
+        setState(stateResult.state);
+      } else if (stateResult.diagnostic) {
+        reportProgramDiagnostic(stateResult.diagnostic);
+      }
+      if (isProgramStateEvent(parsed.event)) return;
+
+      if (data.type === 'broadcast_settings_update') {
         // broadcast settings stored for overlay display
       } else if (data.type === 'scene_instant_take' && data.instant?.audioUrl) {
         console.log('[scene_instant_take]', data.instant.name, data.instant.audioUrl);

@@ -169,13 +169,19 @@ export function liveProgramPageAsset(filename: string): string {
 
 const CONTENT_TYPE_MAP: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
-  '.js': 'application/javascript',
-  '.css': 'text/css',
+  '.js': 'application/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
   '.ogg': 'audio/ogg',
   '.mp3': 'audio/mpeg',
+  '.ttf': 'font/ttf',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.svg': 'image/svg+xml',
+  '.webp': 'image/webp',
 };
 
 function contentTypeForFile(filename: string): string {
@@ -200,7 +206,7 @@ export function liveProgramPageFiles(): LiveProgramFileEntry[] {
   const entries: LiveProgramFileEntry[] = [];
 
   function walk(dir: string, prefix: string) {
-    const items = fs.readdirSync(dir, { withFileTypes: true });
+    const items = fs.readdirSync(dir, { withFileTypes: true }).sort((left, right) => left.name.localeCompare(right.name));
     for (const item of items) {
       const fullPath = path.join(dir, item.name);
       const relativeKey = prefix ? `${prefix}/${item.name}` : item.name;
