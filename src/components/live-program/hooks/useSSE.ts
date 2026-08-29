@@ -2,20 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 
 interface UseSSEOptions {
   url: string;
-  onMessage?: (data: any) => void;
+  onMessage?: (data: unknown) => void;
+  onOpen?: () => void | Promise<void>;
+  onDiagnostic?: (message: string, payload?: unknown) => void;
   reconnectInterval?: number;
   enabled?: boolean;
 }
 
-export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = true }: UseSSEOptions) {
+export function useSSE({ url, onMessage, onOpen, onDiagnostic, reconnectInterval = 3000, enabled = true }: UseSSEOptions) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const onMessageRef = useRef(onMessage);
+  const onOpenRef = useRef(onOpen);
+  const onDiagnosticRef = useRef(onDiagnostic);
   const bufferRef = useRef('');
 
   useEffect(() => {
     onMessageRef.current = onMessage;
-  }, [onMessage]);
+    onOpenRef.current = onOpen;
+    onDiagnosticRef.current = onDiagnostic;
+  }, [onMessage, onOpen, onDiagnostic]);
 
   useEffect(() => {
     if (!enabled) {
@@ -37,8 +43,8 @@ export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = tru
           const data = JSON.parse(dataStr);
           console.log('[SSE] message:', data.type);
           onMessageRef.current?.(data);
-        } catch {
-          // partial data or non-JSON
+        } catch (parseError) {
+          onDiagnosticRef.current?.('Ignored malformed SSE JSON payload', { data: dataStr, error: parseError });
         }
       }
     };
@@ -58,6 +64,7 @@ export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = tru
 
       try {
         abortController = new AbortController();
+        bufferRef.current = '';
         const response = await fetch(url, {
           signal: abortController.signal,
           cache: 'no-store',
@@ -74,6 +81,7 @@ export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = tru
         console.log('[SSE] connected to', url);
         setIsConnected(true);
         setError(null);
+        await onOpenRef.current?.();
 
         reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -90,6 +98,7 @@ export function useSSE({ url, onMessage, reconnectInterval = 3000, enabled = tru
         setIsConnected(false);
         setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
+        if (!disposed) setIsConnected(false);
         reader = null;
         abortController = null;
         if (!disposed) {
