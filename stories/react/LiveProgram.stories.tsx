@@ -9,13 +9,14 @@ const meta: Meta = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'The complete React broadcast program, using Encode Sans as its primary face and the secondary sans only for supporting copy.'
+        component: 'The complete React broadcast program. The standalone bundle loads an initial versioned snapshot and program-scoped SSE updates from Alcantara; embedded scene renderers can continue to provide scene metadata directly.'
       }
     }
   },
   argTypes: {
     programId: { control: 'text' },
-    embedded: { control: 'boolean' }
+    embedded: { control: 'boolean' },
+    apiBaseUrl: { control: 'text' }
   },
   render: (args) => {
     const container = document.createElement('div');
@@ -42,5 +43,21 @@ export const Embedded: StoryObj = {
   args: {
     programId: 'fifthbell',
     embedded: true
+  }
+};
+
+export const EmbeddedSceneRenderer: StoryObj = {
+  args: {
+    programId: 'fifthbell',
+    embedded: true,
+    sceneMetadata: {},
+    activeComponents: []
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'The renderer-owned presentation can run without fetching Alcantara state when a host provides scene metadata.'
+      }
+    }
   }
 };
