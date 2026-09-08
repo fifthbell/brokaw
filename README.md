@@ -38,7 +38,7 @@ When enabled, the shared standard and 404 shells collect only performance and fi
 
 ## Fifthbell live-program bundle
 
-`liveProgramPageFiles()` returns the deployable bundle as deterministic `{ key, body, contentType }` entries. It includes `index.html`, versioned JavaScript and CSS, every image/audio/font dependency, and `live-program-manifest.json`. The manifest records the Brokaw package version, renderer schema version, file byte sizes, content types, and SHA-256 digests. A publisher such as Cronkite must upload every returned key under the same public prefix; the relative URLs then work at any Cronkite-owned path.
+`liveProgramPageFiles()` returns the deployable bundle as deterministic `{ key, body, contentType }` entries. It includes `index.html`, versioned JavaScript and CSS, every image/audio/font dependency, and `live-program-manifest.json`. The manifest records the Brokaw package version, renderer schema version, file byte sizes, content types, and SHA-256 digests. It is also an `alcantara.program-template` contract: it declares the renderer entrypoint, supported capabilities, accepted signals, and the runtime parameters Alcantara supplies. A publisher such as Cronkite must upload every returned key under the same public prefix; the relative URLs then work at any Cronkite-owned path.
 
 ```ts
 import { liveProgramPageFiles } from '@fifthbell/brokaw';
@@ -54,6 +54,8 @@ The standalone renderer uses Alcantara's public, program-scoped contract:
 - updates: `GET /program/:programId/events` as server-sent events
 - state ordering: the non-negative integer `version` supplied by Alcantara
 - renderer schema: `schemaVersion: 1` when present; absent schema versions remain compatible with Alcantara's current v1 payload
+
+Alcantara registers the versioned public URL of `live-program-manifest.json`, resolves the relative `entrypoint`, and uses the declared `capabilities` to expose only applicable controls. The `control.signals` allowlist is the complete set of SSE signal types this renderer accepts; adding renderer behavior requires updating that contract in the same release.
 
 Cronkite can configure a published bundle at runtime by defining `window.__FIFTHBELL_LIVE_PROGRAM_CONFIG__ = { programId, apiBaseUrl }` before the module script runs, or by supplying `programId` and `apiBaseUrl` query parameters. Build-time `VITE_PROGRAM_ID` (default `fifthbell`) and `VITE_API_BASE_URL` are fallbacks. The API base can be an Alcantara origin, an origin ending in `/program`, or the complete `/program/:programId` endpoint; the complete endpoint form remains compatible with existing builds.
 
