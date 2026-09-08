@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { liveProgramTemplateContract } from './src/program-template-manifest';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const outDir = resolve(__dirname, 'dist', 'live-program-page');
@@ -76,10 +77,10 @@ export default defineConfig({
             };
           });
         writeFileSync(join(outDir, 'live-program-manifest.json'), `${JSON.stringify({
+          ...liveProgramTemplateContract,
           package: '@fifthbell/brokaw',
           bundleVersion: packageVersion,
           schemaVersion: 1,
-          entrypoint: 'index.html',
           statePath: 'state',
           eventsPath: 'events',
           files,
