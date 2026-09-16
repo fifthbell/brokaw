@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { canonicalArticleSchema } from './types/canonical-article.js';
+import { layoutNames } from './layouts.js';
 
 /**
  * Standalone pages carry evergreen content — privacy policies, contact and
@@ -9,10 +9,9 @@ import { canonicalArticleSchema } from './types/canonical-article.js';
  */
 describe('standalone-page layout', () => {
   it('is an accepted canonical layout', () => {
-    // Assert against the enum itself rather than a whole fixture document, so
+    // Assert against the authoritative layout list rather than a whole fixture document, so
     // this stays true as unrelated required fields come and go.
-    const layout = canonicalArticleSchema.shape.layout;
-    expect(layout.options).toContain('standalone-page');
+    expect(layoutNames).toContain('standalone-page');
   });
 
   it('registers a layout template and its main partial', async () => {

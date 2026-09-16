@@ -19,7 +19,7 @@ describe('updated article version', () => {
       categories: [],
       body: [],
       updatedVersion: {
-        id: 42,
+        id: '42',
         title: 'The current version of the story',
         url: '/news/current-version'
       }

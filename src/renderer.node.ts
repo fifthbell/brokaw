@@ -1,20 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { layoutFiles, type LayoutName } from './layouts.js';
 import type { CanonicalDocument } from './types/canonical-article.js';
-import { renderWithAssets, type RendererAssets, type LayoutName } from './renderer.core.js';
-
-const layoutFiles: Record<LayoutName, string> = {
-  'article-page': 'article-page.hbs',
-  homepage: 'homepage.hbs',
-  'category-page': 'category-page.hbs',
-  'search-page': 'search-page.hbs',
-  '404': '404.hbs',
-  'live-story': 'live-story.hbs',
-  'link-in-bio': 'link-in-bio.hbs',
-  'media-page': 'media-page.hbs',
-  'standalone-page': 'standalone-page.hbs'
-};
+import { renderWithAssets, type RendererAssets } from './renderer.core.js';
 
 function getPaths() {
   const currentFile = fileURLToPath(import.meta.url);
@@ -93,7 +82,12 @@ export function render(document: CanonicalDocument): string {
 function liveProgramPageDir(): string {
   const currentFile = fileURLToPath(import.meta.url);
   const currentDir = path.dirname(currentFile);
-  return path.join(currentDir, 'live-program-page');
+  const colocated = path.join(currentDir, 'live-program-page');
+  if (fs.existsSync(colocated)) return colocated;
+
+  // Source-level verification runs after Vite has emitted the package bundle.
+  // Published code resolves the colocated dist directory above.
+  return path.join(path.resolve(currentDir, '..'), 'dist', 'live-program-page');
 }
 
 export function liveProgramPageHtml(): string {
