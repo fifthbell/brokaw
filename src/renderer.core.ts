@@ -1,10 +1,11 @@
 import Handlebars from 'handlebars';
+import { layoutNames, type LayoutName } from './layouts.js';
 import { canonicalArticleSchema, type CanonicalDocument } from './types/canonical-article.js';
 import { distributeHomepageArticles } from './homepage-distributor.js';
 import { buildSofascoreAttackMomentumUrl, buildSofascoreMatchUrl } from './utils/sofascore.js';
 import { renderRumLoader } from './rum.js';
 
-export type LayoutName = CanonicalDocument['layout'];
+export type { LayoutName } from './layouts.js';
 
 export type RendererAssets = {
   layouts: Record<LayoutName, string>;
@@ -362,11 +363,11 @@ export function renderWithAssets(doc: CanonicalDocument, assets: RendererAssets)
 
   const requestedLayout = (doc as { layout?: string }).layout;
   if (!requestedLayout || !layoutCache.has(requestedLayout as LayoutName)) {
-    throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: article-page, homepage, category-page, search-page, 404, live-story, link-in-bio, media-page`);
+    throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: ${layoutNames.join(', ')}`);
   }
 
   const parsed = canonicalArticleSchema.parse(normalizeDocument(doc));
-  const template = layoutCache.get(parsed.layout);
+  const template = layoutCache.get(parsed.layout as LayoutName);
   if (!template) {
     throw new Error(`Layout template missing for \"${parsed.layout}\"`);
   }

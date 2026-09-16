@@ -1,0 +1,501 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/cronkite/cls/v1/cronkite-manifest.schema.json",
+  "title": "Cronkite CLS manifest",
+  "description": "Machine-readable structural contract for a Cronkite-compatible Component Library System manifest. Semantic cross-field and package checks are specified in ../validation.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract",
+    "contractVersion",
+    "package",
+    "version",
+    "layouts",
+    "languages"
+  ],
+  "properties": {
+    "contract": {
+      "const": "cronkite.cls",
+      "description": "Required contract discriminator. No omission default."
+    },
+    "contractVersion": {
+      "const": 1,
+      "description": "Required manifest contract version. No omission default."
+    },
+    "package": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 214,
+      "pattern": "^(?:@[a-z0-9][a-z0-9._-]*/)?[a-z0-9][a-z0-9._-]*$",
+      "description": "Required npm package name without a version. No omission default."
+    },
+    "version": {
+      "type": "string",
+      "maxLength": 256,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$",
+      "description": "Required exact SemVer package version. No omission default."
+    },
+    "layouts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/name" },
+      "description": "Required authoritative set of page layouts. No omission default."
+    },
+    "languages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/languageTag" },
+      "description": "Required supported BCP 47 language tags. No omission default."
+    },
+    "collections": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/name" },
+      "additionalProperties": { "$ref": "#/$defs/safePrefix" },
+      "default": {
+        "article-page": "json/articles",
+        "standalone-page": "json/pages"
+      },
+      "description": "Optional layout-to-canonical-JSON-prefix map. Supplying the object replaces the whole default map."
+    },
+    "routing": {
+      "$ref": "#/$defs/routing",
+      "default": {
+        "htmlKeyTemplate": "html/{path}/index.html",
+        "rootKey": "html/index.html"
+      },
+      "description": "Optional HTML object-key derivation rules."
+    },
+    "systemPages": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/systemPage" },
+      "default": [],
+      "description": "Optional system-generated pages. Expanded route/key uniqueness is a semantic validation rule."
+    },
+    "renderables": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/name" },
+      "additionalProperties": { "$ref": "#/$defs/renderable" },
+      "default": {},
+      "description": "Optional explicit page or asset renderables in the same namespace as layouts."
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fonts": { "$ref": "#/$defs/capability" },
+        "assets": { "$ref": "#/$defs/capability" }
+      },
+      "default": {},
+      "description": "Optional package file capabilities recognized by contract version 1."
+    },
+    "writeOrdering": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/name" },
+      "additionalProperties": { "$ref": "#/$defs/writeOrderingRule" },
+      "default": {},
+      "description": "Optional operation-local final-write declarations."
+    }
+  },
+  "$defs": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "languageTag": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]{1,8}(?:-[A-Za-z0-9]{1,8})*$",
+      "minLength": 1,
+      "maxLength": 63,
+      "description": "Permissive lexical envelope including grandfathered and private-use tags; a standards-compliant BCP 47 parser is authoritative."
+    },
+    "javascriptIdentifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "safePrefix": {
+      "type": "string",
+      "pattern": "^(?!/)(?!\\.{1,2}(?:/|$))(?!.*(?:/\\.{1,2})(?:/|$))(?!.*//)(?!.*[\\\\?#\\u0000\\r\\n])(?!.*\\{)[^/]+(?:/[^/]+)*$",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "safeKey": {
+      "type": "string",
+      "pattern": "^(?!/)(?!\\.{1,2}(?:/|$))(?!.*(?:/\\.{1,2})(?:/|$))(?!.*//)(?!.*[\\\\?#\\u0000\\r\\n])(?!.*\\{)[^/]+(?:/[^/]+)*$",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "safeKeyWithLanguage": {
+      "type": "string",
+      "pattern": "^(?!/)(?!\\.{1,2}(?:/|$))(?!.*(?:/\\.{1,2})(?:/|$))(?!.*//)(?!.*[\\\\?#\\u0000\\r\\n])(?!(?:.*\\{language\\}){2})(?!.*\\{(?!language\\})[^}]*\\})[^/]+(?:/[^/]+)*$",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "siteRouteWithLanguage": {
+      "type": "string",
+      "pattern": "^/(?:$|(?!/)(?!\\.{1,2}(?:/|$))(?!.*(?:/\\.{1,2})(?:/|$))(?!.*//)(?!.*[\\\\?#\\u0000\\r\\n])(?!(?:.*\\{language\\}){2})(?!.*\\{(?!language\\})[^}]*\\})[^/?#]+(?:/[^/?#]+)*)$",
+      "minLength": 1,
+      "maxLength": 2048
+    },
+    "packageEntry": {
+      "type": "string",
+      "pattern": "^(?!/)(?!\\.{1,2}(?:/|$))(?!.*(?:/\\.{1,2})(?:/|$))(?!.*//)(?!.*[\\\\?#\\u0000\\r\\n])(?!.*\\{)[^/]+(?:/[^/]+)*$",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "mediaType": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+(?:\\s*;\\s*[A-Za-z0-9!#$&^_.+-]+=(?:[A-Za-z0-9!#$&^_.+-]+|\"[^\"\\r\\n]*\"))*$",
+      "maxLength": 256
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "htmlKeyTemplate": {
+          "type": "string",
+          "pattern": "^(?!/)(?=.*\\{path\\})(?!\\.{1,2}(?:/|$))(?!.*(?:/\\.{1,2})(?:/|$))(?!.*//)(?!.*[\\\\?#\\u0000\\r\\n])(?!(?:.*\\{path\\}){2})(?!.*\\{(?!path\\})[^}]*\\})[^/]+(?:/[^/]+)*$",
+          "minLength": 6,
+          "maxLength": 1024,
+          "default": "html/{path}/index.html",
+          "description": "Optional safe relative template containing {path} exactly once."
+        },
+        "rootKey": {
+          "$ref": "#/$defs/safeKey",
+          "default": "html/index.html",
+          "description": "Optional safe relative root-route object key."
+        }
+      }
+    },
+    "copy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "description"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "\\S",
+          "description": "Required non-empty fictional or outlet-owned page title. No omission default."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2048,
+          "pattern": "\\S",
+          "description": "Required non-empty fictional or outlet-owned page description. No omission default."
+        }
+      }
+    },
+    "systemPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "layout",
+        "route",
+        "key",
+        "cacheControl",
+        "perLanguage",
+        "copy"
+      ],
+      "properties": {
+        "layout": {
+          "$ref": "#/$defs/name",
+          "description": "Required layout that must occur in the top-level layouts array. No omission default."
+        },
+        "route": {
+          "$ref": "#/$defs/siteRouteWithLanguage",
+          "description": "Required public route, optionally with one {language} token. No omission default."
+        },
+        "key": {
+          "$ref": "#/$defs/safeKeyWithLanguage",
+          "description": "Required safe relative object key, optionally with one {language} token. No omission default."
+        },
+        "cacheControl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\r\\n]+$",
+          "description": "Required Cache-Control field value. No omission default."
+        },
+        "perLanguage": {
+          "type": "boolean",
+          "description": "Required switch controlling language expansion. No omission default."
+        },
+        "copy": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/$defs/languageTag" },
+          "additionalProperties": { "$ref": "#/$defs/copy" },
+          "description": "Required language-to-copy map. No omission default."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "perLanguage": { "const": true } },
+            "required": ["perLanguage"]
+          },
+          "then": {
+            "properties": {
+              "route": { "type": "string", "pattern": "\\{language\\}" },
+              "key": { "type": "string", "pattern": "\\{language\\}" }
+            }
+          },
+          "else": {
+            "properties": {
+              "route": {
+                "type": "string",
+                "not": { "type": "string", "pattern": "\\{language\\}" }
+              },
+              "key": {
+                "type": "string",
+                "not": { "type": "string", "pattern": "\\{language\\}" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "opaqueContract": {
+      "type": "object",
+      "required": ["kind", "version"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "\\S"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true,
+      "description": "Producer-owned contract metadata. The CPS validates kind/version and treats every other member as opaque."
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "schema", "contentType"],
+      "properties": {
+        "key": {
+          "$ref": "#/$defs/safeKeyWithLanguage",
+          "description": "Required CMS-owned resource key, optionally with one {language} token."
+        },
+        "schema": {
+          "$ref": "#/$defs/packageEntry",
+          "description": "Required packed draft-2020-12 JSON Schema path."
+        },
+        "contentType": {
+          "$ref": "#/$defs/mediaType",
+          "description": "Required resource media type."
+        },
+        "perLanguage": {
+          "type": "boolean",
+          "default": false,
+          "description": "Optional language-expansion switch."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "perLanguage": { "const": true } },
+            "required": ["perLanguage"]
+          },
+          "then": {
+            "properties": {
+              "key": { "type": "string", "pattern": "\\{language\\}" }
+            }
+          },
+          "else": {
+            "properties": {
+              "key": {
+                "type": "string",
+                "not": { "type": "string", "pattern": "\\{language\\}" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "resources": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/name" },
+      "additionalProperties": { "$ref": "#/$defs/resource" },
+      "default": {}
+    },
+    "renderable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine"],
+      "properties": {
+        "engine": {
+          "enum": ["handlebars", "html-raster", "remotion"],
+          "description": "Required bounded CPS rendering engine. No omission default."
+        },
+        "export": {
+          "$ref": "#/$defs/javascriptIdentifier",
+          "description": "Function export required by handlebars and html-raster. No omission default."
+        },
+        "entry": {
+          "$ref": "#/$defs/packageEntry",
+          "description": "Packed package entry required by remotion. No omission default."
+        },
+        "compositionId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Composition selector required by remotion. No omission default."
+        },
+        "outputMode": {
+          "enum": ["single", "files"],
+          "default": "single",
+          "description": "Optional result mode; files uses the FileEntry array ABI."
+        },
+        "lifecycle": {
+          "enum": ["request", "basement"],
+          "default": "request",
+          "description": "Optional request-derived or CLS-version-derived lifecycle."
+        },
+        "contentType": {
+          "$ref": "#/$defs/mediaType",
+          "description": "Media type required for a single output and forbidden for a file set."
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16384,
+          "description": "Positive pixel width required by html-raster."
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16384,
+          "description": "Positive pixel height required by html-raster."
+        },
+        "key": {
+          "$ref": "#/$defs/safeKey",
+          "description": "Output key required only for a basement single output."
+        },
+        "inputSchema": {
+          "$ref": "#/$defs/packageEntry",
+          "description": "Optional packed draft-2020-12 input-schema path."
+        },
+        "resources": {
+          "$ref": "#/$defs/resources"
+        },
+        "contract": {
+          "$ref": "#/$defs/opaqueContract"
+        }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "engine": { "const": "handlebars" },
+                "outputMode": { "const": "single" },
+                "contentType": { "type": "string", "pattern": "^text/" },
+                "export": true,
+                "entry": false,
+                "compositionId": false,
+                "width": false,
+                "height": false
+              },
+              "required": ["export", "contentType"]
+            },
+            {
+              "properties": {
+                "engine": { "const": "handlebars" },
+                "outputMode": { "const": "files" },
+                "export": true,
+                "entry": false,
+                "compositionId": false,
+                "contentType": false,
+                "width": false,
+                "height": false,
+                "key": false
+              },
+              "required": ["export", "outputMode"]
+            },
+            {
+              "properties": {
+                "engine": { "const": "html-raster" },
+                "outputMode": { "const": "single" },
+                "contentType": { "type": "string", "pattern": "^image/" },
+                "export": true,
+                "width": true,
+                "height": true,
+                "entry": false,
+                "compositionId": false
+              },
+              "required": ["export", "contentType", "width", "height"]
+            },
+            {
+              "properties": {
+                "engine": { "const": "remotion" },
+                "outputMode": { "const": "single" },
+                "contentType": { "type": "string", "pattern": "^video/" },
+                "entry": true,
+                "compositionId": true,
+                "export": false,
+                "width": false,
+                "height": false
+              },
+              "required": ["entry", "compositionId", "contentType"]
+            }
+          ]
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycle": { "const": "basement" },
+              "outputMode": { "const": "single" }
+            },
+            "required": ["lifecycle"]
+          },
+          "then": {
+            "properties": { "key": true },
+            "required": ["key"]
+          },
+          "else": { "properties": { "key": false } }
+        }
+      ]
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["export"],
+      "properties": {
+        "export": {
+          "$ref": "#/$defs/javascriptIdentifier",
+          "description": "Required function export. No omission default."
+        }
+      }
+    },
+    "writeOrderingRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["last"],
+      "properties": {
+        "last": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/safeKey" },
+          "description": "Required ordered final-write keys. No omission default."
+        }
+      }
+    }
+  }
+}
