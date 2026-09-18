@@ -89,6 +89,7 @@ for (const [name, capability] of Object.entries(
 
 for (const schemaName of [
   "canonical-document.schema.json",
+  "feed-renderable-input.schema.json",
   "live-program-release-input.schema.json",
 ]) {
   const schema = await readJson(join(sourceSchemas, schemaName));

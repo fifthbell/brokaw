@@ -62,9 +62,40 @@ export const cronkiteManifest = {
   collections: {
     "article-page": "json/articles",
     "standalone-page": "json/pages",
+    "media-page": "json/media",
   },
   systemPages,
   renderables: {
+    homepage: {
+      engine: "handlebars",
+      export: "render",
+      contentType: "text/html; charset=utf-8",
+      inputSchema: "dist/schemas/feed-renderable-input.schema.json",
+    },
+    "category-page": {
+      engine: "handlebars",
+      export: "render",
+      contentType: "text/html; charset=utf-8",
+      inputSchema: "dist/schemas/feed-renderable-input.schema.json",
+    },
+    "search-page": {
+      engine: "handlebars",
+      export: "render",
+      contentType: "text/html; charset=utf-8",
+      inputSchema: "dist/schemas/feed-renderable-input.schema.json",
+    },
+    "live-story": {
+      engine: "handlebars",
+      export: "render",
+      contentType: "text/html; charset=utf-8",
+      inputSchema: "dist/schemas/feed-renderable-input.schema.json",
+    },
+    "link-in-bio": {
+      engine: "handlebars",
+      export: "render",
+      contentType: "text/html; charset=utf-8",
+      inputSchema: "dist/schemas/feed-renderable-input.schema.json",
+    },
     "social-image": {
       engine: "html-raster",
       export: "buildInstagramImageHtml",

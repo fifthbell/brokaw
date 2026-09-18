@@ -39,6 +39,7 @@
     "./cronkite-manifest.json": "./dist/cronkite-manifest.json",
     "./schemas/canonical-document.schema.json": "./dist/schemas/canonical-document.schema.json",
     "./schemas/cronkite-manifest.schema.json": "./dist/schemas/cronkite-manifest.schema.json",
+    "./schemas/feed-renderable-input.schema.json": "./dist/schemas/feed-renderable-input.schema.json",
     "./schemas/live-program-release-input.schema.json": "./dist/schemas/live-program-release-input.schema.json",
     "./video": "./dist/video/index.js",
     "./components/live-program": {
