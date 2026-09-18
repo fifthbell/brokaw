@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fifthbell.com/brokaw/feed-renderable-input.schema.json",
+  "title": "Brokaw feed renderable input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["document"],
+  "properties": {
+    "document": {
+      "type": "object"
+    },
+    "feed": {
+      "type": "object"
+    }
+  }
+}

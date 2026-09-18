@@ -49,6 +49,22 @@ describe("Cronkite manifest", () => {
     expect(cronkiteManifest.capabilities).toEqual({
       fonts: { export: "fontFiles" },
     });
+    expect(cronkiteManifest.collections["media-page"]).toBe("json/media");
+
+    for (const renderable of [
+      "homepage",
+      "category-page",
+      "search-page",
+      "live-story",
+      "link-in-bio",
+    ] as const) {
+      expect(cronkiteManifest.renderables[renderable]).toMatchObject({
+        engine: "handlebars",
+        export: "render",
+        contentType: "text/html; charset=utf-8",
+        inputSchema: "dist/schemas/feed-renderable-input.schema.json",
+      });
+    }
 
     for (const descriptor of Object.values(cronkiteManifest.renderables)) {
       if ("export" in descriptor && descriptor.export) {

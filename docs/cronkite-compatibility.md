@@ -19,6 +19,13 @@ The canonical-document TypeScript declaration is generated from
 Brokaw's runtime validation uses that same JSON Schema. The previous local Zod
 copy is not an independent contract.
 
+CMS-supplied feed renderables (`homepage`, `category-page`, `search-page`,
+`live-story`, and `link-in-bio`) retain the root page ABI and declare the packed
+`feed-renderable-input` schema. This lets Cronkite validate the explicit
+`{ document, feed? }` boundary before rendering; it never needs to fetch a feed.
+The `media-page` layout owns the distinct `json/media` collection alongside its
+HTML route so generic publication can receive a complete signed target set.
+
 ## Declared system pages
 
 The manifest owns localized copy for 404 and search pages in English, Spanish,

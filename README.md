@@ -44,6 +44,7 @@ When enabled, the shared standard and 404 shells collect only performance and fi
 - `@fifthbell/brokaw/video` -> bundleable Remotion short-video entrypoint
 - `@fifthbell/brokaw/schemas/canonical-document.schema.json` -> canonical input contract
 - `@fifthbell/brokaw/schemas/cronkite-manifest.schema.json` -> CLS manifest contract
+- `@fifthbell/brokaw/schemas/feed-renderable-input.schema.json` -> CMS-owned feed renderable input boundary
 - `@fifthbell/brokaw/schemas/live-program-release-input.schema.json` -> generic live-program release input
 - `@fifthbell/brokaw/partial-deps.json` -> partial-to-layout dependency map
 
