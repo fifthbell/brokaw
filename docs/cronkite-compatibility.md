@@ -47,6 +47,10 @@ Brokaw declares:
   `BrokawShort` composition;
 - `fonts`, using `fontFiles`.
 
+`fontFiles()` returns each packaged font asset once, including exactly one
+`content/fonts/fonts.css` stylesheet. Its output keys are unique so Cronkite
+can publish the declared font capability without rejecting the file set.
+
 Brokaw does not declare `capabilities.assets`; it has no `assetFiles` export.
 The short-video template accepts caller-owned brand colors, identity, URLs,
 logo/background assets, slide copy, and optional audio. It contains no

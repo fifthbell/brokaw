@@ -14,6 +14,7 @@ const meta = {
       ],
       ['Renderables', Object.keys(cronkiteManifest.renderables).join(', ')],
       ['Capabilities', Object.keys(cronkiteManifest.capabilities).join(', ')],
+      ['Font output', 'One stylesheet and one entry per font file'],
     ]
       .map(
         ([label, value]) =>

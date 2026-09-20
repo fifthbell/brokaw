@@ -57,6 +57,22 @@ try {
   const installedRenderer = await import(
     pathToFileURL(join(packageRoot, "dist", "renderer.js")).href
   );
+  const fontFiles = installedRenderer.fontFiles();
+  const fontKeys = fontFiles.map((file) => file.key);
+  if (fontFiles.length === 0 || new Set(fontKeys).size !== fontKeys.length) {
+    throw new Error("packed font file set is empty or contains duplicate keys");
+  }
+  const stylesheets = fontFiles.filter(
+    (file) => file.key === "content/fonts/fonts.css",
+  );
+  if (
+    stylesheets.length !== 1 ||
+    stylesheets[0].contentType !== "text/css; charset=utf-8" ||
+    stylesheets[0].body.length === 0
+  ) {
+    throw new Error("packed font file set must contain one nonempty stylesheet");
+  }
+
   const release = installedRenderer.liveProgramReleaseFiles({
     programId: "fifthbell",
     apiBaseUrl: "https://api.example.test/program/fifthbell",
