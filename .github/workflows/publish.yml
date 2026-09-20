@@ -40,20 +40,18 @@ jobs:
 
       - name: Publish
         run: npm publish --access public --provenance --loglevel verbose
-        env:
-          ACTIONS_STEP_DEBUG: 'true'
 
       - name: Verify registry
         run: |
           VERSION=$(node -p 'require("./package.json").version')
-          for attempt in 1 2 3 4 5; do
+          for attempt in $(seq 1 20); do
             LATEST=$(npm view "@fifthbell/brokaw@${VERSION}" version 2>/dev/null || true)
             if [ "$LATEST" = "$VERSION" ]; then
               echo "registry serves ${VERSION}"
               exit 0
             fi
             echo "attempt ${attempt}: registry does not serve ${VERSION} yet"
-            sleep 10
+            sleep 15
           done
           echo "::error::${VERSION} was not published to the registry"
           exit 1
