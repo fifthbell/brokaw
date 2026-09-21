@@ -1,17 +1,26 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { promisify } from "node:util";
-import { bundle } from "@remotion/bundler";
 
 const execFileAsync = promisify(execFile);
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const workspace = await mkdtemp(join(tmpdir(), "brokaw-packed-remotion-"));
+const workspace = await mkdtemp(join(tmpdir(), "brokaw-packed-contract-"));
 const packageDirectory = join(workspace, "package");
 const consumerDirectory = join(workspace, "consumer");
+
+const assertPackedFile = async (packageRoot, relativePath, owner) => {
+  const resolvedPath = resolve(packageRoot, relativePath);
+  if (!resolvedPath.startsWith(`${resolve(packageRoot)}${sep}`)) {
+    throw new Error(`${owner} path escapes the packed package: ${relativePath}`);
+  }
+  if (!(await stat(resolvedPath)).isFile()) {
+    throw new Error(`${owner} path is not a regular packed file: ${relativePath}`);
+  }
+};
 
 try {
   await mkdir(packageDirectory);
@@ -32,7 +41,7 @@ try {
 
   await writeFile(
     join(consumerDirectory, "package.json"),
-    JSON.stringify({ name: "brokaw-remotion-consumer", private: true }),
+    JSON.stringify({ name: "brokaw-contract-consumer", private: true }),
   );
   await execFileAsync(
     "npm",
@@ -54,12 +63,48 @@ try {
   );
   const installedManifest = JSON.parse(await readFile(manifestPath, "utf8"));
   const packageRoot = dirname(dirname(manifestPath));
+  const installedPackage = JSON.parse(
+    await readFile(join(packageRoot, "package.json"), "utf8"),
+  );
+  if (
+    installedManifest.package !== installedPackage.name ||
+    installedManifest.version !== installedPackage.version
+  ) {
+    throw new Error("packed manifest identity does not match the package");
+  }
+
+  const rendering = installedManifest.templateRendering;
+  if (
+    rendering?.contract !== "cronkite.templates" ||
+    rendering.contractVersion !== 1
+  ) {
+    throw new Error("packed manifest has no declarative template contract");
+  }
+  for (const [name, definition] of Object.entries(rendering.partials ?? {})) {
+    await assertPackedFile(packageRoot, definition.entry, `partial ${name}`);
+  }
+  for (const [name, definition] of Object.entries(rendering.renderables ?? {})) {
+    await assertPackedFile(
+      packageRoot,
+      definition.template.entry,
+      `renderable ${name} template`,
+    );
+    await assertPackedFile(
+      packageRoot,
+      definition.inputSchema,
+      `renderable ${name} schema`,
+    );
+  }
+  for (const [key, definition] of Object.entries(rendering.staticAssets ?? {})) {
+    await assertPackedFile(packageRoot, definition.source, `static asset ${key}`);
+  }
+
   const installedRenderer = await import(
     pathToFileURL(join(packageRoot, "dist", "renderer.js")).href
   );
   const fontFiles = installedRenderer.fontFiles();
   const fontKeys = fontFiles.map((file) => file.key);
-  if (fontFiles.length === 0 || new Set(fontKeys).size !== fontKeys.length) {
+  if (fontFiles.length === 0 || new Set(fontKeys).size !== fontFiles.length) {
     throw new Error("packed font file set is empty or contains duplicate keys");
   }
   const stylesheets = fontFiles.filter(
@@ -81,18 +126,9 @@ try {
     throw new Error("packed live-program release does not end at its pointer");
   }
 
-  const video = installedManifest.renderables?.["short-video"];
-  if (video?.engine !== "remotion" || typeof video.entry !== "string") {
-    throw new Error("packed manifest has no Remotion short-video entry");
-  }
-
-  const entryPoint = join(packageRoot, video.entry);
-  await bundle({
-    entryPoint,
-    outDir: join(workspace, "bundle"),
-    onProgress: () => undefined,
-  });
-  console.log(`Bundled packed ${installedManifest.package} short-video entry.`);
+  console.log(
+    `Validated packed ${installedManifest.package}@${installedManifest.version} declarative contract.`,
+  );
 } finally {
   await rm(workspace, { recursive: true, force: true });
 }

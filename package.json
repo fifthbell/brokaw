@@ -61,7 +61,7 @@
     "test": "npm run test:unit",
     "pretest:unit": "npm run generate:contract-types && npm run build:css && npm run build:live-program",
     "test:unit": "vitest run --project unit",
-    "verify:packed-remotion": "npm run build && node scripts/verify-packed-remotion.mjs"
+    "verify:packed-contract": "npm run build && node scripts/verify-packed-contract.mjs"
   },
   "dependencies": {
     "ajv": "^8.20.0",

@@ -95,7 +95,7 @@ npm install
 npm run typecheck
 npm run test:unit
 npm run build
-npm run verify:packed-remotion
+npm run verify:packed-contract
 npm pack --dry-run
 npm run storybook
 ```

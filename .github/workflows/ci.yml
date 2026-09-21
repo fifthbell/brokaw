@@ -33,5 +33,5 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Bundle the packed Remotion entry as a consumer
-        run: node scripts/verify-packed-remotion.mjs
+      - name: Verify the packed declarative contract as a consumer
+        run: node scripts/verify-packed-contract.mjs
