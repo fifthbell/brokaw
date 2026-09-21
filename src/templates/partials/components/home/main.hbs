@@ -4,6 +4,7 @@
       {{> components/spotlight-hero
         title=(coalesce heroTitle title)
         slug=(coalesce heroSlug slug)
+        url=(coalesce heroUrl canonicalUrl)
         excerpt=(coalesce heroExcerpt excerpt)
         hero=hero
         slides=heroSlides
@@ -12,9 +13,10 @@
       }}
     {{else}}
       {{#if heroSlides}}
-        {{> components/spotlight-hero
+        {{> components/spotlight-hero-slides
           title=(coalesce heroTitle title)
           slug=(coalesce heroSlug slug)
+          url=(coalesce heroUrl canonicalUrl)
           excerpt=(coalesce heroExcerpt excerpt)
           hero=hero
           slides=heroSlides
@@ -34,6 +36,7 @@
       {{> components/editorial-hero
         title=(coalesce heroTitle title)
         slug=(coalesce heroSlug slug)
+        url=(coalesce heroUrl canonicalUrl)
         excerpt=(coalesce heroExcerpt excerpt)
         hero=hero
         slides=heroSlides

@@ -1,76 +1,87 @@
 # Cronkite compatibility
 
-Brokaw owns Fifthbell's renderer identity and declares it through
-`cronkiteManifest`. The source object lives in `src/cronkite-manifest.ts`; the
-build validates it against the CPS-02 schema and emits
-`dist/cronkite-manifest.json`. Consumers can read the JSON export before they
-execute package code.
+Brokaw publishes the pinned declarative template contract for Fifthbell. The
+source artifact is `src/cronkite-manifest.ts`; the build validates it against
+`src/schemas/cronkite-manifest.schema.json` and emits
+`dist/cronkite-manifest.json`.
 
-## Identity and drift boundaries
+The emitted artifact has only three top-level members: `package`, `version`,
+and `templateRendering`. Cronkite compiles the declared Handlebars entries and
+partial graph directly. Publishing an HTML page no longer requires importing or
+executing `dist/renderer.js`.
 
-The manifest package and version must match `package.json` and the exported
-`version`. Its ordered layout list must match `src/layouts.ts`, and its language
-list must match `outletConfig.supportedLanguages`. The build also checks every
-declared function export and every packed entry or schema path. A mismatch fails
-the build instead of becoming a runtime renderer guess.
+## Complete document boundary
 
-The canonical-document TypeScript declaration is generated from
-`src/schemas/canonical-document.schema.json`, the CPS-03 normative schema.
-Brokaw's runtime validation uses that same JSON Schema. The previous local Zod
-copy is not an independent contract.
+Every page renderable validates the supplied document against the packed
+canonical-document schema. The CMS owns the completed rendering input,
+including:
 
-CMS-supplied feed renderables (`homepage`, `category-page`, `search-page`,
-`live-story`, and `link-in-bio`) retain the root page ABI and declare the packed
-`feed-renderable-input` schema. This lets Cronkite validate the explicit
-`{ document, feed? }` boundary before rendering; it never needs to fetch a feed.
-The `media-page` layout owns the distinct `json/media` collection alongside its
-HTML route so generic publication can receive a complete signed target set.
+- canonical URLs and article/reference URLs;
+- pre-distributed `homepageSlots` and explicit homepage visibility flags;
+- `logoLink`, `statusVariant`, and localized `searchCopy` when applicable;
+- structured `seo.socialImage` data;
+- extracted vendor identifiers such as `tweetId` and TikTok `videoId`;
+- optional, validated public RUM configuration.
 
-## Declared system pages
+The browser and Node renderers remain as local and Storybook compatibility
+exports. They render the same completed document without composing editorial
+state or deriving vendor identifiers.
 
-The manifest owns localized copy for 404 and search pages in English, Spanish,
-and Italian. The current English and Spanish 404 copy is preserved exactly. The
-Italian copy is owned here instead of falling back to English.
+## Templates, helpers, and embeds
 
-The system-page descriptors include their routes, output keys, cache policy,
-language expansion, and copy. Brokaw declares `en` as its default and supports
-`en`, `es`, and `it`. It intentionally does not declare `coming-soon`, because
-no such layout exists in this package.
+The manifest names every direct partial dependency in source order. Dynamic
+partials, inline partial decorators, and partial blocks have been replaced by
+ordinary declared partials so Cronkite can validate the graph before serving
+requests.
 
-## Asset renderables and capabilities
+Templates use only the pinned helpers: `eq`, `add`, `slice`, `uppercase`,
+`coalesce`, `jsonString`, `embedUrl`, `formatDate`,
+`socialImageUrl`, and `socialImageAlt`. X, TikTok, Instagram, and SofaScore
+URL shapes are data in `embedRegistry`, not executable package helpers. The
+social-card template accepts caller-supplied `qrCodeHtml`; QR generation is
+not part of declarative rendering.
 
-Brokaw declares:
+The conditional RUM loader is a declared Handlebars partial. It retains
+pathname-only page IDs, strips resource performance entries, disables cookies,
+X-Ray, resource URLs, and automatic page views, and rejects sensitive error
+payloads without requiring a JavaScript renderer import.
 
-- `social-image`, using the existing `buildInstagramImageHtml` HTML-raster
-  export at 1080 by 1350 JPEG;
-- `short-video`, using the bundleable `dist/video/index.js` Remotion entry and
-  `BrokawShort` composition;
-- `fonts`, using `fontFiles`.
+## System pages and localization
 
-`fontFiles()` returns each packaged font asset once, including exactly one
-`content/fonts/fonts.css` stylesheet. Its output keys are unique so Cronkite
-can publish the declared font capability without rejecting the file set.
+The manifest declares 404 and search pages as explicit English, Spanish, and
+Italian variants. English is Fifthbell's default language, so its object keys
+and routes are unprefixed:
 
-Brokaw does not declare `capabilities.assets`; it has no `assetFiles` export.
-The short-video template accepts caller-owned brand colors, identity, URLs,
-logo/background assets, slide copy, and optional audio. It contains no
-Fifthbell or Sanremo branding. `npm run verify:packed-remotion` builds and packs
-Brokaw, installs the tarball into a clean consumer directory, reads the
-data-only manifest, exercises the packed live-program release export, and
-bundles the declared video entry from the installed package.
+- `html/404/index.html` at `/404`;
+- `html/search/index.html` at `/search`.
 
-## Live-program release boundary
+Spanish and Italian variants retain `/es/` and `/it/` prefixes. Each variant
+contains a complete document. Search headings, controls, empty states, result
+messages, pagination, loading text, and failure text come from the document's
+localized `searchCopy`. `outletConfig.searchTitle` is no longer part of the
+contract.
 
-The existing `liveProgramPageFiles()` export remains unchanged for current
-consumers: it returns the validated relative renderer bundle. The manifest
-declares the new `liveProgramReleaseFiles(input)` request renderable, which
-accepts a safe `programId` and absolute HTTPS `apiBaseUrl` (with loopback HTTP
-retained for local development), emits the immutable bundle under
-`html/live-program.v<package-version>/`, and appends the configured canonical
-`html/program.html` document.
+## Static and raster assets
 
-The manifest's `writeOrdering.live-program.last` rule makes
-`html/program.html` the commit point. A conforming CPS writes every versioned
-release object successfully before it writes that pointer. Brokaw continues to
-own and verify the opaque `alcantara.program-template` contents; the CPS only
-writes the returned files.
+The manifest maps every packed font, the font stylesheet, and the compiled
+Brokaw stylesheet to exact output keys with content types and immutable cache
+policy. Page shells link to the published stylesheet instead of expecting CSS
+to be injected by renderer code.
+
+The `social-image` renderable retains JPEG rasterization at 1080 by 1350. Its
+input schema requires `imageUrl`, `categoryName`, `title`, and
+caller-supplied `qrCodeHtml`.
+
+Brokaw's legacy live-program and short-video exports remain available to their
+existing direct consumers, but they are not members of the declarative page
+artifact.
+
+## Verification
+
+`npm run build` validates and emits the artifact, copies schemas and fonts,
+and verifies the retained live-program bundle. Unit tests cover schema
+validation, manifest alignment, explicit system-page keys and routes, static
+assets, embed data, and output parity between declarative rendering and the
+legacy local renderer for article, homepage, category, search, and link-in-bio
+documents. `npm run build-storybook` verifies the updated page, partial, RUM,
+standalone-page, and social-image stories.

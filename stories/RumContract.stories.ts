@@ -4,6 +4,7 @@ import { render } from '../src/renderer.browser';
 import type { CanonicalArticle, RumConfig } from '../src/types/canonical-article';
 import { articleFixture } from './fixtures/article.fixture';
 import { mediaPageFixture } from './fixtures/media-page.fixture';
+import { completeDocument } from './complete-document';
 
 const rumConfig: RumConfig = {
   appMonitorId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
@@ -25,7 +26,7 @@ const notFoundFixture: CanonicalArticle = {
 
 function renderContract(page: CanonicalArticle): HTMLElement {
   const root = document.createElement('div');
-  root.innerHTML = render({ ...page, rumConfig });
+  root.innerHTML = render(completeDocument({ ...page, rumConfig }));
   return root;
 }
 
@@ -47,7 +48,7 @@ const meta = {
     controls: { disable: true },
     docs: {
       description: {
-        component: 'Standard, not-found, and media shells share the same conditional, tenant-neutral RUM loader. Scripts inserted by Storybook are inert; these stories verify rendered markup only.'
+        component: 'Standard, not-found, and media shells share the same conditional, declarative RUM partial. Scripts inserted by Storybook are inert; these stories verify rendered markup only.'
       }
     }
   }

@@ -19,6 +19,8 @@ import pullQuoteHbs from '../../src/templates/partials/blocks/pull-quote.hbs?raw
 import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
 import { loadArticlePreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
+import type { CanonicalArticle } from '../../src/types/canonical-article';
+import { completeDocument } from '../complete-document';
 
 registerCommonHelpers();
 Handlebars.registerPartial('richText', richTextHbs);
@@ -43,7 +45,7 @@ const template = Handlebars.compile(articleMainHbs);
 const meta = {
   title: 'Partials/Article/Main',
   loaders: [async () => ({ article: await loadArticlePreviewData() })],
-  render: (args, { loaded }) => template({ ...loaded.article, ...args }),
+  render: (args, { loaded }) => template(completeDocument({ ...loaded.article, ...args } as CanonicalArticle)),
 } satisfies Meta;
 
 export default meta;

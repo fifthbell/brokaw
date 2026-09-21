@@ -14,6 +14,8 @@ import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
 import scrollAreaHbs from '../../src/templates/partials/components/ui/scroll-area.hbs?raw';
 import { loadHomepagePartialPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
+import type { CanonicalArticle } from '../../src/types/canonical-article';
+import { completeDocument } from '../complete-document';
 
 registerCommonHelpers();
 Handlebars.registerPartial('components/spotlight-hero', spotlightHeroHbs);
@@ -43,7 +45,7 @@ const sectionControls = {
 const meta = {
   title: 'Partials/Home/Main',
   loaders: [async () => ({ homepage: await loadHomepagePartialPreviewData() })],
-  render: (args, { loaded }) => template({ ...loaded.homepage, ...args }),
+  render: (args, { loaded }) => template(completeDocument({ ...loaded.homepage, ...args } as CanonicalArticle)),
   args: {
     showHero: true,
     showEditorialHero: false,

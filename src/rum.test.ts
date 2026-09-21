@@ -34,6 +34,7 @@ const baseDocument: CanonicalDocument = {
 const sourceRoot = path.dirname(fileURLToPath(import.meta.url));
 const standardShell = fs.readFileSync(path.join(sourceRoot, 'templates/partials/shell/doc-start-standard.hbs'), 'utf8');
 const notFoundShell = fs.readFileSync(path.join(sourceRoot, 'templates/partials/shell/doc-start-404.hbs'), 'utf8');
+const rumLoader = fs.readFileSync(path.join(sourceRoot, 'templates/partials/shell/rum-loader.hbs'), 'utf8');
 const layoutNames: LayoutName[] = [
   'article-page',
   'homepage',
@@ -51,7 +52,8 @@ const assets: RendererAssets = {
   layouts,
   partials: {
     'shell/doc-start-standard': standardShell,
-    'shell/doc-start-404': notFoundShell
+    'shell/doc-start-404': notFoundShell,
+    'shell/rum-loader': rumLoader
   },
   styles: ''
 };

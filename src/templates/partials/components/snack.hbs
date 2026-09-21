@@ -1,71 +1,13 @@
-{{#*inline 'snackMetaImageRow'}}
-  {{#if category}}
-    <div class='w-full flex items-center justify-between {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-      <span class='text-[#8f0d00] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{category}}</span>
-      {{#if readTime}}
-        <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
-      {{/if}}
-    </div>
-  {{else if (lookup categories 0)}}
-    {{#with (lookup categories 0)}}
-      <div class='w-full flex items-center justify-between {{#if ../metaTextSize}}{{../metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-        <span class='text-[#8f0d00] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{name}}</span>
-        {{#if ../readTime}}
-          <span class='article-time text-slate-500 dark:text-slate-400'>{{../readTime}}</span>
-        {{/if}}
-      </div>
-    {{/with}}
-  {{else if readTime}}
-    <div class='w-full flex items-center justify-end {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-      <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
-    </div>
-  {{/if}}
-{{/inline}}
-
-{{#*inline 'snackMetaInline'}}
-  {{#if category}}
-    <div class='flex items-center {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-      <span class='text-[#8f0d00] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{category}}</span>
-      {{#if readTime}}
-          <span class='mx-2 text-slate-400 dark:text-slate-500'>•</span>
-          <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
-      {{/if}}
-    </div>
-  {{else if (lookup categories 0)}}
-    {{#with (lookup categories 0)}}
-      <div class='flex items-center {{#if ../metaTextSize}}{{../metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-        <span class='text-[#8f0d00] dark:text-[#ff2e1a] uppercase font-bold tracking-wider'>{{name}}</span>
-        {{#if ../readTime}}
-          <span class='mx-2 text-slate-400 dark:text-slate-500'>•</span>
-          <span class='article-time text-slate-500 dark:text-slate-400'>{{../readTime}}</span>
-        {{/if}}
-      </div>
-    {{/with}}
-  {{else if readTime}}
-    <div class='flex items-center {{#if metaTextSize}}{{metaTextSize}}{{else}}text-xs{{/if}} mb-2'>
-      <span class='article-time text-slate-500 dark:text-slate-400'>{{readTime}}</span>
-    </div>
-  {{/if}}
-{{/inline}}
-
 <article class='{{#if className}}flex flex-col h-full {{className}} items-stretch{{else}}flex flex-col h-full py-4 border-t border-slate-100 dark:border-slate-800 items-stretch{{/if}}'>
   {{#unless (eq showImage false)}}
-    {{#if image}}
-      {{> snackMetaImageRow}}
-    {{else if featuredImage.url}}
-      {{> snackMetaImageRow}}
+    {{#if (coalesce image featuredImage.url)}}
+      {{> components/snack-meta-image-row}}
     {{/if}}
   {{/unless}}
 
   <div class='{{#if (eq showImage false)}}flex flex-col h-full{{else if image}}flex items-start gap-4{{else if featuredImage.url}}flex items-start gap-4{{else}}flex flex-col h-full{{/if}}'>
     <div class='flex-1'>
-      {{#if (eq showImage false)}}
-        {{> snackMetaInline}}
-      {{else if image}}
-      {{else if featuredImage.url}}
-      {{else}}
-        {{> snackMetaInline}}
-      {{/if}}
+      {{> components/snack-meta-inline}}
 
       <h3 class='{{#if titleFontWeight}}{{titleFontWeight}}{{else}}font-bold{{/if}} {{#if titleTextSize}}{{titleTextSize}}{{else}}text-lg{{/if}} leading-snug text-slate-900 dark:text-slate-100 {{#if titleClasses}}{{titleClasses}}{{else}}font-encode{{/if}}'>
         <a href='{{url}}' class='hover:text-[#8f0d00] dark:hover:text-[#ff2e1a] transition-colors'>{{title}}</a>

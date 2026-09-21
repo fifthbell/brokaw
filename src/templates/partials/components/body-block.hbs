@@ -1,0 +1,31 @@
+{{#if (eq type 'audio')}}
+  {{> blocks/audio}}
+{{else if (eq type 'dataTable')}}
+  {{> blocks/data-table}}
+{{else if (eq type 'divider')}}
+  {{> blocks/divider}}
+{{else if (eq type 'heading')}}
+  {{> blocks/heading}}
+{{else if (eq type 'image')}}
+  {{> blocks/image}}
+{{else if (eq type 'infoBox')}}
+  {{> blocks/info-box}}
+{{else if (eq type 'instagram')}}
+  {{> blocks/instagram}}
+{{else if (eq type 'keyPoints')}}
+  {{> blocks/key-points}}
+{{else if (eq type 'list')}}
+  {{> blocks/list}}
+{{else if (eq type 'liveUpdate')}}
+  {{> blocks/live-update}}
+{{else if (eq type 'pullQuote')}}
+  {{> blocks/pull-quote}}
+{{else if (eq type 'richText')}}
+  {{> blocks/rich-text}}
+{{else if (eq type 'tiktok')}}
+  {{> blocks/tiktok}}
+{{else if (eq type 'x')}}
+  {{> blocks/x}}
+{{else if (eq type 'youtube')}}
+  {{> blocks/youtube}}
+{{/if}}

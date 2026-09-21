@@ -3,6 +3,7 @@ import { render } from '../src/renderer.browser';
 import { homepageFixture, FIXTURE_NOW } from './fixtures/homepage.fixture';
 import type { CanonicalArticle } from '../src/types/canonical-article';
 import { loadHomepagePreviewData } from './preview-data';
+import { completeDocument } from './complete-document';
 
 const sectionControls = {
   showHero: { control: 'boolean' },
@@ -17,7 +18,7 @@ const sectionControls = {
 const meta = {
   title: 'Pages/Homepage',
   loaders: [async () => ({ homepage: await loadHomepagePreviewData() })],
-  render: (args, { loaded }) => render({ ...(loaded.homepage as CanonicalArticle), ...args }),
+  render: (args, { loaded }) => render(completeDocument({ ...(loaded.homepage as CanonicalArticle), ...args })),
   args: {
     showHero: true,
     showEditorialHero: false,
@@ -48,7 +49,7 @@ export const Default: Story = {
 
 export const Current: Story = {
   name: 'Current',
-  render: (_args, { loaded }) => render(loaded.homepage as CanonicalArticle),
+  render: (_args, { loaded }) => render(completeDocument(loaded.homepage as CanonicalArticle)),
   parameters: {
     controls: {
       disable: true
@@ -76,7 +77,7 @@ export const FeaturedOverflow: Story = {
  */
 export const NoFeaturedArticles: Story = {
   name: 'Featured: none recent — all slots from queue',
-  render: (args) => render(args as CanonicalArticle),
+  render: (args) => render(completeDocument(args as CanonicalArticle, FIXTURE_NOW)),
   args: {
     ...homepageFixture,
     showHero: false,
@@ -107,7 +108,7 @@ export const WithBreakingNews: Story = {
  */
 export const PartialFeatured: Story = {
   name: 'Featured: 3 recent — partial fill, rest from queue',
-  render: (args) => render(args as CanonicalArticle),
+  render: (args) => render(completeDocument(args as CanonicalArticle, FIXTURE_NOW)),
   args: {
     ...homepageFixture,
     showHero: false,

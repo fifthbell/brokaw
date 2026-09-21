@@ -16,7 +16,6 @@ const meta = {
       'defaultAuthor',
       'defaultCategory',
       'linkInBioRoute',
-      'searchTitle',
       'searchDescriptions',
       'socialLanguages',
       'socialUserAgent',

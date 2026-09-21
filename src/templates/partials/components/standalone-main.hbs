@@ -22,7 +22,7 @@
 
   <div class="prose dark:prose-invert max-w-none">
     {{#each body}}
-      {{> (lookup . "type")}}
+      {{> components/body-block}}
     {{/each}}
   </div>
 </main>

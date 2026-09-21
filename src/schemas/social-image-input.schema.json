@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fifthbell.com/schemas/social-image-input-v1.schema.json",
+  "title": "Fifthbell social image input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["imageUrl", "categoryName", "title", "qrCodeHtml"],
+  "properties": {
+    "imageUrl": { "type": "string", "format": "uri" },
+    "categoryName": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "qrCodeHtml": { "type": "string", "minLength": 1 }
+  }
+}

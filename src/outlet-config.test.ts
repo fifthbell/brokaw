@@ -22,7 +22,6 @@ const requiredContract: Record<string, ExpectedType> = {
   defaultAuthor: 'named-slug',
   defaultCategory: 'named-slug',
   linkInBioRoute: 'string',
-  searchTitle: 'string',
   searchDescriptions: 'record<string,string>',
   socialLanguages: 'string[]',
   socialUserAgent: 'string',
@@ -66,6 +65,7 @@ describe('outletConfig', () => {
   });
 
   it('uses Fifthbell production integration values expected by Cronkite', () => {
+    expect(outletConfig).not.toHaveProperty('searchTitle');
     expect(outletConfig.contentPath).toBe('/content');
     expect(outletConfig.inventoryFilename).toBe('cronkite-inventory.json');
     expect(outletConfig.socialImageExport).toBe('buildInstagramImageHtml');

@@ -2,11 +2,12 @@ import type { Meta, StoryObj } from '@storybook/html';
 import { render } from '../src/renderer.browser';
 import type { CanonicalArticle } from '../src/types/canonical-article';
 import { loadLinkInBioPreviewData } from './preview-data';
+import { completeDocument } from './complete-document';
 
 const meta = {
   title: 'Pages/LinkInBioPage',
   loaders: [async () => ({ linkInBio: await loadLinkInBioPreviewData() })],
-  render: (args, { loaded }) => render({ ...(loaded.linkInBio as CanonicalArticle), ...args }),
+  render: (args, { loaded }) => render(completeDocument({ ...(loaded.linkInBio as CanonicalArticle), ...args })),
   parameters: {
     viewport: {
       defaultViewport: 'mobile1'
@@ -24,9 +25,9 @@ export const DenseGrid: Story = {
   render: (_args, { loaded }) => {
     const current = loaded.linkInBio as CanonicalArticle;
     const articles = current.articles ?? [];
-    return render({
+    return render(completeDocument({
       ...current,
       articles: [...articles, ...articles.slice(0, 8).map((article, index) => ({ ...article, id: `${article.id}-dense-${index}` }))]
-    });
+    }));
   }
 };

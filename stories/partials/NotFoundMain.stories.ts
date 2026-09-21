@@ -8,7 +8,15 @@ const template = Handlebars.compile(notFoundMainHbs);
 const meta = {
   title: 'Partials/NotFound/Main',
   loaders: [async () => ({ homepage: await loadHomepagePreviewData() })],
-  render: (args, { loaded }) => template({ logoLink: '/', navigation: loaded.homepage.navigation, ...args }),
+  render: (args, { loaded }) => template({
+    title: 'Page Not Found',
+    excerpt: 'The page you are looking for does not exist.',
+    homeLinkLabel: 'Go to Homepage',
+    categoriesLabel: 'Or explore our categories:',
+    logoLink: '/',
+    navigation: loaded.homepage.navigation,
+    ...args
+  }),
 } satisfies Meta;
 
 export default meta;

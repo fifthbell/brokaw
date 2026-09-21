@@ -1,52 +1,223 @@
 {
-  "shell/doc-start-standard": ["article-page", "homepage", "category-page", "search-page", "media-page"],
-  "shell/doc-start-404": ["404"],
-  "shell/doc-end": ["article-page", "homepage", "category-page", "search-page", "404", "media-page"],
-  "headers/header-main": ["article-page", "homepage", "category-page", "search-page", "media-page"],
-  "headers/header-minimal": ["404"],
-  "footers/footer-full": ["article-page", "homepage", "category-page", "search-page", "media-page", "404"],
-  "nav/nav-categories": ["article-page", "homepage", "category-page", "search-page", "media-page"],
-  "components/article-main": ["article-page"],
-  "components/home/main": ["homepage"],
-  "components/category/main": ["category-page"],
-  "components/search/main": ["search-page"],
-  "components/not-found/main": ["404"],
-  "blocks/rich-text": ["article-page"],
-  "blocks/heading": ["article-page"],
-  "blocks/image": ["article-page"],
-  "blocks/list": ["article-page"],
-  "blocks/divider": ["article-page"],
-  "blocks/info-box": ["article-page"],
-  "blocks/key-points": ["article-page"],
-  "blocks/data-table": ["article-page"],
-  "blocks/live-update": ["article-page"],
-  "blocks/audio": ["article-page"],
-  "blocks/youtube": ["article-page"],
-  "blocks/x": ["article-page"],
-  "blocks/instagram": ["article-page"],
-  "blocks/tiktok": ["article-page"],
-  "blocks/pull-quote": ["article-page"],
-  "components/home/landing": ["homepage"],
-  "components/home/must-read": ["homepage"],
-  "components/home/more-stories": ["homepage"],
-  "components/category/header": ["category-page"],
-  "components/category/main-grid": ["category-page"],
-  "components/category/more-grid": ["category-page"],
-  "components/breaking-news": ["homepage"],
-  "components/breaking-news/live-updates-column": ["homepage"],
-  "components/snack": ["homepage", "category-page"],
-  "components/headline": ["homepage"],
-  "components/spotlight-hero": ["homepage"],
-  "components/editorial-hero": ["homepage"],
-  "components/hero": ["homepage"],
-  "components/hero-editorial": ["homepage"],
-  "components/trending": ["homepage"],
-  "components/ui/accordion": ["article-page", "homepage", "category-page", "search-page", "live-story", "404"],
-  "components/ui/breadcrumb": ["article-page", "homepage", "category-page", "search-page", "live-story", "404"],
-  "components/ui/icon-button": ["article-page", "homepage", "category-page", "search-page", "live-story", "404"],
-  "components/ui/loading-spinner": ["article-page", "homepage", "category-page", "search-page", "live-story", "404"],
-  "components/ui/pagination": ["article-page", "homepage", "category-page", "search-page", "live-story", "404"],
-  "components/ui/scroll-area": ["article-page", "homepage", "category-page", "search-page", "live-story", "404"],
-  "components/ui/status-badge": ["article-page", "homepage", "category-page", "search-page", "live-story", "404"],
-  "components/media/main": ["media-page"]
+  "shell/doc-start-404": [
+    "404"
+  ],
+  "shell/rum-loader": [
+    "404",
+    "article-page",
+    "homepage",
+    "category-page",
+    "search-page",
+    "live-story",
+    "media-page",
+    "standalone-page"
+  ],
+  "headers/header-minimal": [
+    "404"
+  ],
+  "components/not-found/main": [
+    "404"
+  ],
+  "footers/footer-full": [
+    "404",
+    "article-page",
+    "homepage",
+    "category-page",
+    "search-page",
+    "live-story",
+    "media-page",
+    "standalone-page"
+  ],
+  "shell/doc-end": [
+    "404",
+    "article-page",
+    "homepage",
+    "category-page",
+    "search-page",
+    "live-story",
+    "media-page",
+    "standalone-page"
+  ],
+  "shell/doc-start-standard": [
+    "article-page",
+    "homepage",
+    "category-page",
+    "search-page",
+    "live-story",
+    "media-page",
+    "standalone-page"
+  ],
+  "headers/header-main": [
+    "article-page",
+    "homepage",
+    "category-page",
+    "search-page",
+    "live-story",
+    "media-page",
+    "standalone-page"
+  ],
+  "components/article-main": [
+    "article-page"
+  ],
+  "components/body-block": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/audio": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/data-table": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/divider": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/heading": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/image": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/info-box": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/instagram": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/key-points": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/list": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/live-update": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/pull-quote": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/rich-text": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/tiktok": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/x": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "blocks/youtube": [
+    "article-page",
+    "live-story",
+    "standalone-page"
+  ],
+  "components/snack": [
+    "article-page",
+    "homepage",
+    "category-page",
+    "live-story"
+  ],
+  "components/snack-meta-image-row": [
+    "article-page",
+    "homepage",
+    "category-page",
+    "live-story"
+  ],
+  "components/snack-meta-inline": [
+    "article-page",
+    "homepage",
+    "category-page",
+    "live-story"
+  ],
+  "components/home/main": [
+    "homepage"
+  ],
+  "components/spotlight-hero": [
+    "homepage"
+  ],
+  "components/headline": [
+    "homepage"
+  ],
+  "components/spotlight-hero-slides": [
+    "homepage"
+  ],
+  "components/trending": [
+    "homepage"
+  ],
+  "components/editorial-hero": [
+    "homepage"
+  ],
+  "components/breaking-news": [
+    "homepage"
+  ],
+  "components/breaking-news/live-updates-column": [
+    "homepage"
+  ],
+  "components/home/landing": [
+    "homepage"
+  ],
+  "components/snack-top-story": [
+    "homepage"
+  ],
+  "components/home/must-read": [
+    "homepage"
+  ],
+  "components/home/more-stories": [
+    "homepage"
+  ],
+  "components/category/main": [
+    "category-page"
+  ],
+  "components/category/header": [
+    "category-page"
+  ],
+  "components/category/main-grid": [
+    "category-page"
+  ],
+  "components/category/more-grid": [
+    "category-page"
+  ],
+  "components/search/main": [
+    "search-page"
+  ],
+  "components/live-story/main": [
+    "live-story"
+  ],
+  "components/ui/status-badge": [
+    "live-story"
+  ],
+  "components/media/main": [
+    "media-page"
+  ],
+  "components/standalone-main": [
+    "standalone-page"
+  ]
 }

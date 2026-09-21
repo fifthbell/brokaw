@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from '@storybook/html';
 import { render } from '../src/renderer.browser';
 import type { CanonicalArticle } from '../src/types/canonical-article';
 import { loadHomepagePreviewData } from './preview-data';
+import { completeDocument } from './complete-document';
 
 const meta = {
   title: 'Foundations/Luxury Calibration',
   loaders: [async () => ({ homepage: await loadHomepagePreviewData() })],
   render: (_args, { loaded }) =>
-    render({
+    render(completeDocument({
       ...(loaded.homepage as CanonicalArticle),
       showHero: false,
       showEditorialHero: false,
@@ -16,7 +17,7 @@ const meta = {
       showLanding: true,
       showMustRead: true,
       showMoreStories: true
-    }),
+    })),
   parameters: {
     layout: 'fullscreen',
     controls: { disable: true },

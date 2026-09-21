@@ -1,9 +1,9 @@
 <figure class='my-8 w-full'>
-  <div class='x-embed-shell overflow-hidden w-full' data-tweet-id='{{xTweetId url}}'>
-    {{#if (xEmbedUrl url)}}
+  <div class='x-embed-shell overflow-hidden w-full' data-tweet-id='{{tweetId}}'>
+    {{#with (embedUrl 'x-embed' id=tweetId) as |embedUrlValue|}}
       <iframe
         title='Embedded X post'
-        src='{{xEmbedUrl url}}'
+        src='{{embedUrlValue}}'
         data-x-embed-frame='true'
         width='100%'
         style='border:0; display:block; width:100%; min-height:260px; height:380px;'
@@ -15,7 +15,7 @@
       <div class='p-4 text-sm text-slate-600 dark:text-slate-300'>
         Post preview unavailable.
       </div>
-    {{/if}}
+    {{/with}}
   </div>
   <script>
     (function () {

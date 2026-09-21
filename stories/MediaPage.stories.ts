@@ -6,6 +6,7 @@ import {
   type MediaAssignmentFixture
 } from './fixtures/media-page.fixture';
 import { loadMediaPagePreviewData } from './preview-data';
+import { completeDocument } from './complete-document';
 
 const PAGE_SIZE = 48;
 
@@ -130,7 +131,7 @@ function hydrateMediaFixture(root: HTMLElement, data: MediaAssignmentFixture, pa
 
 function renderMediaStory(args: CanonicalArticle, assignment = mediaAssignmentFixture, page = 1): HTMLElement {
   const root = document.createElement('div');
-  root.innerHTML = render(args);
+  root.innerHTML = render(completeDocument(args));
   hydrateMediaFixture(root, assignment, page);
   return root;
 }

@@ -17,12 +17,6 @@ function buildQrCodeHtml(url: string): string {
   return `<div class="qr-container"><div class="qr-code" aria-label="QR Code">${qrSvg}</div></div>`;
 }
 
-export function registerInstagramImageHelpers(): void {
-  Handlebars.registerHelper('instagramQrCode', (url: string) => buildQrCodeHtml(url));
-}
-
-registerInstagramImageHelpers();
-
 function isNodeRuntime(): boolean {
   return typeof process !== 'undefined' && typeof process.versions?.node === 'string';
 }

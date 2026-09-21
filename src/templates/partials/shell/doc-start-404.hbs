@@ -5,13 +5,11 @@
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <link rel='preload' as='style' href='https://cdn.fifthbell.com/content/fonts/fonts.css' onload="this.rel='stylesheet';this.media='all'" />
     <noscript><link href='https://cdn.fifthbell.com/content/fonts/fonts.css' rel='stylesheet' /></noscript>
+    <link href='https://cdn.fifthbell.com/content/styles/brokaw.css' rel='stylesheet' />
     <meta name='description' content='{{#if seo.metaDescription}}{{seo.metaDescription}}{{else}}Page not found{{/if}}' />
     <link rel='canonical' href='{{canonicalUrl}}' />
     <title>{{#if seo.metaTitle}}{{seo.metaTitle}}{{else}}404 - Page Not Found | fifthbell{{/if}}</title>
-    <style>{{{styles}}}</style>
-    {{#if rumConfig}}
-      {{{rumLoader rumConfig layout language}}}
-    {{/if}}
+    {{> shell/rum-loader}}
     {{#if gaConfig}}
     <script async src='https://www.googletagmanager.com/gtag/js?id={{{gaConfig.measurementId}}}'></script>
     <script>

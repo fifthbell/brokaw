@@ -107,7 +107,8 @@ export const articleFixture: CanonicalArticle = {
     },
     {
       type: 'x',
-      url: 'https://x.com/Carolina_Toha/status/14192687787'
+      url: 'https://x.com/Carolina_Toha/status/14192687787',
+      tweetId: '14192687787'
     },
     {
       type: 'instagram',
@@ -115,7 +116,8 @@ export const articleFixture: CanonicalArticle = {
     },
     {
       type: 'tiktok',
-      url: 'https://www.tiktok.com/@scout2015/video/6718335390845095173'
+      url: 'https://www.tiktok.com/@scout2015/video/6718335390845095173',
+      videoId: '6718335390845095173'
     },
     {
       type: 'richText',
@@ -125,7 +127,11 @@ export const articleFixture: CanonicalArticle = {
   seo: {
     metaTitle: 'Atlantic storm tracker | fifthbell',
     metaDescription: 'Latest forecast, timing, and impact details for the Atlantic storm setup.',
-    ogImage: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=1200&h=630&fit=crop'
+    ogImage: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=1200&h=630&fit=crop',
+    socialImage: {
+      url: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=1200&h=630&fit=crop',
+      alt: 'Storm front over the Atlantic coast'
+    }
   },
   navigation: {
     categories: [

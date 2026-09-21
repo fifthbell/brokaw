@@ -26,7 +26,7 @@
               </a>
             {{/if}}
 
-            {{#with (sofascoreWidgetUrl sofascore_id) as |widgetUrl|}}
+            {{#with (embedUrl 'sofascore-widget' id=sofascore_id widgetTheme='light') as |widgetUrl|}}
               <div class='w-full mt-4 mb-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700'>
                 <iframe
                   width='100%'
@@ -39,7 +39,7 @@
                   referrerpolicy='no-referrer-when-downgrade'
                   style='border:0;'
                 ></iframe>
-                {{#with (sofascoreMatchUrl sofascore_id) as |matchUrl|}}
+                {{#with (embedUrl 'sofascore-match' id=sofascore_id) as |matchUrl|}}
                   <div style='font-size:12px;font-family:Arial,sans-serif'>
                     <a href='{{matchUrl}}' target='_blank' rel='noreferrer'>{{title}} Live Score</a>
                   </div>

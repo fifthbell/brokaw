@@ -1,0 +1,77 @@
+{{#if rumConfig}}
+<script data-brokaw-rum-loader>
+  (function () {
+    try {
+      function containsSensitiveErrorData(event) {
+        var reason = event && event.reason;
+        var error = event && event.error;
+        var candidate = [
+          event && event.message,
+          event && event.filename,
+          typeof reason === 'string' ? reason : reason && reason.message,
+          error && error.message
+        ].filter(Boolean).join(' ');
+        return candidate.length > 256 || /(?:https?:\/\/|[?#]|authorization|bearer|credential|password|passcode|api[_-]?key|access[_-]?token|refresh[_-]?token|<[^>]+>|[{}][^{}]{8,}[{}])/i.test(candidate);
+      }
+
+      (function (namespace, appMonitorId, applicationVersion, region, source, clientConfig, client, script) {
+        client = window.AwsRumClient = {
+          q: [],
+          n: namespace,
+          i: appMonitorId,
+          v: applicationVersion,
+          r: region,
+          c: clientConfig
+        };
+        window[namespace] = function (command, payload) {
+          client.q.push({ c: command, p: payload });
+        };
+        script = document.createElement('script');
+        script.async = true;
+        script.crossOrigin = 'anonymous';
+        script.src = source;
+        script.onerror = function () {
+          client.q = [];
+          window[namespace] = function () {};
+        };
+        document.head.appendChild(script);
+      })(
+        'cwr',
+        {{{jsonString rumConfig.appMonitorId}}},
+        {{{jsonString rumConfig.applicationVersion}}},
+        {{{jsonString rumConfig.region}}},
+        'https://client.rum.us-east-1.amazonaws.com/3.0.0/cwr.js',
+        {
+          identityPoolId: {{{jsonString rumConfig.identityPoolId}}},
+          guestRoleArn: {{{jsonString rumConfig.guestRoleArn}}},
+          sessionSampleRate: 1,
+          endpoint: 'https://dataplane.rum.' + {{{jsonString rumConfig.region}}} + '.amazonaws.com',
+          telemetries: [
+            ['errors', { stackTraceLength: 0, ignore: containsSensitiveErrorData }],
+            ['performance', {
+              ignore: function (entry) { return entry && entry.entryType === 'resource'; },
+              recordAllTypes: [],
+              sampleTypes: []
+            }]
+          ],
+          allowCookies: false,
+          enableXRay: false,
+          recordResourceUrl: false,
+          pageIdFormat: 'PATH',
+          disableAutoPageView: true
+        }
+      );
+
+      window.cwr('recordPageView', {
+        pageId: window.location.pathname,
+        pageAttributes: {
+          page_type: {{{jsonString layout}}},
+          content_language: {{{jsonString language}}}
+        }
+      });
+    } catch (_rumError) {
+      // Monitoring is optional and must never block rendering or navigation.
+    }
+  })();
+</script>
+{{/if}}

@@ -1173,6 +1173,18 @@ export async function loadMediaPagePreviewData(): Promise<CanonicalArticle> {
 export async function loadContentBlockPreviewData(type: CanonicalArticle['body'][number]['type']): Promise<Record<string, unknown>> {
   const article = await loadArticlePreviewData();
   const directBlock = article.body.find((block) => block.type === type);
+  if (directBlock?.type === 'x') {
+    return {
+      ...directBlock,
+      tweetId: 'tweetId' in directBlock ? directBlock.tweetId : directBlock.url.match(/\/status\/(\d+)/)?.[1] ?? ''
+    };
+  }
+  if (directBlock?.type === 'tiktok') {
+    return {
+      ...directBlock,
+      videoId: 'videoId' in directBlock ? directBlock.videoId : directBlock.url.match(/\/video\/(\d+)/)?.[1] ?? ''
+    };
+  }
   if (directBlock) return directBlock as unknown as Record<string, unknown>;
 
   if (type === 'liveUpdate') {

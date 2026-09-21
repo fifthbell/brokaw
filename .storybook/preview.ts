@@ -29,7 +29,7 @@ const preview: Preview = {
     layout: 'fullscreen',
     options: {
       storySort: {
-        order: ['Foundations', ['Luxury Calibration'], 'Pages', ['Homepage', 'ArticlePage', 'CategoryPage', 'SearchPage', 'LiveStoryPage', 'LinkInBioPage', 'MediaPage'], 'Templates', 'Partials', 'React', 'Example']
+        order: ['Foundations', ['Luxury Calibration'], 'Pages', ['Homepage', 'ArticlePage', 'CategoryPage', 'SearchPage', 'LiveStoryPage', 'LinkInBioPage', 'MediaPage', 'StandalonePage'], 'Templates', ['Instagram Image'], 'Partials', 'React', 'Example']
       }
     }
   }

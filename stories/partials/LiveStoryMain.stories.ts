@@ -20,6 +20,8 @@ import snackHbs from '../../src/templates/partials/components/snack.hbs?raw';
 import statusBadgeHbs from '../../src/templates/partials/components/ui/status-badge.hbs?raw';
 import { loadLiveStoryPreviewData } from '../preview-data';
 import { registerCommonHelpers } from './handlebars-helpers';
+import type { CanonicalArticle } from '../../src/types/canonical-article';
+import { completeDocument } from '../complete-document';
 
 registerCommonHelpers();
 
@@ -46,7 +48,7 @@ const template = Handlebars.compile(liveStoryMainHbs);
 const meta = {
   title: 'Partials/LiveStory/Main',
   loaders: [async () => ({ liveStory: await loadLiveStoryPreviewData() })],
-  render: (_args, { loaded }) => template(loaded.liveStory)
+  render: (_args, { loaded }) => template(completeDocument(loaded.liveStory as CanonicalArticle))
 } satisfies Meta;
 
 export default meta;

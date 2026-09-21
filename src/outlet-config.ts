@@ -16,7 +16,6 @@ export const outletConfig = {
     slug: 'top-stories'
   },
   linkInBioRoute: '/instagram',
-  searchTitle: 'Search',
   searchDescriptions: {
     en: 'Search stories from Fifthbell.',
     es: 'Busca noticias de Fifthbell.',
