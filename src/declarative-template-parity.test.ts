@@ -118,6 +118,48 @@ const homepageFixture: CanonicalArticle = {
   showMoreStories: false,
 };
 
+const sofascoreId = 15388428;
+const liveStoryFixture: CanonicalArticle = {
+  ...baseFixture,
+  slug: '/live/fixture',
+  canonicalUrl: 'https://fifthbell.com/live/fixture',
+  layout: 'live-story',
+  statusVariant: 'live',
+  sofascore_id: sofascoreId,
+  liveStory: { keyPoints: [] },
+};
+const liveStoryWithoutSofascore: CanonicalArticle = {
+  ...liveStoryFixture,
+  sofascore_id: undefined,
+};
+const breakingNewsMain = {
+  category: 'Live',
+  title: 'Breaking fixture',
+  url: '/live/fixture',
+  liveUrl: '/live/fixture',
+  sofascore_id: sofascoreId,
+  image: 'https://cdn.fifthbell.com/content/breaking.jpg',
+  alt: 'Breaking fixture',
+  excerpt: 'Live coverage fixture.',
+};
+const homepageWithBreakingNews: CanonicalArticle = {
+  ...homepageFixture,
+  showBreakingNews: true,
+  breakingNews: {
+    displayClass: 'breaking-news-single',
+    main: breakingNewsMain,
+    updates: [],
+    snacks: [],
+  },
+};
+const homepageWithoutSofascore: CanonicalArticle = {
+  ...homepageWithBreakingNews,
+  breakingNews: {
+    ...homepageWithBreakingNews.breakingNews,
+    main: { ...breakingNewsMain, sofascore_id: undefined },
+  },
+};
+
 const categoryFixture: CanonicalArticle = {
   ...baseFixture,
   slug: '/world',
@@ -147,12 +189,39 @@ const linkInBioFixture: CanonicalArticle = {
 
 describe('declarative template output parity', () => {
   it.each([
-    ['article-page', articleFixture],
-    ['homepage', homepageFixture],
-    ['category-page', categoryFixture],
-    ['search-page', searchFixture],
-    ['link-in-bio', linkInBioFixture],
-  ] as const)('matches the legacy local renderer for %s', (renderable, fixture) => {
+    ['article page', 'article-page', articleFixture],
+    ['homepage', 'homepage', homepageFixture],
+    ['category page', 'category-page', categoryFixture],
+    ['search page', 'search-page', searchFixture],
+    ['link in bio', 'link-in-bio', linkInBioFixture],
+    ['live story with SofaScore', 'live-story', liveStoryFixture],
+    ['live story without SofaScore', 'live-story', liveStoryWithoutSofascore],
+    ['breaking news with SofaScore', 'homepage', homepageWithBreakingNews],
+    ['breaking news without SofaScore', 'homepage', homepageWithoutSofascore],
+  ] as const)('matches the legacy local renderer for %s', (_label, renderable, fixture) => {
     expect(declarativeRender(renderable, fixture)).toBe(render(fixture));
+  });
+
+  it.each([
+    ['live story', 'live-story', liveStoryFixture, liveStoryFixture.title],
+    ['breaking news', 'homepage', homepageWithBreakingNews, breakingNewsMain.title],
+  ] as const)('renders both SofaScore links for %s', (_label, renderable, fixture, title) => {
+    const html = declarativeRender(renderable, fixture);
+    expect(html).toContain(
+      `https://widgets.sofascore.com/embed/attackMomentum?id&#x3D;${sofascoreId}&amp;widgetTheme&#x3D;light`,
+    );
+    expect(html).toContain(
+      `https://www.sofascore.com/football/match#id:${sofascoreId}`,
+    );
+    expect(html).toContain(`${title} Live Score`);
+  });
+
+  it.each([
+    ['live story', 'live-story', liveStoryWithoutSofascore],
+    ['breaking news', 'homepage', homepageWithoutSofascore],
+  ] as const)('omits the optional SofaScore section for %s', (_label, renderable, fixture) => {
+    const html = declarativeRender(renderable, fixture);
+    expect(html).not.toContain("title='SofaScore Attack Momentum'");
+    expect(html).not.toContain('Match Momentum</h2>');
   });
 });

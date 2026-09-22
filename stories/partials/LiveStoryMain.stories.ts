@@ -56,3 +56,10 @@ export default meta;
 type Story = StoryObj;
 
 export const Default: Story = {};
+
+export const WithoutSofascore: Story = {
+  render: (_args, { loaded }) => {
+    const document = completeDocument(loaded.liveStory as CanonicalArticle);
+    return template({ ...document, sofascore_id: undefined });
+  }
+};

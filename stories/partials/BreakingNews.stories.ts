@@ -38,6 +38,16 @@ type Story = StoryObj;
 
 export const Default: Story = {};
 
+export const WithoutSofascore: Story = {
+  render: (args, { loaded }) => {
+    const breakingNews = { ...loaded.breakingNews, ...args };
+    return template({
+      ...breakingNews,
+      main: { ...(breakingNews.main || {}), sofascore_id: undefined }
+    });
+  }
+};
+
 export const OverflowingLiveUpdates: Story = {
   render: (args, { loaded }) =>
     template({

@@ -41,6 +41,11 @@ URL shapes are data in `embedRegistry`, not executable package helpers. The
 social-card template accepts caller-supplied `qrCodeHtml`; QR generation is
 not part of declarative rendering.
 
+SofaScore embeds are optional. Live-story and breaking-news templates guard
+the entire embed section on `sofascore_id` and expand both URLs without
+changing the document context. A missing identifier omits the section; it is
+never passed to Cronkite's fail-closed `embedUrl` helper.
+
 The conditional RUM loader is a declared Handlebars partial. It retains
 pathname-only page IDs, strips resource performance entries, disables cookies,
 X-Ray, resource URLs, and automatic page views, and rejects sensitive error

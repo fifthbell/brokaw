@@ -26,12 +26,12 @@
               </a>
             {{/if}}
 
-            {{#with (embedUrl 'sofascore-widget' id=sofascore_id widgetTheme='light') as |widgetUrl|}}
+            {{#if sofascore_id}}
               <div class='w-full mt-4 mb-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700'>
                 <iframe
                   width='100%'
                   height='286'
-                  src='{{widgetUrl}}'
+                  src='{{embedUrl 'sofascore-widget' id=sofascore_id widgetTheme='light'}}'
                   title='SofaScore Attack Momentum'
                   frameborder='0'
                   scrolling='no'
@@ -39,13 +39,11 @@
                   referrerpolicy='no-referrer-when-downgrade'
                   style='border:0;'
                 ></iframe>
-                {{#with (embedUrl 'sofascore-match' id=sofascore_id) as |matchUrl|}}
-                  <div style='font-size:12px;font-family:Arial,sans-serif'>
-                    <a href='{{matchUrl}}' target='_blank' rel='noreferrer'>{{title}} Live Score</a>
-                  </div>
-                {{/with}}
+                <div style='font-size:12px;font-family:Arial,sans-serif'>
+                  <a href='{{embedUrl 'sofascore-match' id=sofascore_id}}' target='_blank' rel='noreferrer'>{{title}} Live Score</a>
+                </div>
               </div>
-            {{/with}}
+            {{/if}}
           </div>
         </div>
       </section>

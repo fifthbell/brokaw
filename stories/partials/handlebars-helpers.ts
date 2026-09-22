@@ -69,7 +69,13 @@ export function registerCommonHelpers(): void {
     };
     const template = typeof name === 'string' ? templates[name] : undefined;
     if (!template) throw new Error(`Unknown embed provider "${String(name)}"`);
-    return template.replace(/\{([A-Za-z][A-Za-z0-9]*)\}/g, (_token, parameter: string) => encodeURIComponent(String(options.hash[parameter])));
+    return template.replace(/\{([A-Za-z][A-Za-z0-9]*)\}/g, (_token, parameter: string) => {
+      const value = options.hash[parameter];
+      if (value === undefined || value === null || value === '') {
+        throw new Error(`Embed provider "${String(name)}" requires parameter ${parameter}`);
+      }
+      return encodeURIComponent(String(value));
+    });
   });
   Handlebars.registerHelper('formatDate', (isoString: string) => {
     if (!isoString) return '';
