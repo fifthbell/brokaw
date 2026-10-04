@@ -1161,9 +1161,9 @@ export async function loadMediaPagePreviewData(): Promise<CanonicalArticle> {
   return {
     ...homepage,
     id: 'storybook-media-current',
-    slug: '/media/assignment-storybook',
+    slug: '/mediathek',
     layout: 'media-page',
-    canonicalUrl: 'https://fifthbell.com/media/assignment-storybook',
+    canonicalUrl: 'https://fifthbell.com/mediathek',
     title: 'Media Assignment',
     excerpt: 'Current Fifthbell media assignment.',
     body: []
