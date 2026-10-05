@@ -28,9 +28,9 @@ export type MediaAssignmentFixture = {
 
 export const mediaPageFixture: CanonicalArticle = {
   id: 'media-page',
-  slug: '/media',
+  slug: '/mediathek',
   layout: 'media-page',
-  canonicalUrl: 'https://fifthbell.com/media',
+  canonicalUrl: 'https://fifthbell.com/mediathek',
   contentVersion: '2026-05-05T14:00:00.000Z',
   publishedAt: '2026-05-05T14:00:00.000Z',
   updatedAt: '2026-05-05T14:00:00.000Z',

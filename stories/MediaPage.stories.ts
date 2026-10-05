@@ -32,7 +32,7 @@ function formatDate(value: string): string {
 }
 
 function pageHref(pageNumber: number): string {
-  return pageNumber <= 1 ? '/media/assignment-storybook' : `/media/assignment-storybook?page=${pageNumber}`;
+  return pageNumber <= 1 ? '/mediathek/assignment-storybook' : `/mediathek/assignment-storybook?page=${pageNumber}`;
 }
 
 function paginationPages(currentPage: number, totalPages: number): Array<{ ellipsis?: boolean; label?: number; page?: number; current?: boolean }> {
@@ -100,7 +100,7 @@ function hydrateMediaFixture(root: HTMLElement, data: MediaAssignmentFixture, pa
 
   title.textContent = data.assignment.name;
   meta.textContent = `${data.photos.length} photos${totalPages > 1 ? ` - Page ${currentPage} of ${totalPages}` : ''} updated ${formatDate(data.generatedAt)}`;
-  refresh.href = '/media/assignment-storybook';
+  refresh.href = '/mediathek/assignment-storybook';
 
   if (data.photos.length === 0) {
     status.textContent = 'No photos have been published for this assignment yet.';

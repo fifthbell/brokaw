@@ -104,3 +104,10 @@ npm run storybook
 
 - CI validates typecheck, unit tests, and package build on pull requests and `main` pushes.
 - Package publish is triggered by pushing a `v*` tag.
+
+### Mediathek
+
+The `media-page` renderer emits one shared page for `/mediathek/<assignment-key>`.
+Its browser script selects the assignment from the URL and fetches
+`contents/assignments/<key>.json`; neither the HTML nor its canonical document is
+assignment-specific. Storybook `Pages/MediaPage` uses Mediathek URLs.
