@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { render } from '../src/renderer.browser';
+import { expect } from 'storybook/test';
+import { mediathekSystemPage } from '../src/system-pages';
 import type { CanonicalArticle } from '../src/types/canonical-article';
 import {
   mediaAssignmentFixture,
@@ -169,6 +171,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
+
+export const SharedSystemPage: Story = {
+  render: () => renderMediaStory(mediathekSystemPage.variants[0].document as CanonicalArticle),
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector('[data-media-page]')).not.toBeNull();
+    await expect(canvasElement.querySelector('#media-title')).toHaveTextContent(mediaAssignmentFixture.assignment.name);
+    await expect(canvasElement.querySelectorAll('#media-grid figure')).toHaveLength(mediaAssignmentFixture.photos.length);
+    await expect(canvasElement.querySelector('#media-refresh')).toHaveAttribute('href', '/mediathek/assignment-storybook');
+  }
+};
 
 export const Empty: Story = {
   render: (_args, { loaded }) =>

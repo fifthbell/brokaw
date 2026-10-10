@@ -111,3 +111,10 @@ The `media-page` renderer emits one shared page for `/mediathek/<assignment-key>
 Its browser script selects the assignment from the URL and fetches
 `contents/assignments/<key>.json`; neither the HTML nor its canonical document is
 assignment-specific. Storybook `Pages/MediaPage` uses Mediathek URLs.
+
+The manifest declares this shell as a single `media-page` system variant at
+`html/mediathek/index.html`. A basement refresh publishes it alongside search,
+404 pages, and static assets. Ariston's successful-publication receipt handler
+requests that refresh when it detects a new CLS version. Restarting Cronkite
+loads npm `latest`; publication follows the CMS refresh, rather than startup.
+Storybook `Pages/MediaPage/SharedSystemPage` previews the manifest document.

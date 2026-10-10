@@ -102,6 +102,27 @@ try {
   const installedRenderer = await import(
     pathToFileURL(join(packageRoot, "dist", "renderer.js")).href
   );
+  const renderedSystemPages = new Map();
+  for (const page of rendering.systemPages) {
+    for (const variant of page.variants) {
+      const html = await installedRenderer.render(variant.document);
+      if (typeof html !== "string" || !html.includes("<html")) {
+        throw new Error(`packed system page ${variant.key} did not render HTML`);
+      }
+      renderedSystemPages.set(variant.key, html);
+    }
+  }
+  const mediathekPages = rendering.systemPages
+    .filter((page) => page.renderable === "media-page")
+    .flatMap((page) => page.variants);
+  const mediathekHtml = renderedSystemPages.get("html/mediathek/index.html");
+  if (
+    mediathekPages.length !== 1 ||
+    !mediathekHtml?.includes("data-media-page") ||
+    !mediathekHtml.includes("window.location.pathname.match(/^\\/mediathek\\/")
+  ) {
+    throw new Error("packed basement must render one shared Mediathek shell");
+  }
   const fontFiles = installedRenderer.fontFiles();
   const fontKeys = fontFiles.map((file) => file.key);
   if (fontFiles.length === 0 || new Set(fontKeys).size !== fontFiles.length) {
