@@ -100,6 +100,51 @@ describe('Cronkite declarative template manifest', () => {
     expect(Object.keys(rendering.staticAssets).filter((key) => key.startsWith('content/fonts/')).length).toBeGreaterThan(1);
   });
 
+  it('declares one shared Mediathek system page without assignment-specific input', () => {
+    const page = cronkiteManifest.templateRendering.systemPages.find(
+      (entry) => entry.renderable === 'media-page',
+    );
+    expect(page).toMatchObject({
+      contentType: 'text/html; charset=utf-8',
+      cacheControl: 'public, max-age=0, must-revalidate',
+      variants: [{
+        key: 'html/mediathek/index.html',
+        document: {
+          slug: '/mediathek',
+          canonicalUrl: 'https://fifthbell.com/mediathek',
+          layout: 'media-page',
+          language: 'en',
+          title: 'Mediathek',
+          status: 'published',
+        },
+      }],
+    });
+    expect(page?.variants).toHaveLength(1);
+    expect(page?.variants[0].document).not.toHaveProperty('assignmentId');
+  });
+
+  it('rejects a shared system page outside the default language', () => {
+    const manifest = structuredClone(cronkiteManifest);
+    const page = manifest.templateRendering.systemPages.find(
+      (entry) => entry.renderable === 'media-page',
+    )!;
+    page.variants[0].document.language = 'es';
+    expect(() => assertManifestAlignment(manifest, sources())).toThrow(
+      'system page media-page languages drift',
+    );
+  });
+
+  it('rejects an incomplete localized system page', () => {
+    const manifest = structuredClone(cronkiteManifest);
+    const page = manifest.templateRendering.systemPages.find(
+      (entry) => entry.renderable === 'search-page',
+    )!;
+    page.variants.splice(1);
+    expect(() => assertManifestAlignment(manifest, sources())).toThrow(
+      'system page search-page languages drift',
+    );
+  });
+
   it('models vendor URL construction as embed data', () => {
     expect(cronkiteManifest.templateRendering.embedRegistry).toHaveProperty('x-embed');
     expect(cronkiteManifest.templateRendering.embedRegistry).toHaveProperty('tiktok');
