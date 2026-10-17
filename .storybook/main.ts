@@ -5,6 +5,7 @@ const config: StorybookConfig = {
     '../stories/LuxuryCalibration.stories.ts',
     '../stories/RumContract.stories.ts',
     '../stories/ArticlePage.stories.ts',
+    '../stories/ArticleReading.stories.ts',
     '../stories/Homepage.stories.ts',
     '../stories/CategoryPage.stories.ts',
     '../stories/SearchPage.stories.ts',
@@ -15,7 +16,10 @@ const config: StorybookConfig = {
     '../stories/partials/*.stories.ts',
     '../stories/react/**/*.stories.tsx'
   ],
-  staticDirs: [{ from: '../src/live-program/public', to: '/' }],
+  staticDirs: [
+    { from: '../src/live-program/public', to: '/' },
+    { from: '../stories/fixtures/article-reading', to: '/article-reading-fixtures' }
+  ],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest', '@storybook/addon-a11y', '@storybook/addon-docs'],
   framework: '@storybook/html-vite',
   async viteFinal(config) {
