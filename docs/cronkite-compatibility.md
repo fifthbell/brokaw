@@ -115,6 +115,23 @@ closing paragraph, supplied image URL, optional update notice and desktop
 share/body placement. Rendered-markup regressions verify these boundaries and
 author escaping; browser layout acceptance must also exercise the generated CSS.
 
+Local acceptance on 17 October 2026 passed all 25 combinations of those five
+stories and widths. The complete story, lead image, update notice, wrapping,
+ordered byline and desktop share/body placement remained within the article
+frame. At 390px and 1440px, native Tab/Shift+Tab traversal reached the eight
+share links and the updated-version link with visible focus; no link was
+activated.
+
+The check used native Chrome's responsive Desktop engine at 50% preview, with
+actual toolbar widths and screenshots checked. Physical-device and VoiceOver
+acceptance were outside that check. A local favicon 404 was observed; the
+record makes no globally clean-console claim. The shared shell retains its
+existing public fixed-city weather requests. Screenshots were emitted in the
+acceptance conversation. The acceptance record is `acceptance-v3.json`,
+SHA-256 `692322950b8adf2b411bc1e40acb9222e3489b2f0ea5356f7cb05def48d9b805`.
+These are local acceptance results; the separate delivery steps below still
+apply.
+
 This repair needs both the package templates and the compiled stylesheet.
 The page shell continues to request the established published Brokaw stylesheet.
 At release preparation on 17 October 2026, that served stylesheet already
