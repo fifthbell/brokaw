@@ -1,5 +1,5 @@
-<main class='mx-auto grid max-w-7xl flex-1 grid-cols-1 gap-x-8 px-5 pb-20 pt-10 md:px-8 lg:grid-cols-12 lg:gap-x-10 lg:pt-16'>
-  <header class='editorial-rule col-span-12 grid grid-cols-1 gap-x-10 border-b pb-10 lg:grid-cols-12 lg:pb-14'>
+<main class='mx-auto grid w-full min-w-0 max-w-7xl flex-1 grid-cols-1 gap-x-8 wrap-anywhere px-5 pb-20 pt-10 md:px-8 lg:grid-cols-12 lg:gap-x-10 lg:pt-16'>
+  <header class='editorial-rule col-span-full grid grid-cols-1 gap-x-10 border-b pb-10 lg:grid-cols-12 lg:pb-14'>
     <div class='lg:col-span-10 xl:col-span-9'>
       <div class='mb-5'>
         <span class='editorial-kicker'>{{#with (lookup categories 0)}}{{name}}{{/with}}</span>
@@ -7,6 +7,7 @@
 
       <h1 class='max-w-5xl font-encode text-[2.8rem] font-bold leading-[0.98] tracking-[-0.03em] text-[var(--brokaw-ink)] md:text-6xl lg:text-7xl'>{{title}}</h1>
       <p class='font-secondary mt-6 max-w-3xl text-xl leading-8 text-[var(--brokaw-ink-muted)] md:text-2xl md:leading-9'>{{excerpt}}</p>
+      {{#if authors.length}}<p class='editorial-meta mt-6' data-article-byline>{{#each authors}}<span>{{name}}</span>{{#unless @last}}, {{/unless}}{{/each}}</p>{{/if}}
       <p class='editorial-meta mt-6'><span class='article-time' data-timestamp='{{publishedAt}}'>{{formatDate publishedAt}}</span></p>
     </div>
 
@@ -25,7 +26,7 @@
   </header>
 
   {{#if updatedVersion}}
-    <aside class='col-span-12 mt-8 rounded-sm border-l-4 border-[var(--brokaw-signal)] bg-[var(--brokaw-paper-deep)] px-5 py-4 lg:mt-10' aria-label='Updated version'>
+    <aside class='col-span-full mt-8 rounded-sm border-l-4 border-[var(--brokaw-signal)] bg-[var(--brokaw-paper-deep)] px-5 py-4 lg:mt-10' aria-label='Updated version'>
       <p class='font-secondary text-sm leading-6 text-[var(--brokaw-ink)]'>
         {{#if (eq language 'es')}}Esta historia tiene una versión más reciente.
         {{else if (eq language 'it')}}Questa storia ha una versione più recente.
@@ -39,7 +40,7 @@
     </aside>
   {{/if}}
 
-  <aside class='col-span-12 mt-8 lg:col-span-3 lg:mt-12'>
+  <aside class='col-span-full mt-8 lg:col-span-3 lg:mt-12'>
     <div class='editorial-rule border-t pt-5 lg:sticky lg:top-28'>
       <p class='editorial-kicker mb-4 text-[var(--brokaw-ink-muted)]'>Share</p>
       <div class='flex flex-wrap items-center gap-2'>
@@ -88,7 +89,7 @@
     </div>
   </aside>
 
-  <article class='article-prose col-span-12 mt-10 max-w-none prose prose-neutral dark:prose-invert lg:col-span-7 lg:col-start-4 lg:mt-12 xl:col-span-6'>
+  <article class='article-prose col-span-full mt-10 max-w-none prose prose-neutral dark:prose-invert lg:col-span-7 lg:col-start-4 lg:mt-12 xl:col-span-6'>
     {{#each body}}
       {{> components/body-block}}
     {{/each}}

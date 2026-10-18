@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Fictional newsroom illustration">
+  <rect width="1600" height="900" fill="#f3f0e9"/>
+  <path d="M180 640h1240M320 640V260h960v380M480 640V420h640v220" fill="none" stroke="#171717" stroke-width="24"/>
+  <path d="M560 340h480" stroke="#a31308" stroke-width="24"/>
+</svg>

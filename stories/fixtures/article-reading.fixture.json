@@ -1,0 +1,38 @@
+{
+  "document": {
+    "id": "fictional-article-reading",
+    "slug": "/news/fictional-article-reading",
+    "layout": "article-page",
+    "canonicalUrl": "https://fictional.example.test/news/fictional-article-reading",
+    "contentVersion": "2026-10-17T12:00:00.000Z",
+    "publishedAt": "2026-10-17T12:00:00.000Z",
+    "updatedAt": "2026-10-17T12:00:00.000Z",
+    "status": "published",
+    "title": "A fictional newsroom opens its doors",
+    "excerpt": "A deterministic published story for checking the complete article at narrow and wide reading widths.",
+    "language": "en",
+    "featured": false,
+    "authors": [
+      { "name": "Elena Ortiz", "slug": "elena-ortiz" }
+    ],
+    "categories": [
+      { "name": "Newsroom", "slug": "newsroom" }
+    ],
+    "body": [
+      { "type": "richText", "html": "<p>The fictional newsroom welcomes readers into a story that stays complete on every screen.</p>" },
+      { "type": "pullQuote", "text": "Every word deserves room to be read.", "attribution": "Fictional newsroom" },
+      { "type": "richText", "html": "<p>This closing paragraph remains visible after the quote and its attribution.</p>" }
+    ],
+    "navigation": { "categories": [] },
+    "logoLink": "/"
+  },
+  "photo": {
+    "url": "/article-reading-fixtures/editorial.svg",
+    "alt": "Fictional newsroom illustration"
+  },
+  "update": {
+    "id": "fictional-current-article",
+    "title": "The fictional newsroom's current story",
+    "url": "/news/fictional-current-article"
+  }
+}
