@@ -111,3 +111,25 @@ The `media-page` renderer emits one shared page for `/mediathek/<assignment-key>
 Its browser script selects the assignment from the URL and fetches
 `contents/assignments/<key>.json`; neither the HTML nor its canonical document is
 assignment-specific. Storybook `Pages/MediaPage` uses Mediathek URLs.
+
+Every `media-page` document must supply `assignmentMediaBaseUrl`: a completed
+absolute HTTP(S) directory ending in `/contents/assignments/`, including its
+trailing slash, without credentials, query or fragment. The browser appends only
+the encoded opaque assignment key and `.json`; it does not infer an origin from
+the page URL or use a package fallback. The static manifest document explicitly
+supplies Fifthbell's preview value. Cronkite replaces it from its configured
+tenant CDN directory for basement publication; a direct CMS render supplies its
+own completed value.
+
+The manifest declares this shell as a single `media-page` system variant at
+`html/mediathek/index.html`. A basement refresh publishes it alongside search,
+404 pages, and static assets. Ariston's successful-publication receipt handler
+requests that refresh when it detects a new CLS version. Restarting Cronkite
+loads npm `latest`; publication follows the CMS refresh, rather than startup.
+Storybook `Pages/MediaPage/SharedSystemPage` previews the manifest document.
+
+Local packed-consumer checks verify the source candidate; they do not publish or
+adopt it. The current-main `0.1.72` article candidate and the earlier Mediathek
+`0.1.72` rehearsal have different contents. A combined package needs its own
+reviewed release artifact and explicit publication decision before normal
+Cronkite adoption and the CMS-triggered refresh are verified together.
