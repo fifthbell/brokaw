@@ -28,4 +28,49 @@ describe("canonical document adapter", () => {
       canonicalArticleSchema.parse({ ...document, language: "not a tag!" }),
     ).toThrow("Canonical document validation failed");
   });
+
+  it.each([
+    "https://photos.example.test/contents/assignments/",
+    "http://127.0.0.1:18768/fictional-bucket/prefix/contents/assignments/",
+    "HtTpS://photos.example.test/encoded%20prefix/contents/assignments/",
+  ])("preserves the completed media-page directory %s", (base) => {
+    expect(canonicalArticleSchema.parse({
+      ...document, layout: "media-page", assignmentMediaBaseUrl: base,
+    }).assignmentMediaBaseUrl).toBe(base);
+  });
+
+  it.each([
+    undefined,
+    "",
+    " https://photos.example.test/contents/assignments/",
+    "https://photos.example.test/contents/assignments/\n",
+    "/contents/assignments/",
+    "ftp://photos.example.test/contents/assignments/",
+    "https://user:password@photos.example.test/contents/assignments/",
+    "https://photos.example.test/contents/assignments/?token=fictional",
+    "https://photos.example.test/contents/assignments/#fragment",
+    "https://photos.example.test/contents/assignments/?",
+    "https://photos.example.test/contents/assignments/#",
+    "https://pho\ntos.example.test/contents/assignments/",
+    "https://photos.example.test/pre\tfix/contents/assignments/",
+    "https://photos.example.test/pre\u2028fix/contents/assignments/",
+    "https://photos.example.test/prefix\\bucket/contents/assignments/",
+    "https://photos.example.test/contents/assignments",
+    "https://photos.example.test/contents/media/",
+    "http://127.0.0.1:999999/contents/assignments/",
+  ])("refuses an incomplete or unusable media-page directory %s", (base) => {
+    expect(() => canonicalArticleSchema.parse({
+      ...document, layout: "media-page", assignmentMediaBaseUrl: base,
+    })).toThrow("Canonical document validation failed");
+  });
+
+  it("keeps other layouts and unrelated canonical extensions independent of the media directory", () => {
+    for (const layout of ["article-page", "standalone-page", "search-page"]) {
+      const parsed = canonicalArticleSchema.parse({
+        ...document, layout, fictionalExtension: { enabled: true },
+      });
+      expect(parsed).not.toHaveProperty("assignmentMediaBaseUrl");
+      expect(parsed.fictionalExtension).toEqual({ enabled: true });
+    }
+  });
 });

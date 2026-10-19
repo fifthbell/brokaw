@@ -116,6 +116,7 @@ describe('Cronkite declarative template manifest', () => {
           language: 'en',
           title: 'Mediathek',
           status: 'published',
+          assignmentMediaBaseUrl: 'https://cdn.fifthbell.com/contents/assignments/',
         },
       }],
     });

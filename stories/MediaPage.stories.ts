@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import { render } from '../src/renderer.browser';
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import { mediathekSystemPage } from '../src/system-pages';
 import type { CanonicalArticle } from '../src/types/canonical-article';
 import {
@@ -180,6 +180,48 @@ export const SharedSystemPage: Story = {
     await expect(canvasElement.querySelectorAll('#media-grid figure')).toHaveLength(mediaAssignmentFixture.photos.length);
     await expect(canvasElement.querySelector('#media-refresh')).toHaveAttribute('href', '/mediathek/assignment-storybook');
   }
+};
+
+export const FetchedSystemPage: Story = {
+  render: () => {
+    const iframe = document.createElement('iframe');
+    iframe.title = 'Mediathek with repository HTTP assignment data';
+    iframe.style.width = '100%';
+    iframe.style.height = '800px';
+    const html = render(completeDocument({
+      ...mediathekSystemPage.variants[0].document,
+      assignmentMediaBaseUrl: `${window.location.origin}/mediathek/contents/assignments/`,
+    } as CanonicalArticle));
+    iframe.src = '/mediathek/gallery.html';
+    iframe.addEventListener('load', () => {
+      const target = iframe.contentDocument;
+      if (!target) throw new Error('Mediathek fixture frame is unavailable');
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      target.replaceChild(target.importNode(parsed.documentElement, true), target.documentElement);
+      // Activate the actual rendered scripts without document.open(), which
+      // replaces the frame's assignment URL with the caller's document URL.
+      target.querySelectorAll<HTMLScriptElement>('script:not([src])').forEach((script) => {
+        const executable = target.createElement('script');
+        executable.textContent = script.textContent;
+        script.replaceWith(executable);
+      });
+    }, { once: true });
+    return iframe;
+  },
+  play: async ({ canvasElement }) => {
+    const iframe = canvasElement.querySelector('iframe');
+    await waitFor(() => {
+      const target = iframe?.contentDocument;
+      expect(iframe?.contentWindow?.location.pathname, target?.querySelector('#media-status')?.textContent ?? 'No rendered media status').toBe('/mediathek/gallery.html');
+      expect(target?.querySelector('#media-title')).toHaveTextContent('Repository HTTP gallery fixture');
+      expect(target?.querySelectorAll('#media-grid figure')).toHaveLength(1);
+      expect(target?.querySelector('#media-status')).toHaveClass('hidden');
+      const image = target?.querySelector<HTMLImageElement>('#media-grid img');
+      expect(image?.getAttribute('src')).toBe('/mediathek/fixture-photo.svg');
+      expect(image?.naturalWidth).toBeGreaterThan(0);
+      expect(target?.querySelector('#media-refresh')).toHaveAttribute('href', `${window.location.origin}/mediathek/gallery.html`);
+    });
+  },
 };
 
 export const Empty: Story = {

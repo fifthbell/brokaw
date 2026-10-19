@@ -41,6 +41,8 @@ export const mediathekSystemPage = {
   cacheControl: 'public, max-age=0, must-revalidate',
   variants: [{
     key: 'html/mediathek/index.html',
-    document: systemDocument('media-page', 'en', '/mediathek', 'Mediathek', 'Browse photos from Fifthbell assignments.'),
+    document: systemDocument('media-page', 'en', '/mediathek', 'Mediathek', 'Browse photos from Fifthbell assignments.', {
+      assignmentMediaBaseUrl: 'https://cdn.fifthbell.com/contents/assignments/',
+    }),
   }],
 } as const satisfies SystemPage;

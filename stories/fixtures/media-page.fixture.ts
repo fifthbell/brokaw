@@ -30,6 +30,7 @@ export const mediaPageFixture: CanonicalArticle = {
   id: 'media-page',
   slug: '/mediathek',
   layout: 'media-page',
+  assignmentMediaBaseUrl: 'https://cdn.fifthbell.com/contents/assignments/',
   canonicalUrl: 'https://fifthbell.com/mediathek',
   contentVersion: '2026-05-05T14:00:00.000Z',
   publishedAt: '2026-05-05T14:00:00.000Z',

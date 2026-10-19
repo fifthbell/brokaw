@@ -580,6 +580,10 @@ export type CronkiteCanonicalDocument =
         | "link-in-bio"
         | "media-page"
         | "standalone-page";
+      /**
+       * Completed assignment JSON directory supplied by the media-page producer.
+       */
+      assignmentMediaBaseUrl?: string;
       authors?: {
         name: string;
         slug: string;
