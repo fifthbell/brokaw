@@ -597,8 +597,8 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           audio.volume = finalVol;
           sceneInstantBaseVolumeRef.current = baseVol;
           sceneInstantAudiosRef.current.add(audio);
-          audio.onended = () => { sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
-          audio.onerror = () => { console.error('[scene_instant] audio error'); sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
+          audio.onended = () => { sceneInstantAudiosRef.current.delete(audio); if (activeInstantAudioRef.current === audio) activeInstantAudioRef.current = null; };
+          audio.onerror = () => { console.error('[scene_instant] audio error'); sceneInstantAudiosRef.current.delete(audio); if (activeInstantAudioRef.current === audio) activeInstantAudioRef.current = null; };
           activeInstantAudioRef.current = audio;
           audio.play().catch((err) => {
             console.error('[scene_instant] play failed:', err);
@@ -641,8 +641,8 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
             audio.volume = typeof playback.instant.volume === 'number' ? Math.max(0, Math.min(1, playback.instant.volume)) : 1;
             sceneInstantBaseVolumeRef.current = audio.volume;
             sceneInstantAudiosRef.current.add(audio);
-            audio.onended = () => { sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
-            audio.onerror = () => { console.error('[scene_instant] audio error'); sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
+            audio.onended = () => { sceneInstantAudiosRef.current.delete(audio); if (activeInstantAudioRef.current === audio) activeInstantAudioRef.current = null; };
+            audio.onerror = () => { console.error('[scene_instant] audio error'); sceneInstantAudiosRef.current.delete(audio); if (activeInstantAudioRef.current === audio) activeInstantAudioRef.current = null; };
             activeInstantAudioRef.current = audio;
             audio.play().catch((err) => {
               console.error('[scene_instant] play failed:', err);
