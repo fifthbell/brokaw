@@ -658,6 +658,10 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           const activeItem = songSeq.items.find((item: any) => item.id === songSeq.activeItemId) || songSeq.items[0];
           const songUrl = activeItem?.audioUrl;
           if (songUrl) {
+            const ms2 = (mixerSettingsRef.current || {}) as any;
+            const songMuted = ms2.songMuted === true;
+            const songVol = ms2.songMasterVolume ?? 1;
+            const finalSongVolume = songMuted ? 0 : Math.max(0, Math.min(1, songVol));
             if (!currentSong || currentSong.src !== songUrl) {
               if (currentSong) {
                 currentSong.pause();
@@ -667,13 +671,12 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
               const audio = new Audio(songUrl);
               audio.preload = 'auto';
               audio.loop = songSeq.loop !== false;
-              const ms2 = (mixerSettingsRef.current || {}) as any;
-              const songMuted = ms2.songMuted === true;
-              const songVol = ms2.songMasterVolume ?? 1;
-              audio.volume = songMuted ? 0 : Math.max(0, Math.min(1, songVol));
+              audio.volume = finalSongVolume;
               audio.onerror = () => { console.error('[song] playback error'); };
               songAudioRef.current = audio;
               audio.play().catch((err) => { console.error('[song] play failed:', err); });
+            } else {
+              currentSong.volume = finalSongVolume;
             }
           }
         } else if (currentSong) {
