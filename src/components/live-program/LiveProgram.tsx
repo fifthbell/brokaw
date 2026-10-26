@@ -600,7 +600,11 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           audio.onended = () => { sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
           audio.onerror = () => { console.error('[scene_instant] audio error'); sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
           activeInstantAudioRef.current = audio;
-          audio.play().catch((err) => { console.error('[scene_instant] play failed:', err); sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; });
+          audio.play().catch((err) => {
+            console.error('[scene_instant] play failed:', err);
+            sceneInstantAudiosRef.current.delete(audio);
+            if (activeInstantAudioRef.current === audio) activeInstantAudioRef.current = null;
+          });
         };
 
         const currentlyPlaying = activeInstantAudioRef.current;
@@ -640,7 +644,11 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
             audio.onended = () => { sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
             audio.onerror = () => { console.error('[scene_instant] audio error'); sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; };
             activeInstantAudioRef.current = audio;
-            audio.play().catch((err) => { console.error('[scene_instant] play failed:', err); sceneInstantAudiosRef.current.delete(audio); activeInstantAudioRef.current = null; });
+            audio.play().catch((err) => {
+              console.error('[scene_instant] play failed:', err);
+              sceneInstantAudiosRef.current.delete(audio);
+              if (activeInstantAudioRef.current === audio) activeInstantAudioRef.current = null;
+            });
           }, 1500);
           sceneInstantPlayTimersRef.current.add(timer);
         } else {
