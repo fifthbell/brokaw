@@ -241,6 +241,16 @@ describe('failed refresh', () => {
 });
 
 describe('event change notifications', () => {
+  it('detects a relevance-only change to the same posts so marquee eligibility can refresh', () => {
+    const before = event(1, {
+      posts_count: 4,
+      posts: [1, 2, 3, 4].map((id) => post(id, { relevance: 8 })),
+    });
+    const after = { ...before, posts: before.posts.map((item) => ({ ...item, relevance: 1 })) };
+
+    expect(hasEventChanges([before], [after])).toBe(true);
+  });
+
   it('detects an added event or a replacement event identity at equal length', () => {
     expect(hasEventChanges([event(1)], [event(1), event(2)])).toBe(true);
     expect(hasEventChanges([event(1)], [event(2)])).toBe(true);
