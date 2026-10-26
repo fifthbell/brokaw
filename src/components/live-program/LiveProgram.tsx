@@ -503,7 +503,9 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           try { audio.currentTime = 0; } catch { /* no-op */ }
           audio.onended = null;
           audio.onerror = null;
-          activeInstantAudioRef.current = null;
+          if (activeInstantAudioRef.current === audio) {
+            activeInstantAudioRef.current = null;
+          }
           return;
         }
         // A queued frame's timestamp can precede the time the fade was requested.
