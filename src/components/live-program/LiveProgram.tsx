@@ -390,7 +390,8 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   const [dataLoaded, setDataLoaded] = useState(false);
   const lastFetchedItemRef = useRef<number>(-1);
   const activeInstantAudioRef = useRef<HTMLAudioElement | null>(null);
-  const activeInstantAudiosRef = useRef<Set<HTMLAudioElement>>(new Set());
+  const sceneInstantBaseVolumeRef = useRef(1);
+  const activeInstantAudiosRef = useRef<Map<HTMLAudioElement, number>>(new Map());
   const sceneInstantTakeSequenceRef = useRef(0);
   const mixerSettingsRef = useRef<Record<string, unknown>>({});
   const songAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -558,6 +559,7 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           audio.preload = 'auto';
           audio.loop = data.loop !== false;
           audio.volume = finalVol;
+          sceneInstantBaseVolumeRef.current = baseVol;
           audio.onended = () => { activeInstantAudioRef.current = null; };
           audio.onerror = () => { console.error('[scene_instant] audio error'); activeInstantAudioRef.current = null; };
           activeInstantAudioRef.current = audio;
@@ -593,6 +595,7 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
             audio.preload = 'auto';
             audio.loop = true;
             audio.volume = typeof playback.instant.volume === 'number' ? Math.max(0, Math.min(1, playback.instant.volume)) : 1;
+            sceneInstantBaseVolumeRef.current = audio.volume;
             audio.onended = () => { activeInstantAudioRef.current = null; };
             audio.onerror = () => { console.error('[scene_instant] audio error'); activeInstantAudioRef.current = null; };
             activeInstantAudioRef.current = audio;
@@ -616,11 +619,11 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
         };
         audio.onended = cleanup;
         audio.onerror = () => { console.error('[instant_play] error'); cleanup(); };
-        activeInstantAudiosRef.current.add(audio);
+        activeInstantAudiosRef.current.set(audio, baseVol);
         audio.play().catch((err) => { console.error('[instant_play] play failed:', err); cleanup(); });
       } else if (data.type === 'instant_stop_all') {
         stopSceneInstantAudio();
-        for (const audio of activeInstantAudiosRef.current) {
+        for (const audio of activeInstantAudiosRef.current.keys()) {
           audio.pause();
           try { audio.currentTime = 0; } catch { /* no-op */ }
           audio.onended = null;
@@ -636,14 +639,14 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           const ms = mixerSettingsRef.current as any;
           const vol = ms.sceneInstantMasterVolume ?? 1;
           const muted = ms.sceneInstantMuted === true;
-          current.volume = muted ? 0 : Math.max(0, Math.min(1, vol));
+          current.volume = muted ? 0 : Math.max(0, Math.min(1, sceneInstantBaseVolumeRef.current * vol));
         }
         // Update instant play volumes
         const ms = (mixerSettingsRef.current || {}) as any;
         const instantVol = ms.instantMasterVolume ?? 1;
         const instantMuted = ms.instantMuted === true;
-        for (const audio of activeInstantAudiosRef.current) {
-          audio.volume = instantMuted ? 0 : Math.max(0, Math.min(1, instantVol));
+        for (const [audio, baseVol] of activeInstantAudiosRef.current) {
+          audio.volume = instantMuted ? 0 : Math.max(0, Math.min(1, baseVol * instantVol));
         }
         // Handle song sequence playback
         const songSeq = settings.songSequence;
