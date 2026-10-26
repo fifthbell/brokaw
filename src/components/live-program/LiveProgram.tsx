@@ -505,7 +505,8 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           activeInstantAudioRef.current = null;
           return;
         }
-        audio.volume = Math.max(0, initialVolume * (1 - elapsed / fadeMs));
+        // A queued frame's timestamp can precede the time the fade was requested.
+        audio.volume = initialVolume * (1 - Math.min(1, Math.max(0, elapsed / fadeMs)));
         requestAnimationFrame(fadeStep);
       };
       requestAnimationFrame(fadeStep);
