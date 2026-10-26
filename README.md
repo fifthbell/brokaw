@@ -100,6 +100,19 @@ npm pack --dry-run
 npm run storybook
 ```
 
+`npm run storybook`, `npm run build-storybook`, and `npm run test:storybook`
+first build the package and prepare its public declaration and outlet metadata.
+The metadata stories read those actual build artifacts from `package-metadata/`;
+they do not import the Node renderer into a browser. Preparation rejects missing
+or inconsistent package/version/manifest artifacts and removes previously served
+metadata on failure. Only `cronkite-manifest.json` and `outlet-config.json` are
+served from the generated `.cache/storybook-package-metadata` directory.
+
+For headless browser checks, install the repository-pinned Chromium with
+`npx playwright install chromium`, then run `npm run test:storybook`. These checks
+exercise the registered stories in a real browser; unit tests remain available
+separately through `npm run test:unit`.
+
 ## Publish flow
 
 - CI validates typecheck, unit tests, and package build on pull requests and `main` pushes.

@@ -55,13 +55,15 @@
     "generate:contract-types": "node scripts/generate-contract-types.mjs",
     "build:contract": "node scripts/build-contract.mjs",
     "build": "npm run clean && npm run build:css && npm run build:live-program && npm run generate:contract-types && tsc -p tsconfig.build.json && node -e \"require('node:fs').cpSync('src/styles/fonts','dist/fonts',{recursive:true})\" && node scripts/verify-live-program.mjs && npm run build:contract",
-    "storybook": "npm run build:css && storybook dev -p 6006",
-    "build-storybook": "npm run build:css && storybook build",
+    "prepare:storybook": "npm run build && node scripts/prepare-storybook-metadata.mjs",
+    "storybook": "npm run prepare:storybook && storybook dev -p 6006",
+    "build-storybook": "npm run prepare:storybook && storybook build",
     "typecheck": "npm run generate:contract-types && tsc --noEmit -p tsconfig.json",
     "test": "npm run test:unit",
     "pretest:unit": "npm run generate:contract-types && npm run build:css && npm run build:live-program",
     "test:unit": "vitest run --project unit",
     "test:coverage": "npm run pretest:unit && vitest run --project unit --coverage.enabled --coverage.provider=v8 --coverage.reporter=json --coverage.reportsDirectory=coverage \"--coverage.include=src/**/*.{ts,tsx}\"",
+    "test:storybook": "npm run prepare:storybook && vitest run --project storybook",
     "verify:packed-contract": "npm run build && node scripts/verify-packed-contract.mjs"
   },
   "dependencies": {
@@ -78,8 +80,8 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@remotion/bundler": "4.0.524",
     "@chromatic-com/storybook": "^5.0.1",
+    "@remotion/bundler": "4.0.524",
     "@storybook/addon-a11y": "^10.2.16",
     "@storybook/addon-docs": "^10.2.16",
     "@storybook/addon-vitest": "^10.2.16",
@@ -93,6 +95,8 @@
     "@vitejs/plugin-react": "^6.0.2",
     "@vitest/browser-playwright": "^4.0.18",
     "@vitest/coverage-v8": "^4.0.18",
+    "ast-v8-to-istanbul": "1.0.0",
+    "istanbul-lib-coverage": "3.2.2",
     "json-schema-to-typescript": "^16.0.0",
     "playwright": "^1.58.2",
     "storybook": "^10.2.16",

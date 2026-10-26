@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/html';
-import { cronkiteManifest } from '../../src/renderer';
+import { loadStorybookPackageMetadata } from '../package-metadata';
 
 const meta = {
   title: 'Partials/Cronkite Manifest',
-  render: () => {
+  loaders: [async () => ({ packageMetadata: await loadStorybookPackageMetadata() })],
+  render: (_args, { loaded }) => {
+    const { manifest: cronkiteManifest } = loaded.packageMetadata as Awaited<ReturnType<typeof loadStorybookPackageMetadata>>;
     const rendering = cronkiteManifest.templateRendering;
     const rows = [
       ['Package', `${cronkiteManifest.package}@${cronkiteManifest.version}`],

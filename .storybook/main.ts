@@ -17,6 +17,7 @@ const config: StorybookConfig = {
     '../stories/react/**/*.stories.tsx'
   ],
   staticDirs: [
+    { from: '../.cache/storybook-package-metadata', to: '/package-metadata' },
     { from: '../src/live-program/public', to: '/' },
     { from: '../stories/fixtures/article-reading', to: '/article-reading-fixtures' }
   ],

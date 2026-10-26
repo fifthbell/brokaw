@@ -27,7 +27,10 @@ export const DenseGrid: Story = {
     const articles = current.articles ?? [];
     return render(completeDocument({
       ...current,
-      articles: [...articles, ...articles.slice(0, 8).map((article, index) => ({ ...article, id: `${article.id}-dense-${index}` }))]
+      articles: [...articles, ...articles.slice(0, 8).map((article, index) => ({
+        ...article,
+        id: `d3000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+      }))]
     }));
   }
 };
