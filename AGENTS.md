@@ -416,3 +416,16 @@ This repository uses an explicit Storybook story list in `.storybook/main.ts`.
 When adding a new top-level page story (for example `stories/SearchPage.stories.ts`), AI assistants must also:
 1. Register the story file path in `.storybook/main.ts`.
 2. Update story ordering in `.storybook/preview.ts` (`parameters.options.storySort.order`) when needed.
+
+## Required Clouseau review before creating a PR
+
+- Before creating any pull request, run the current shared `clouseau` skill
+  locally with your authenticated coding harness against the complete change.
+  The accepted local recipe is `.clouseau-local.json`.
+- Fix the reported defects and required changes, run the recipe's verification,
+  and rerun Clouseau after repairs. Resolve every actionable finding; do not
+  create a PR with unresolved findings or an incomplete review.
+- Review the final committed change with a clean worktree. A change to the code
+  or base requires a matching fresh review; never repeat an unchanged review to
+  obtain a pass.
+- Submit changes through PRs; never push directly to `main`.
