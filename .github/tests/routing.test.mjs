@@ -12,10 +12,11 @@ const engine = fileURLToPath(new URL('../../.clouseau-ci/', import.meta.url));
 const config = require(`${engine}/src/config.cjs`).loadConfig(fileURLToPath(new URL('../clouseau.json', import.meta.url)));
 const head = 'a'.repeat(40);
 
-function context(event, {draft = false, pullRequest = '', author = false, fork = false, assessment = 'success', record = true, repair = false, gate = 'success', ref = 'refs/heads/main', deleted = false} = {}) {
+function context(event, {draft = false, pullRequest = '', author = false, fork = false, assessment = 'success', record = true, repair = false, gate = 'success', ref = 'refs/heads/main', deleted = false, baseSha = 'c'.repeat(40)} = {}) {
   return {
     github: {event_name: event, ref, repository: 'fifthbell/brokaw', run_id: 1000, event: {deleted, pull_request: {number: 20, draft, head: {sha: head, repo: {full_name: fork ? 'external/contribution' : 'fifthbell/brokaw'}}}}},
     inputs: {pull_request: pullRequest, check_author: author},
+    steps: {base: {outputs: {sha: baseSha}}},
     needs: {unit: {result: 'success'}, build: {result: 'success'}, 'assess-intent': {result: assessment, outputs: {assessment: JSON.stringify({record_digest: record ? 'a'.repeat(64) : '', repair_digest: repair ? 'b'.repeat(64) : ''})}}, 'approve-and-merge': {result: gate}},
   };
 }
@@ -40,6 +41,7 @@ for (const [label, c, verify, assess] of [
     for (const name of ['unit', 'build']) assert.equal(allowed(workflow.jobs[name].if, c), verify, name);
     assert.equal(evaluate(workflow.jobs.verify.name, c).coerceString(), verify ? 'verify' : 'metadata-only');
     assert.ok(allowed(workflow.jobs.verify.if, c, {success: false}));
+    if (!verify) c.steps.base.outputs.sha = '';
     for (const step of workflow.jobs.verify.steps) assert.equal(allowed(step.if, c), verify);
     assert.equal(allowed(workflow.jobs['assess-intent'].if, c), assess);
     const approve = workflow.jobs['approve-and-merge'];
@@ -191,4 +193,35 @@ test('the actual wait step uses fresh PR verification, reports pending work and 
 test('strict owner-only automatic merge is selected and backed by repository-wide ownership', () => {
   assert.equal(config.merge_mode, "automatic");
   assert.equal(readFileSync(new URL('../CODEOWNERS', import.meta.url), 'utf8'), '* @gaulatti\n');
+});
+
+test('changed-line coverage is skipped, and the exact gate applies, when an event has no base revision', () => {
+  const baseSteps = (job, names) => names.map(name => {
+    const step = job.steps.find(candidate => candidate.name === name);
+    assert.ok(step, name);
+    return step;
+  });
+  const resolve = job => job.steps.find(step => step.id === 'base');
+  for (const job of [workflow.jobs.unit, workflow.jobs.verify]) {
+    assert.match(resolve(job).run, /\^\[0-9a-f\]\{40\}\$/);
+    assert.match(resolve(job).run, /0{40}/);
+  }
+  const measured = baseSteps(workflow.jobs.unit, [
+    'Check out the base revision for its coverage baseline', 'Install base revision dependencies',
+    'Test the base revision with complete source coverage', 'Measure the base revision coverage totals', 'Retain base coverage totals']);
+  const consumed = baseSteps(workflow.jobs.verify, ['Load the base revision coverage totals', 'Read the protected configuration from the base revision']);
+  for (const step of [...measured, ...consumed]) {
+    assert.equal(step.if, "steps.base.outputs.sha != ''");
+    assert.equal(allowed(step.if, context('pull_request')), true);
+    assert.equal(allowed(step.if, context('workflow_dispatch', {baseSha: ''})), false);
+    assert.equal(allowed(step.if, context('push', {baseSha: ''})), false);
+  }
+  assert.equal(measured[0].with.ref, '${{ steps.base.outputs.sha }}');
+  const coverage = workflow.jobs.verify.steps.find(step => step.with?.operation === 'coverage');
+  const withBase = context('pull_request');
+  const noBase = context('workflow_dispatch', {baseSha: ''});
+  assert.equal(evaluate(coverage.with['coverage-base-ref'], withBase).coerceString(), 'c'.repeat(40));
+  assert.equal(evaluate(coverage.with['coverage-baseline'], withBase).coerceString(), 'coverage-baseline/baseline.json');
+  assert.equal(evaluate(coverage.with['coverage-base-ref'], noBase).coerceString(), '');
+  assert.equal(evaluate(coverage.with['coverage-baseline'], noBase).coerceString(), '');
 });

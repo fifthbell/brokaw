@@ -102,24 +102,40 @@ jobs:
             coverage/coverage-final.json
           if-no-files-found: error
       # Measured on the protected base revision, never on the pull request head.
+      - name: Resolve the base revision for changed-line coverage
+        id: base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ && "$BASE_SHA" != 0000000000000000000000000000000000000000 ]]; then
+            echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=" >> "$GITHUB_OUTPUT"
+            echo "::notice::No base revision for this event; changed-line coverage is skipped and the exact 100% gate applies."
+          fi
       - name: Check out the base revision for its coverage baseline
+        if: steps.base.outputs.sha != ''
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.base.sha || github.event.before }}
+          ref: ${{ steps.base.outputs.sha }}
           path: base
           persist-credentials: false
       - name: Install base revision dependencies
+        if: steps.base.outputs.sha != ''
         working-directory: base
         run: npm ci
       - name: Test the base revision with complete source coverage
+        if: steps.base.outputs.sha != ''
         working-directory: base
         run: npm run test:coverage
       - name: Measure the base revision coverage totals
+        if: steps.base.outputs.sha != ''
         working-directory: base
         run: |
           mkdir -p ../coverage-baseline
           node ../.clouseau-ci/bin/coverage-gate.cjs totals coverage/coverage-final.json src istanbul > ../coverage-baseline/baseline.json
       - name: Retain base coverage totals
+        if: steps.base.outputs.sha != ''
         uses: actions/upload-artifact@v4
         with:
           name: coverage-baseline-${{ github.run_id }}-${{ github.run_attempt }}
@@ -165,19 +181,30 @@ jobs:
         with:
           name: application-coverage-${{ github.run_id }}-${{ github.run_attempt }}
           path: coverage
-      - name: Load the base revision coverage totals
+      - name: Resolve the base revision for changed-line coverage
+        id: base
         if: *verify-code
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ && "$BASE_SHA" != 0000000000000000000000000000000000000000 ]]; then
+            echo "sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=" >> "$GITHUB_OUTPUT"
+            echo "::notice::No base revision for this event; changed-line coverage is skipped and the exact 100% gate applies."
+          fi
+      - name: Load the base revision coverage totals
+        if: steps.base.outputs.sha != ''
         uses: actions/download-artifact@v4
         with:
           name: coverage-baseline-${{ github.run_id }}-${{ github.run_attempt }}
           path: coverage-baseline
       - name: Read the protected configuration from the base revision
-        if: *verify-code
+        if: steps.base.outputs.sha != ''
         id: base-config
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
         run: |
-          test -n "$BASE_SHA"
           git show "$BASE_SHA:.github/clouseau.json" > "$RUNNER_TEMP/clouseau-base.json"
           echo "path=$RUNNER_TEMP/clouseau-base.json" >> "$GITHUB_OUTPUT"
       - name: Enforce 100% line and branch coverage
@@ -189,8 +216,8 @@ jobs:
           coverage-format: istanbul
           coverage-report: coverage/coverage-final.json
           source-directory: src
-          coverage-base-ref: ${{ github.event.pull_request.base.sha || github.event.before }}
-          coverage-baseline: coverage-baseline/baseline.json
+          coverage-base-ref: ${{ steps.base.outputs.sha }}
+          coverage-baseline: ${{ steps.base.outputs.sha != '' && 'coverage-baseline/baseline.json' || '' }}
       - name: Require workflow tests execution
         if: *verify-code
         env:
