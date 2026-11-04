@@ -552,7 +552,6 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
     for (const audio of activeInstantAudiosRef.current.keys()) stopOwnedAudio(audio);
     activeInstantAudiosRef.current.clear();
     if (songAudioRef.current) stopOwnedAudio(songAudioRef.current);
-    if (audioRef.current) stopOwnedAudio(audioRef.current);
     activeInstantAudioRef.current = null;
     songAudioRef.current = null;
   }, []);
@@ -706,9 +705,8 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
           const activeItem = songSeq.items.find((item: any) => item.id === songSeq.activeItemId) || songSeq.items[0];
           const songUrl = activeItem?.audioUrl;
           if (songUrl) {
-            const ms2 = (mixerSettingsRef.current || {}) as any;
-            const songMuted = ms2.songMuted === true;
-            const songVol = ms2.songMasterVolume ?? 1;
+            const songMuted = ms.songMuted === true;
+            const songVol = ms.songMasterVolume ?? 1;
             const finalSongVolume = songMuted ? 0 : Math.max(0, Math.min(1, songVol));
             if (!currentSong || currentSong.src !== songUrl) {
               if (currentSong) {

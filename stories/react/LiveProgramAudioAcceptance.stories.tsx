@@ -508,3 +508,117 @@ export const NativeSceneFailureAllowsTheNextTake: Story = {
     await waitFor(() => expect(next.paused).toBe(true));
   },
 };
+
+function restore(url: string) {
+  fixture.send({ type: 'scene_instant_state', playback: {
+    isPlaying: true,
+    instant: { id: 9, name: 'Restored fixture', audioUrl: url, volume: 1 },
+  } });
+}
+
+/** A later independent instant proves the SSE reader has processed every earlier event. */
+async function settle(index: number) {
+  const before = fixture.players.length;
+  fixture.instant('instant_play', 0);
+  await waitFor(() => expect(fixture.players).toHaveLength(before + 1));
+  await playing(index);
+}
+
+export const SceneMutedBusSilencesCurrentTake: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    fixture.instant('scene_instant_take', 0, 0.8);
+    const audio = await playing(0);
+    await expect(audio.volume).toBeCloseTo(0.8);
+    fixture.bus({ sceneInstantMuted: true });
+    await waitFor(() => expect(audio.volume).toBe(0));
+  },
+};
+
+export const StaleSceneCallbacksCannotClearTheNewOwner: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    fixture.instant('scene_instant_take', 0);
+    const first = await playing(0);
+    const staleEnded = first.onended!;
+    const staleError = first.onerror!;
+    fixture.send({ type: 'scene_instant_stop' });
+    await waitFor(() => expect(first.paused).toBe(true));
+    fixture.instant('scene_instant_take', 1);
+    const second = await playing(1);
+    fixture.bus({ sceneInstantMasterVolume: 0.5 });
+    await waitFor(() => expect(second.volume).toBeCloseTo(0.5));
+    // The old owner's retained callbacks are invoked directly: natural end/error timing cannot be forced after release.
+    staleEnded.call(first, new Event('ended'));
+    staleError.call(first, new Event('error'));
+    fixture.bus({ sceneInstantMasterVolume: 0.25 });
+    await waitFor(() => expect(second.volume).toBeCloseTo(0.25));
+    await expect(second.paused).toBe(false);
+  },
+};
+
+export const InterruptedSceneTakeReleasesItsOwner: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    fixture.instant('scene_instant_take', fixture.pendingSceneStream());
+    await waitFor(() => {
+      expect(fixture.players).toHaveLength(1);
+      expect(fixture.players[0].paused).toBe(false);
+    });
+    const interrupted = fixture.players[0];
+    interrupted.pause();
+    await waitFor(() => expect(fixture.errors.some((args) => args.some((value) => String(value).includes('play failed')))).toBe(true));
+    interrupted.volume = 0.9;
+    fixture.bus({ sceneInstantMasterVolume: 0.3 });
+    await settle(1);
+    await expect(interrupted.volume).toBeCloseTo(0.9);
+  },
+};
+
+export const RestoredSceneCallbacksFollowTheirOwner: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    restore(fixture.urls[0]);
+    await waitFor(() => expect(fixture.players).toHaveLength(1), { timeout: 4000 });
+    const first = await playing(0);
+    const staleEnded = first.onended!;
+    const staleError = first.onerror!;
+    // The first owner ends and releases its claim; a later restore becomes the owner.
+    first.dispatchEvent(new Event('ended'));
+    fixture.bus({ sceneInstantMasterVolume: 0.5 });
+    await settle(1);
+    await expect(first.volume).toBe(1);
+    restore(fixture.urls[1]);
+    await waitFor(() => expect(fixture.players).toHaveLength(3), { timeout: 4000 });
+    const second = await playing(2);
+    fixture.bus({ sceneInstantMasterVolume: 0.5 });
+    await waitFor(() => expect(second.volume).toBeCloseTo(0.5));
+    staleEnded.call(first, new Event('ended'));
+    staleError.call(first, new Event('error'));
+    fixture.bus({ sceneInstantMasterVolume: 0.25 });
+    await waitFor(() => expect(second.volume).toBeCloseTo(0.25));
+    // The owner's own failure releases it.
+    second.dispatchEvent(new Event('error'));
+    fixture.bus({ sceneInstantMasterVolume: 0.75 });
+    await settle(3);
+    await expect(second.volume).toBeCloseTo(0.25);
+  },
+};
+
+export const InterruptedRestoredSceneReleasesItsOwner: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    restore(fixture.urls[fixture.pendingSceneStream()]);
+    await waitFor(() => {
+      expect(fixture.players).toHaveLength(1);
+      expect(fixture.players[0].paused).toBe(false);
+    }, { timeout: 4000 });
+    const interrupted = fixture.players[0];
+    interrupted.pause();
+    await waitFor(() => expect(fixture.errors.some((args) => args.some((value) => String(value).includes('play failed')))).toBe(true));
+    interrupted.volume = 0.9;
+    fixture.bus({ sceneInstantMasterVolume: 0.3 });
+    await settle(1);
+    await expect(interrupted.volume).toBeCloseTo(0.9);
+  },
+};
