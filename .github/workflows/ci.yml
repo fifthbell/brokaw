@@ -74,6 +74,8 @@ jobs:
         run: npm ci
       - name: Type-check
         run: npm run typecheck
+      - name: Install the pinned browser for story acceptance tests
+        run: npx playwright install --with-deps chromium
       - name: Test application with complete source coverage
         run: npm run test:coverage
       - name: Set up Python for frozen shared tests
