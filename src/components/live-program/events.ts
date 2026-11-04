@@ -247,7 +247,8 @@ export function hasEventChanges(oldEvents: Event[], newEvents: Event[]): boolean
 
     const oldPostMap = new Map(oldEvent.posts.map((post) => [post.uuid, post]));
     for (const post of newEvent.posts) {
-      if (!oldPostMap.has(post.uuid)) {
+      const oldPost = oldPostMap.get(post.uuid);
+      if (!oldPost || oldPost.relevance !== post.relevance) {
         return true;
       }
     }

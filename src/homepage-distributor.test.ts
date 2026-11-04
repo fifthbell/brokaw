@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { distributeHomepageArticles } from './homepage-distributor.js';
 import type { SelfReference } from './types/canonical-article.js';
 
@@ -34,6 +34,35 @@ function makeQueue(n: number, startId = 100): SelfReference[] {
 }
 
 describe('distributeHomepageArticles', () => {
+  it('uses updatedAt for an undated publication and keeps fully undated items behind dated ones', () => {
+    const updated = { ...makeRef(1), featured: true, publishedAt: undefined, updatedAt: recent(2) };
+    const undated = { ...makeRef(2), featured: true, publishedAt: undefined, updatedAt: undefined };
+    const newest = makeRef(3, { publishedAt: recent(1) });
+    const slots = distributeHomepageArticles([undated, newest, updated], NOW);
+
+    expect(slots.landing.headline1).toBe(updated);
+    expect(slots.landing.sub1).toEqual([newest, undated]);
+  });
+
+  it('uses the current clock when callers omit now and includes the exact 24-hour boundary', () => {
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(NOW);
+      const boundary = makeRef(1, { featured: true, publishedAt: recent(24) });
+      const expired = makeRef(2, {
+        featured: true,
+        publishedAt: new Date(NOW.getTime() - 24 * 3_600_000 - 1).toISOString(),
+      });
+      const newest = makeRef(3, { publishedAt: recent(1) });
+      const slots = distributeHomepageArticles([expired, newest, boundary]);
+
+      expect(slots.landing.headline1).toBe(boundary);
+      expect(slots.landing.sub1).toEqual([newest, expired]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   describe('featured slots', () => {
     it('fills the 6 featured slots with the most recent featured:true articles', () => {
       const featured = Array.from({ length: 6 }, (_, i) =>

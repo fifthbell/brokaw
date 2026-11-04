@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/html';
-import { outletConfig, version } from '../../src/renderer';
+import { loadStorybookPackageMetadata } from '../package-metadata';
 
 const meta = {
   title: 'Partials/Outlet Config',
-  render: () => {
+  loaders: [async () => ({ packageMetadata: await loadStorybookPackageMetadata() })],
+  render: (_args, { loaded }) => {
+    const { outlet: { outletConfig, version } } = loaded.packageMetadata as Awaited<ReturnType<typeof loadStorybookPackageMetadata>>;
     const requiredKeys = [
       'publicSiteUrl',
       'cdnUrl',
