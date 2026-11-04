@@ -5,6 +5,8 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { afterEach, describe, expect, it } from 'vitest';
+import storybook from '../.storybook/main';
+import { metadataDirectory, prepareStorybookMetadata } from './prepare-storybook-metadata.mjs';
 
 const execute = promisify(execFile);
 const script = fileURLToPath(new URL('./prepare-storybook-metadata.mjs', import.meta.url));
@@ -34,8 +36,8 @@ afterEach(async () => {
 describe('Storybook public package metadata preparation', () => {
   it('serves the exact built declaration bytes and exported identity/configuration only', async () => {
     const root = await fixture();
-    await execute(process.execPath, [script], { cwd: root });
-    const output = join(root, '.cache/storybook-package-metadata');
+    await prepareStorybookMetadata(root);
+    const output = metadataDirectory(root);
     expect((await readdir(output)).sort()).toEqual(['cronkite-manifest.json', 'outlet-config.json']);
     expect(await readFile(join(output, 'cronkite-manifest.json'), 'utf8')).toBe(
       await readFile(join(root, 'dist/cronkite-manifest.json'), 'utf8'),
@@ -56,17 +58,31 @@ describe('Storybook public package metadata preparation', () => {
     const output = join(root, '.cache/storybook-package-metadata');
     await mkdir(output, { recursive: true });
     await writeFile(join(output, 'cronkite-manifest.json'), 'previous artifact');
-    await expect(execute(process.execPath, [script], { cwd: root })).rejects.toMatchObject({
-      stderr: expect.stringContaining('Built package metadata is inconsistent'),
-    });
+    await expect(prepareStorybookMetadata(root)).rejects.toThrow('Built package metadata is inconsistent');
     await expect(readdir(output)).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('fails when the package was never built instead of serving source or old files', async () => {
     const root = await fixture();
     await rm(join(root, 'dist/cronkite-manifest.json'));
+    await expect(prepareStorybookMetadata(root)).rejects.toThrow('cronkite-manifest.json');
+  });
+
+  it('runs as the package preparation command and refuses to serve an unbuilt package', async () => {
+    const root = await fixture();
+    await execute(process.execPath, [script], { cwd: root });
+    expect((await readdir(metadataDirectory(root))).sort()).toEqual(['cronkite-manifest.json', 'outlet-config.json']);
+    await rm(join(root, 'dist/cronkite-manifest.json'));
     await expect(execute(process.execPath, [script], { cwd: root })).rejects.toMatchObject({
       stderr: expect.stringContaining('cronkite-manifest.json'),
     });
+    await expect(readdir(metadataDirectory(root))).rejects.toMatchObject({ code: 'ENOENT' });
+  });
+
+  it('serves the prepared directory, and only it, at /package-metadata in Storybook', () => {
+    const repository = fileURLToPath(new URL('..', import.meta.url));
+    const served = storybook.staticDirs.filter((entry) => typeof entry === 'object' && entry.to === '/package-metadata');
+    expect(served).toHaveLength(1);
+    expect(join(repository, '.storybook', served[0].from)).toBe(metadataDirectory(repository));
   });
 });
