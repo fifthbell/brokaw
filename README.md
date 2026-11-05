@@ -145,6 +145,7 @@ receipt in the initial ready PR body. Never push directly to `main`.
 Every PR runs:
 
 - `npm run typecheck`,
+- the Vitest `unit` project also covers `scripts/*.test.ts` (packed-contract checks run against a fictional package through an offline `npm` shim) and `.storybook/*.test.ts` (Storybook main configuration),
 - `npm run test:coverage`: the Vitest `unit` project under V8 coverage with exactly 100% line and branch coverage required over `src`,
 - `npm run build` and the packed declarative contract check (`node scripts/verify-packed-contract.mjs`),
 - the workflow-contract tests in `.github/tests`.
