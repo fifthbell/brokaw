@@ -100,6 +100,47 @@ npm pack --dry-run
 npm run storybook
 ```
 
+`npm run storybook`, `npm run build-storybook`, and `npm run test:storybook`
+first build the package and prepare its public declaration and outlet metadata.
+The metadata stories read those actual build artifacts from `package-metadata/`;
+they do not import the Node renderer into a browser. Preparation rejects missing
+or inconsistent package/version/manifest artifacts and removes previously served
+metadata on failure. Only `cronkite-manifest.json` and `outlet-config.json` are
+served from the generated `.cache/storybook-package-metadata` directory.
+
+For headless browser checks, install the repository-pinned Chromium with
+`npx playwright install chromium`, then run `npm run test:storybook`. These checks
+exercise the registered stories in a real browser; unit tests remain available
+separately through `npm run test:unit`.
+
+`npm run test:coverage` runs the unit and browser projects together and writes
+native Istanbul measurements to `coverage/coverage-final.json`. Each run keeps
+its original reports and config observations in a new `coverage/run-*` directory.
+The config supplement evaluates the unchanged actual Vitest config in two Node
+ESM host contexts: with `__dirname` absent and with its real directory explicitly
+provided. This exercises both supported config branches; it does not establish
+historical CommonJS-loader acceptance. The collector verifies exact runtime
+text, source identity and native ranges, then uses the same official AST
+remapper and upstream Istanbul aggregation as the test toolchain. Overlapping
+application/config records or changed source identities fail rather than
+replacing counters.
+
+Failed tests remain failures even when their native measurements are retained.
+A generated report is not a 100% coverage claim or a Clouseau approval. The
+complete-source gate also checks the scripts and configuration, not only `src`.
+After coverage, generated `dist` and `storybook-static` JavaScript are removed
+so they cannot duplicate the actual source inventory; run `npm run build` or
+`npm run build-storybook` again when those artifacts are needed.
+
+Live program refreshes adopt post-relevance changes even when event/post IDs and
+counts stay the same. Audio bus updates preserve each instant's base gain and
+apply mute/gain changes to an already playing song. Scene crossfades keep progress
+within its valid range, and old fade/load callbacks cannot clear a newer scene's
+media ownership. Unmounting cancels the component's pending media work and stops
+its own media without stopping unrelated players. Acceptance stories use actual
+browser decoding/playback with valid local PCM WAVs and normal pointer activation;
+they do not claim physical audio-output verification.
+
 ## Publish flow
 
 - CI validates typecheck, unit tests, and package build on pull requests and `main` pushes.
