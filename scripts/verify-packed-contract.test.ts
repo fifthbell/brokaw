@@ -2,9 +2,10 @@ import { execFile } from "node:child_process";
 import { chmod, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { verifyPackedContract } from "./verify-packed-contract.mjs";
 
 const execFileAsync = promisify(execFile);
 const script = fileURLToPath(
@@ -182,40 +183,33 @@ describe("verify-packed-contract script", () => {
   );
 });
 
-describe("verify-packed-contract script imported in-process", () => {
-  it("runs its checks at import time against the fictional package", async () => {
+describe("verifyPackedContract exported function", () => {
+  const environment = (fixtureRoot: string) => ({
+    ...process.env,
+    PATH: `${binDirectory}:${process.env.PATH}`,
+    FIXTURE_PACKAGES: fixtureRoot,
+  });
+
+  it("verifies the fictional package and logs the same lines as the CLI", async () => {
     const fixtureRoot = join(workspace, "in-process");
     await writeFixturePackage(fixtureRoot, {});
-    const saved = {
-      cwd: process.cwd(),
-      argv: [...process.argv],
-      exitCode: process.exitCode,
-      path: process.env.PATH,
-      fixture: process.env.FIXTURE_PACKAGES,
-    };
-    const log = vi.spyOn(console, "log").mockImplementation(() => {});
-    try {
-      process.env.PATH = `${binDirectory}:${saved.path}`;
-      process.env.FIXTURE_PACKAGES = fixtureRoot;
-      process.chdir(repositoryRoot);
-      process.argv = [process.execPath, script];
-      process.exitCode = undefined;
-      vi.resetModules();
-      await import(`${pathToFileURL(script).href}?in-process`);
-      const lines = log.mock.calls.map((call) => String(call[0]));
-      expect(lines.some((line) => line.includes('"packedArtifact":"fixture.tgz"'))).toBe(true);
-      expect(lines).toContain(
-        "Validated packed @fifthbell/brokaw@1.2.3 declarative contract.",
-      );
-      expect(process.exitCode).toBeUndefined();
-    } finally {
-      log.mockRestore();
-      process.chdir(saved.cwd);
-      process.argv = saved.argv;
-      process.exitCode = saved.exitCode;
-      process.env.PATH = saved.path;
-      if (saved.fixture === undefined) delete process.env.FIXTURE_PACKAGES;
-      else process.env.FIXTURE_PACKAGES = saved.fixture;
-    }
+    const lines: string[] = [];
+    await verifyPackedContract({
+      env: environment(fixtureRoot),
+      log: (line: string) => lines.push(line),
+    });
+    expect(lines).toHaveLength(2);
+    expect(JSON.parse(lines[0])).toMatchObject({ packedArtifact: "fixture.tgz" });
+    expect(lines[1]).toBe(
+      "Validated packed @fifthbell/brokaw@1.2.3 declarative contract.",
+    );
+  });
+
+  it("rejects with the script's error message for an inconsistent package", async () => {
+    const fixtureRoot = join(workspace, "in-process-bad");
+    await writeFixturePackage(fixtureRoot, { manifestVersion: "9.9.9" });
+    await expect(
+      verifyPackedContract({ env: environment(fixtureRoot), log: () => {} }),
+    ).rejects.toThrow("packed manifest identity does not match the package");
   });
 });
