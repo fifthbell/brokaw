@@ -1,6 +1,7 @@
 import { searchCopyByLanguage } from './search-copy.js';
 import type { CronkiteDeclarativeTemplateManifest, SystemVariant } from './types/cronkite-manifest.generated.js';
 import { version } from './version.js';
+import { mediathekSystemPage, systemDocument, type Language } from './system-pages.js';
 
 const pagePartials = [
   'shell/doc-start-standard',
@@ -89,8 +90,6 @@ const page = (layout: string, dependencies: readonly string[]) => ({
   contentType: 'text/html; charset=utf-8',
 });
 
-type Language = keyof typeof searchCopyByLanguage;
-
 const localizedSystemCopy = {
   en: {
     notFound: ['Page Not Found', 'The page you are looking for does not exist.', 'Go to Homepage', 'Or explore our categories:'],
@@ -105,38 +104,6 @@ const localizedSystemCopy = {
     search: ['Cerca', 'Cerca notizie Fifthbell.'],
   },
 } as const;
-
-const systemDocument = (
-  layout: '404' | 'search-page',
-  language: Language,
-  slug: string,
-  title: string,
-  excerpt: string,
-  extra: Record<string, unknown> = {},
-) => ({
-  id: `system-${layout}-${language}`,
-  slug,
-  canonicalUrl: `https://fifthbell.com${slug}`,
-  contentVersion: '2026-09-21T00:00:00.000Z',
-  publishedAt: '2026-09-21T00:00:00.000Z',
-  updatedAt: '2026-09-21T00:00:00.000Z',
-  status: 'published',
-  title,
-  excerpt,
-  language,
-  featured: false,
-  body: [],
-  layout,
-  authors: [{ name: 'Fifthbell Newsroom', slug: 'fifthbell-newsroom' }],
-  categories: [],
-  navigation: { categories: [] },
-  logoLink: language === 'en' ? '/' : `/${language}`,
-  seo: {
-    metaTitle: `${title} | fifthbell`,
-    metaDescription: excerpt,
-  },
-  ...extra,
-});
 
 const systemVariants = (
   layout: '404' | 'search-page',
@@ -321,6 +288,7 @@ export const cronkiteManifest = {
         cacheControl: 'public, max-age=0, must-revalidate',
         variants: systemVariants('search-page', 'search', (language) => ({ searchCopy: searchCopyByLanguage[language] })),
       },
+      mediathekSystemPage,
     ],
   },
 } as const satisfies CronkiteDeclarativeTemplateManifest;

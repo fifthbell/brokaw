@@ -23,6 +23,24 @@ including:
 - extracted vendor identifiers such as `tweetId` and TikTok `videoId`;
 - optional, validated public RUM configuration.
 
+`media-page` additionally requires the canonical `assignmentMediaBaseUrl`:
+an absolute HTTP(S) directory ending in `/contents/assignments/` with a trailing
+slash and no credentials, query or fragment. The producer preserves any
+configured path/bucket prefix. Brokaw validates and embeds the supplied value
+with `jsonString`, then the browser appends the encoded opaque route key and
+`.json`. It does not reconstruct that base from the browser origin or another
+field. The package's static system document has an explicit authored Fifthbell
+preview value; Cronkite's basement producer replaces it from the selected
+tenant's CDN configuration, while direct CMS requests supply their own value.
+
+The packed self-contained canonical schema and generated TypeScript remain
+contract version 1. This is a coordinated tightening of `media-page` input:
+an older media document without the field fails validation. Other layouts do
+not require it, and unrelated extra properties remain allowed. Deploy the
+compatible CMS mint/input producer and Cronkite input producer before adopting
+the new package. Source version `0.1.72` remains an unpublished candidate;
+these contents need their own reviewed artifact and release decision.
+
 The browser and Node renderers remain as local and Storybook compatibility
 exports. They render the same completed document without composing editorial
 state or deriving vendor identifiers.
@@ -90,6 +108,16 @@ assets, embed data, and output parity between declarative rendering and the
 legacy local renderer for article, homepage, category, search, and link-in-bio
 documents. `npm run build-storybook` verifies the updated page, partial, RUM,
 standalone-page, and social-image stories.
+
+The Mediathek unit boundary executes the actual rendered inline script against
+controlled public-fetch responses, including supplied loopback/bucket bases,
+opaque keys, errors, empty data, refresh and pagination. Existing gallery
+stories retain their manually hydrated visual fixtures. In contrast,
+`Pages/MediaPage/FetchedSystemPage` runs the rendered script in a same-origin
+frame at a fictional Mediathek path and fetches repository-owned assignment
+JSON and an image over actual Storybook HTTP. Those static fixtures are outside
+the package's published file set. These checks do not establish normal deployed
+CMS/Cronkite publication, stored output, or public package adoption.
 
 ## Article reading and attribution
 

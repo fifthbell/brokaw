@@ -19,6 +19,7 @@ const config: StorybookConfig = {
   staticDirs: [
     { from: '../.cache/storybook-package-metadata', to: '/package-metadata' },
     { from: '../src/live-program/public', to: '/' },
+    { from: '../stories/fixtures/mediathek-http', to: '/mediathek' },
     { from: '../stories/fixtures/article-reading', to: '/article-reading-fixtures' }
   ],
   addons: ['@chromatic-com/storybook', '@storybook/addon-vitest', '@storybook/addon-a11y', '@storybook/addon-docs'],

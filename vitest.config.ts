@@ -37,7 +37,13 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['src/**/*.test.ts', 'stories/**/*.test.ts', 'scripts/**/*.test.mjs'],
+          include: [
+            'src/**/*.test.ts',
+            'stories/**/*.test.ts',
+            'scripts/**/*.test.mjs',
+            'scripts/**/*.test.ts',
+            '.storybook/**/*.test.ts',
+          ],
         },
       },
     ],

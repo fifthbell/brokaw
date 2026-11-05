@@ -70,7 +70,10 @@ describe('tenant-neutral RUM rendering contract', () => {
     ['404', 'es'],
     ['media-page', 'it']
   ] as const)('renders the contract for %s pages', (layout, language) => {
-    const html = renderWithAssets({ ...baseDocument, layout, language, rumConfig: config }, assets);
+    const html = renderWithAssets({
+      ...baseDocument, layout, language, rumConfig: config,
+      ...(layout === 'media-page' ? { assignmentMediaBaseUrl: 'https://example.test/contents/assignments/' } : {}),
+    }, assets);
 
     expect(html).toContain('data-brokaw-rum-loader');
     expect(html).toContain(config.appMonitorId);

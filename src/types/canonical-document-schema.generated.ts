@@ -1739,6 +1739,11 @@ export const canonicalDocumentSchema = {
             "standalone-page",
           ],
         },
+        assignmentMediaBaseUrl: {
+          type: "string",
+          description:
+            "Completed assignment JSON directory supplied by the media-page producer.",
+        },
         authors: {
           type: "array",
           items: {
@@ -1789,6 +1794,29 @@ export const canonicalDocumentSchema = {
         "layout",
       ],
       additionalProperties: {},
+      allOf: [
+        {
+          if: {
+            properties: {
+              layout: {
+                const: "media-page",
+              },
+            },
+            required: ["layout"],
+          },
+          then: {
+            required: ["assignmentMediaBaseUrl"],
+            properties: {
+              assignmentMediaBaseUrl: {
+                type: "string",
+                format: "uri",
+                pattern:
+                  "^[Hh][Tt][Tt][Pp][Ss]?://[^/?#@\\s\\\\]+(?:/[^?#\\s\\\\]*)?/contents/assignments/(?![\\s\\S])",
+              },
+            },
+          },
+        },
+      ],
     },
   ],
   title: "Cronkite canonical document",

@@ -7,6 +7,7 @@ import { cronkiteManifest } from './cronkite-manifest.js';
 import { distributeHomepageArticles } from './homepage-distributor.js';
 import { render } from './renderer.node.js';
 import { searchCopyByLanguage } from './search-copy.js';
+import { mediathekSystemPage } from './system-pages.js';
 import type { CanonicalArticle } from './types/canonical-article.js';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -194,6 +195,7 @@ describe('declarative template output parity', () => {
     ['category page', 'category-page', categoryFixture],
     ['search page', 'search-page', searchFixture],
     ['link in bio', 'link-in-bio', linkInBioFixture],
+    ['shared media page', 'media-page', mediathekSystemPage.variants[0].document as CanonicalArticle],
     ['live story with SofaScore', 'live-story', liveStoryFixture],
     ['live story without SofaScore', 'live-story', liveStoryWithoutSofascore],
     ['breaking news with SofaScore', 'homepage', homepageWithBreakingNews],

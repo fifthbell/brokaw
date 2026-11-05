@@ -16,6 +16,7 @@
 <script>
   (function () {
     var PAGE_SIZE = 48;
+    var assignmentMediaBaseUrl = {{{jsonString assignmentMediaBaseUrl}}};
     var page = document.querySelector('[data-media-page]');
     if (!page) return;
 
@@ -205,7 +206,7 @@
       if (loadedData) render(loadedData);
     });
 
-    fetch('https://cdn.fifthbell.com/contents/assignments/' + encodeURIComponent(assignmentId) + '.json', {
+    fetch(assignmentMediaBaseUrl + encodeURIComponent(assignmentId) + '.json', {
       cache: 'no-store'
     })
       .then(function (response) {

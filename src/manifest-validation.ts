@@ -36,7 +36,9 @@ export function assertManifestAlignment(manifest: CronkiteDeclarativeTemplateMan
     assertSameOrderedValues(
       `system page ${page.renderable} languages`,
       page.variants.map((variant) => String(variant.document.language)).sort(),
-      [...sources.languages].sort(),
+      page.renderable === 'media-page'
+        ? [sources.defaultLanguage]
+        : [...sources.languages].sort(),
     );
   }
 }
