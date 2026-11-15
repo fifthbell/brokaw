@@ -24,6 +24,22 @@ describe('live-program Alcantara contract', () => {
     expect(resolveProgramEndpoint('https://api.example.test', 'fifth bell')).toBe('https://api.example.test/program/fifth%20bell');
     expect(resolveProgramEndpoint('https://api.example.test/program', 'fifthbell')).toBe('https://api.example.test/program/fifthbell');
     expect(resolveProgramEndpoint('https://api.example.test/program/fifthbell/', 'ignored')).toBe('https://api.example.test/program/fifthbell');
+
+    // Test browser window hostname fallback (including IPv6)
+    const originalWindow = (globalThis as any).window;
+    try {
+      (globalThis as any).window = { location: { hostname: 'brokaw.local' } };
+      expect(resolveProgramEndpoint(undefined, 'fifthbell')).toBe('http://brokaw.local:3000/program/fifthbell');
+
+      (globalThis as any).window = { location: { hostname: '::1' } };
+      expect(resolveProgramEndpoint(undefined, 'fifthbell')).toBe('http://[::1]:3000/program/fifthbell');
+    } finally {
+      if (originalWindow === undefined) {
+        delete (globalThis as any).window;
+      } else {
+        (globalThis as any).window = originalWindow;
+      }
+    }
   });
 
   it('accepts an initial snapshot and reconciles a newer snapshot after a dropped stream', () => {
@@ -69,5 +85,20 @@ describe('live-program Alcantara contract', () => {
     expect(parseProgramEvent({ programId: 'fifthbell' }, 'fifthbell')).toMatchObject({ event: null, diagnostic: { code: 'malformed-event' } });
     expect(parseProgramEvent({ type: 'scene_cleared', version: 1, schemaVersion: 2 }, 'fifthbell')).toMatchObject({ event: null, diagnostic: { code: 'incompatible-schema' } });
     expect(parseProgramEvent({ type: 'scene_cleared', version: 1, programId: 'other' }, 'fifthbell')).toMatchObject({ event: null, diagnostic: { code: 'program-mismatch' } });
+
+    // Test snapshot fallback when event and current programId are absent
+    const stateResult = reconcileProgramEvent(null, {
+      type: 'scene_change',
+      version: 1,
+      state: snapshot(1),
+    } as any);
+    expect(stateResult.accepted).toBe(true);
+
+    const emptyProgResult = reconcileProgramEvent(null, {
+      type: 'scene_change',
+      version: 1,
+      state: { ...snapshot(1), programId: undefined },
+    } as any);
+    expect(emptyProgResult.accepted).toBe(true);
   });
 });

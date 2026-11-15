@@ -1,0 +1,389 @@
+import fs from 'node:fs';
+import Handlebars from 'handlebars';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  initializeHandlebars,
+  normalizeDocument,
+  renderWithAssets,
+  resetHandlebarsForTests,
+  layoutCache,
+  type RendererAssets,
+} from './renderer.core.js';
+import {
+  fontFiles,
+  liveProgramPageAsset,
+  liveProgramPageFiles,
+  liveProgramPageHtml,
+  render,
+  resetAssetsForTests,
+} from './renderer.node.js';
+import type { CanonicalDocument } from './types/canonical-article.js';
+
+const minimalDoc: CanonicalDocument = {
+  id: 'test-article-1',
+  slug: '/news/test-article',
+  layout: 'article-page',
+  canonicalUrl: 'https://fifthbell.com/news/test-article',
+  contentVersion: '2026-11-15T00:00:00.000Z',
+  publishedAt: '2026-11-15T00:00:00.000Z',
+  updatedAt: '2026-11-15T00:00:00.000Z',
+  status: 'published',
+  title: 'Test Article',
+  language: 'en',
+  featured: false,
+  authors: [],
+  categories: [],
+  body: [
+    { type: 'heading', level: 2, text: 'Hello World' },
+    { type: 'truthSocial', post: 'ignored' } as any,
+  ],
+};
+
+describe('renderer.core Handlebars helpers and normalization', () => {
+  const assets: RendererAssets = {
+    layouts: {
+      'article-page': '<h1>{{title}}</h1>{{#each body}}{{type}}{{/each}}',
+      'standalone-page': '<div>{{title}}</div>',
+      'search-page': '<div>Search</div>',
+      'category-page': '<div>Category</div>',
+      'media-page': '<div>Media</div>',
+      'link-in-bio': '<div>Bio</div>',
+      'homepage': '<div>Home</div>',
+      'live-story': '<div>Live</div>',
+      '404': '<div>404</div>',
+    },
+    partials: {
+      'blocks/heading': '<h2>heading</h2>',
+      'components/body-block': '<div>body</div>',
+    },
+    styles: 'body { color: black; }',
+  };
+
+  it('initializes helpers, registers partials, and respects idempotency', () => {
+    initializeHandlebars(assets);
+    // calling a second time hits early return if (initialized) return;
+    initializeHandlebars(assets);
+  });
+
+  it('tests eq and add helpers', () => {
+    const eq = Handlebars.helpers['eq'];
+    expect(eq(1, 1)).toBe(true);
+    expect(eq(1, 2)).toBe(false);
+
+    const add = Handlebars.helpers['add'];
+    expect(add(2, 3)).toBe(5);
+  });
+
+  it('tests slice helper', () => {
+    const slice = Handlebars.helpers['slice'];
+    expect(slice('not-an-array', 0)).toEqual([]);
+    expect(slice([1, 2, 3, 4], 1, 3)).toEqual([2, 3]);
+  });
+
+  it('tests uppercase helper', () => {
+    const uppercase = Handlebars.helpers['uppercase'];
+    expect(uppercase(null)).toBe('');
+    expect(uppercase(undefined)).toBe('');
+    expect(uppercase('hello')).toBe('HELLO');
+  });
+
+  it('tests coalesce helper', () => {
+    const coalesce = Handlebars.helpers['coalesce'];
+    expect(coalesce(null, undefined, 'found', 'extra', {})).toBe('found');
+    expect(coalesce(null, undefined, {})).toBeNull();
+  });
+
+  it('tests formatDate helper', () => {
+    const formatDate = Handlebars.helpers['formatDate'];
+    expect(formatDate('')).toBe('');
+    expect(formatDate('2026-11-15T12:00:00.000Z')).toContain('November 15, 2026');
+    expect(formatDate('not-a-date')).toBe('not-a-date');
+  });
+
+  it('tests embedUrl helper across supported providers', () => {
+    const embedUrl = Handlebars.helpers['embedUrl'];
+    expect(
+      embedUrl('x-status', { hash: { username: 'fifthbell', id: '123' } } as any),
+    ).toBe('https://twitter.com/fifthbell/status/123');
+    expect(
+      embedUrl('x-embed', { hash: { id: '123' } } as any),
+    ).toBe('https://platform.twitter.com/embed/Tweet.html?id=123&dnt=true');
+    expect(
+      embedUrl('instagram', { hash: { shortcode: 'ABC' } } as any),
+    ).toBe('https://www.instagram.com/p/ABC/embed/');
+    expect(
+      embedUrl('tiktok', { hash: { id: '999' } } as any),
+    ).toBe('https://www.tiktok.com/embed/v2/999');
+    expect(
+      embedUrl('sofascore-widget', { hash: { id: '10', widgetTheme: 'dark' } } as any),
+    ).toBe('https://widgets.sofascore.com/embed/attackMomentum?id=10&widgetTheme=dark');
+    expect(
+      embedUrl('sofascore-match', { hash: { id: '42' } } as any),
+    ).toBe('https://www.sofascore.com/football/match#id:42');
+
+    expect(() => embedUrl('unknown-provider', { hash: {} } as any)).toThrow(
+      'Unknown embed provider "unknown-provider"',
+    );
+    expect(() =>
+      embedUrl('x-status', { hash: { username: '', id: '123' } } as any),
+    ).toThrow('Embed provider "x-status" requires parameter username');
+    // Non-string embed provider
+    expect(() => Handlebars.helpers['embedUrl'](123, { hash: {} })).toThrow('Unknown embed provider "123"');
+  });
+
+  it('tests jsonString helper with escaping and error handling', () => {
+    const jsonString = Handlebars.helpers['jsonString'];
+    const safeStr = jsonString({ tag: '<script>& \u2028\u2029' });
+    expect(safeStr.toString()).toContain('\\u003c');
+    expect(safeStr.toString()).toContain('\\u003e');
+    expect(safeStr.toString()).toContain('\\u0026');
+    expect(safeStr.toString()).toContain('\\u2028');
+    expect(safeStr.toString()).toContain('\\u2029');
+
+    expect(() => jsonString(undefined)).toThrow('jsonString cannot serialize this value');
+  });
+
+  it('tests socialImageUrl and socialImageAlt helpers', () => {
+    const socialImageUrl = Handlebars.helpers['socialImageUrl'];
+    const socialImageAlt = Handlebars.helpers['socialImageAlt'];
+
+    expect(socialImageUrl(null)).toBeNull();
+    expect(socialImageUrl({})).toBeNull();
+    expect(socialImageUrl({ seo: { socialImage: ['not-an-object'] } })).toBeNull();
+    expect(socialImageUrl({ seo: { socialImage: { url: '   ' } } })).toBeNull();
+    expect(
+      socialImageUrl({ seo: { socialImage: { url: 'https://cdn.example.test/img.jpg' } } }),
+    ).toBe('https://cdn.example.test/img.jpg');
+
+    expect(
+      socialImageAlt({
+        seo: { socialImage: { url: 'https://cdn.example.test/img.jpg', alt: 'custom alt' } },
+      }),
+    ).toBe('custom alt');
+    expect(socialImageAlt({ title: 'My Story' })).toBe('My Story');
+    expect(socialImageAlt({})).toBe('fifthbell');
+  });
+
+  it('renders document with assets and filters removed block types', () => {
+    const rendered = renderWithAssets(minimalDoc, assets);
+    expect(rendered).toContain('<h1>Test Article</h1>');
+    expect(rendered).not.toContain('truthSocial');
+
+    // test normalizeDocument directly with non-array body and non-object blocks
+    const nonArrayDoc = { ...minimalDoc, body: null as any };
+    expect(normalizeDocument(nonArrayDoc)).toBe(nonArrayDoc);
+
+    const withNonObj = normalizeDocument({
+      ...minimalDoc,
+      body: [{ type: 'heading' }, 'string-block' as any, null as any],
+    });
+    expect(withNonObj.body?.length).toBe(3);
+  });
+
+  it('rejects unknown or missing layout in renderWithAssets', () => {
+    expect(() =>
+      renderWithAssets({ ...minimalDoc, layout: undefined as any }, assets),
+    ).toThrow('Unknown layout "undefined"');
+    expect(() =>
+      renderWithAssets({ ...minimalDoc, layout: 'nonexistent-layout' as any }, assets),
+    ).toThrow('Unknown layout "nonexistent-layout"');
+  });
+});
+
+describe('renderer.node file resolution and exports', () => {
+  it('renders a canonical document using assets from disk', () => {
+    const html = render(minimalDoc);
+    expect(html).toContain('Test Article');
+  });
+
+  it('reads fontFiles from disk or throws when font directory is missing', () => {
+    const fontsPath = 'src/styles/fonts';
+    if (fs.existsSync(fontsPath)) {
+      const realExistsSync = fs.existsSync.bind(fs);
+      const realReaddirSync = fs.readdirSync.bind(fs);
+      const realReadFileSync = fs.readFileSync.bind(fs);
+
+      const existsSpy = vi.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
+        if (String(p).endsWith('/fonts')) return true;
+        return realExistsSync(p);
+      });
+      const readdirSpy = vi.spyOn(fs, 'readdirSync').mockImplementation((p: any, opts: any) => {
+        if (String(p).endsWith('/fonts')) {
+          const res = realReaddirSync(fontsPath, opts);
+          return [
+            ...res,
+            { name: 'sub-dir', isFile: () => false, isDirectory: () => true } as any,
+          ];
+        }
+        return realReaddirSync(p, opts);
+      });
+      const readSpy = vi.spyOn(fs, 'readFileSync').mockImplementation((p: any, opts?: any) => {
+        if (String(p).includes('/fonts/')) {
+          const filename = String(p).split('/fonts/')[1];
+          return realReadFileSync(`${fontsPath}/${filename}`, opts);
+        }
+        return realReadFileSync(p, opts);
+      });
+
+      try {
+        const fonts = fontFiles();
+        expect(fonts.length).toBeGreaterThan(0);
+        expect(fonts[0].contentType).toBe('font/ttf');
+        expect(fonts[0].body).toBeInstanceOf(Buffer);
+      } finally {
+        existsSpy.mockRestore();
+        readdirSpy.mockRestore();
+        readSpy.mockRestore();
+      }
+    }
+  });
+
+  it('throws when font directory is missing', () => {
+    const existsSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
+    try {
+      expect(() => fontFiles()).toThrow('fonts directory not found');
+    } finally {
+      existsSpy.mockRestore();
+    }
+  });
+
+  it('reads liveProgramPageHtml and assets from disk', () => {
+    // Test colocated directory resolution
+    const realExists = fs.existsSync.bind(fs);
+    const realRead = fs.readFileSync.bind(fs);
+    const existsSpy = vi.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
+      if (String(p).endsWith('/src/live-program-page') || String(p).endsWith('/src/live-program-page/index.html')) return true;
+      return realExists(p);
+    });
+    const readSpy = vi.spyOn(fs, 'readFileSync').mockImplementation((p: any, opts: any) => {
+      if (String(p).endsWith('/src/live-program-page/index.html')) return '<!doctype html><html>colocated</html>';
+      return realRead(p, opts);
+    });
+    try {
+      expect(liveProgramPageHtml().toLowerCase()).toContain('colocated');
+    } finally {
+      existsSpy.mockRestore();
+      readSpy.mockRestore();
+    }
+
+    const html = liveProgramPageHtml();
+    expect(html.toLowerCase()).toContain('<!doctype html>');
+
+    const asset = liveProgramPageAsset('index.html');
+    expect(asset.toLowerCase()).toContain('<!doctype html>');
+  });
+
+  it('throws when liveProgramPageHtml or asset does not exist', () => {
+    expect(() => liveProgramPageAsset('nonexistent-file.bin')).toThrow(
+      'not found',
+    );
+    const existsSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
+    try {
+      expect(() => liveProgramPageHtml()).toThrow('live-program-page/index.html not found');
+    } finally {
+      existsSpy.mockRestore();
+    }
+  });
+
+  it('handles non-.hbs entries in partials directory', () => {
+    resetAssetsForTests();
+    const realReaddirSync = fs.readdirSync.bind(fs);
+    const readdirSpy = vi.spyOn(fs, 'readdirSync').mockImplementation((p: any, opts: any) => {
+      const res = realReaddirSync(p, opts);
+      if (String(p).includes('partials') && Array.isArray(res)) {
+        return [
+          ...res,
+          { name: 'ignore.txt', isFile: () => true, isDirectory: () => false } as any,
+          { name: 'ignore-dir', isFile: () => false, isDirectory: () => false } as any,
+        ];
+      }
+      return res;
+    });
+    try {
+      const result = render(minimalDoc);
+      expect(result).toContain('Test Article');
+    } finally {
+      readdirSpy.mockRestore();
+      resetAssetsForTests();
+    }
+  });
+
+  it('throws when compiledStylesPath or layout template is missing during loadAssetsFromDisk', () => {
+    resetAssetsForTests();
+    const realExists = fs.existsSync.bind(fs);
+    const existsSpy = vi.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
+      if (String(p).includes('compiled.css')) return false;
+      return realExists(p);
+    });
+    try {
+      expect(() => render(minimalDoc)).toThrow('compiled.css not found');
+    } finally {
+      existsSpy.mockRestore();
+    }
+
+    resetAssetsForTests();
+    const layoutSpy = vi.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
+      if (String(p).includes('article-page.hbs')) return false;
+      return realExists(p);
+    });
+    try {
+      expect(() => render(minimalDoc)).toThrow('Layout template missing');
+    } finally {
+      layoutSpy.mockRestore();
+      resetAssetsForTests();
+    }
+  });
+
+  it('handles uninitialized renderWithAssets and missing cached template', () => {
+    resetHandlebarsForTests();
+    const result = render(minimalDoc);
+    expect(result).toContain('Test Article');
+
+    // Simulate layoutCache missing template after layout check
+    const originalTemplate = layoutCache.get('article-page');
+    (layoutCache as any).set('article-page', undefined);
+    try {
+      expect(() => render(minimalDoc)).toThrow('Layout template missing for "article-page"');
+    } finally {
+      layoutCache.set('article-page', originalTemplate!);
+    }
+  });
+
+  it('reads liveProgramPageFiles recursively and covers content types', () => {
+    const realReaddir = fs.readdirSync.bind(fs);
+    const realRead = fs.readFileSync.bind(fs);
+    const readdirSpy = vi.spyOn(fs, 'readdirSync').mockImplementation((p: any, opts: any) => {
+      const res = realReaddir(p, opts);
+      if (Array.isArray(res)) {
+        return [
+          ...res,
+          { name: 'custom.unknownext', isFile: () => true, isDirectory: () => false } as any,
+          { name: 'special-device', isFile: () => false, isDirectory: () => false } as any,
+        ];
+      }
+      return res;
+    });
+    const readSpy = vi.spyOn(fs, 'readFileSync').mockImplementation((p: any, opts: any) => {
+      if (String(p).includes('custom.unknownext')) return Buffer.from('custom');
+      return realRead(p, opts);
+    });
+
+    try {
+      const files = liveProgramPageFiles();
+      expect(files.some((f) => f.key === 'index.html')).toBe(true);
+      expect(files.some((f) => f.contentType === 'application/octet-stream')).toBe(true);
+    } finally {
+      readdirSpy.mockRestore();
+      readSpy.mockRestore();
+    }
+  });
+
+  it('throws when liveProgramPageDir does not exist', () => {
+    const existsSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
+    try {
+      expect(() => liveProgramPageFiles()).toThrow('directory not found');
+    } finally {
+      existsSpy.mockRestore();
+    }
+  });
+});

@@ -68,6 +68,10 @@ function loadAssetsFromDisk(): RendererAssets {
 
 let cachedAssets: RendererAssets | null = null;
 
+export function resetAssetsForTests(): void {
+  cachedAssets = null;
+}
+
 function getAssets(): RendererAssets {
   if (!cachedAssets) {
     cachedAssets = loadAssetsFromDisk();

@@ -110,7 +110,7 @@ function getMagnitudeColor(magnitude: number): string {
 
 const fac = new FastAverageColor();
 
-function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: EarthquakeData[]; progress: number; language: SupportedLanguage }) {
+export function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: EarthquakeData[]; progress: number; language: SupportedLanguage }) {
   const [dominantColor, setDominantColor] = useState('#7c2d12');
   const backgroundImage = FIFTHBELL_ASSETS.images.seismograph;
 

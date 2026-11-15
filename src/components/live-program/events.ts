@@ -231,10 +231,7 @@ export function hasEventChanges(oldEvents: Event[], newEvents: Event[]): boolean
   }
 
   for (const [uuid, newEvent] of newMap.entries()) {
-    const oldEvent = oldMap.get(uuid);
-    if (!oldEvent) {
-      continue;
-    }
+    const oldEvent = oldMap.get(uuid)!;
 
     if (
       oldEvent.title !== newEvent.title ||

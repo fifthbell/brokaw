@@ -58,7 +58,7 @@ function validateInput(input: unknown): FifthbellLiveProgramReleaseInput {
   };
 }
 
-function configureCanonicalDocument(
+export function configureCanonicalDocument(
   html: string,
   releasePrefix: string,
   input: FifthbellLiveProgramReleaseInput,

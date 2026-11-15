@@ -8,7 +8,7 @@ interface Translations {
   };
 }
 
-const translations: Translations = {
+export const translations: Translations = {
   'segment.articles': {
     en: 'News Articles',
     es: 'Artículos',

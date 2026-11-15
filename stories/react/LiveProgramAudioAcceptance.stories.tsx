@@ -30,6 +30,7 @@ function snapshot(cueAt: Date | null): ProgramState {
           audioCueEnabled: cueAt !== null,
           ...(cueAt ? { audioCueMinute: cueAt.getMinutes(), audioCueSecond: cueAt.getSeconds() } : {}),
           languageRotation: ['en'],
+          weatherCities: ['New York'],
         },
         'fifthbell-corner': {
           showWorldClocks: true,
@@ -120,7 +121,18 @@ class AudioFixture {
       }
       if (parsed.origin === 'https://api.monitor.gaulatti.com') {
         if (parsed.pathname === '/events') return Response.json({ events: [], total: 0 });
-        if (['/broadcast/weather', '/broadcast/markets', '/earthquakes'].includes(parsed.pathname)) return Response.json([]);
+        if (parsed.pathname === '/broadcast/weather') {
+          return Response.json([
+            {
+              region: 'North America',
+              cities: [
+                { name: 'New York', temp: 70, condition: 'sunny', high: 75, low: 65 },
+                { name: 'Boston', temp: 65, condition: 'rainy', high: 70, low: 60 },
+              ],
+            },
+          ]);
+        }
+        if (['/broadcast/markets', '/earthquakes'].includes(parsed.pathname)) return Response.json([]);
       }
       this.unexpected.push(url);
       throw new Error(`Unexpected audio fixture request: ${url}`);
@@ -620,5 +632,37 @@ export const InterruptedRestoredSceneReleasesItsOwner: Story = {
     fixture.bus({ sceneInstantMasterVolume: 0.3 });
     await settle(1);
     await expect(interrupted.volume).toBeCloseTo(0.9);
+  },
+};
+
+export const ExtraProgramSseMessages: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    fixture.send({ type: 'scene_instant_state', state: 'stopped' });
+    await delay(50);
+
+    fixture.send({
+      type: 'program_stingers_changed',
+      version: 10,
+      state: {
+        id: 1,
+        programId: PROGRAM,
+        activeSceneId: 1,
+        updatedAt: '2026-10-25T12:00:00.000Z',
+        version: 10,
+      },
+    });
+    await delay(50);
+
+    fixture.send({ type: 'instant_play', instant: { name: 'inst1', audioUrl: fixture.urls[0], volume: 0.8 } });
+    await delay(50);
+
+    fixture.bus({ songMasterVolume: 0.5 }, { loop: true, activeItemId: 'song-1', items: [{ id: 'song-1', audioUrl: fixture.urls[1] }] });
+    await delay(50);
+
+    fixture.send({ type: 'instant_stop_all' });
+    await delay(50);
   },
 };

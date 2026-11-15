@@ -83,6 +83,31 @@ describe('language-aware event requests', () => {
     expect(getLastFetchTime()).toEqual(initialTime);
   });
 
+  it('normalizes empty whitespace and unsupported language values', async () => {
+    fetchMock.mockResolvedValueOnce(response([event(1)]));
+    const result = await fetchEvents({ language: '   ' as any, allowedLanguages: ['   ' as any, 'de' as any] });
+    expect(result).toHaveLength(1);
+  });
+
+  it('handles events without posts array and API responses without events property', async () => {
+    // API returning empty object
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({}), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }));
+    const res1 = await fetchEvents();
+    expect(res1).toEqual([]);
+
+    // Event with posts undefined
+    const noPostsEvent = { ...event(2), posts: undefined as any };
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ events: [noPostsEvent] }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }));
+    const res2 = await fetchEvents({ language: 'en', allowedLanguages: ['en'] });
+    expect(res2).toEqual([noPostsEvent]);
+  });
+
   it.each([
     { metadata: { language: ' ES-cl ' }, allowed: 'es' as const },
     { metadata: { lang: 'IT-it' }, allowed: 'it' as const },
@@ -254,6 +279,10 @@ describe('event change notifications', () => {
   it('detects an added event or a replacement event identity at equal length', () => {
     expect(hasEventChanges([event(1)], [event(1), event(2)])).toBe(true);
     expect(hasEventChanges([event(1)], [event(2)])).toBe(true);
+    // Duplicate identities in newEvents triggering oldMap key absence check
+    const ev1 = event(1);
+    const ev2 = event(2);
+    expect(hasEventChanges([ev1, ev2], [ev1, { ...ev1 }])).toBe(true);
   });
 
   it.each([

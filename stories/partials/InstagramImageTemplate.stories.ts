@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
 import templateSource from '../../src/templates/templates/instagram-image.hbs?raw';
+import { buildInstagramImageHtml } from '../../src/instagram-image-template.js';
 
 type InstagramTemplateArgs = {
   imageUrl: string;
@@ -41,4 +42,17 @@ export const LongHeadline: Story = {
     categoryName: 'EUROVISION',
     imageUrl: 'https://www.bekia.es/images/galeria/57000/57932_emma-actuacion-festival-eurovision-2014.jpg'
   }
+};
+
+export const GeneratedHelper: Story = {
+  render: () => {
+    const el = document.createElement('div');
+    el.innerHTML = buildInstagramImageHtml({
+      imageUrl: 'https://images.unsplash.com/photo-1495020689067-958852a7765e?auto=format&fit=crop&w=1080&h=1350&q=80',
+      title: 'Helper Generated Instagram Image',
+      category: 'TECHNOLOGY',
+      url: 'https://fifthbell.com/technology/article',
+    });
+    return el;
+  },
 };

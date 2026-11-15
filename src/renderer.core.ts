@@ -11,10 +11,15 @@ export type RendererAssets = {
 };
 
 let initialized = false;
-const layoutCache = new Map<LayoutName, HandlebarsTemplateDelegate>();
+export const layoutCache = new Map<LayoutName, HandlebarsTemplateDelegate>();
+
+export function resetHandlebarsForTests(): void {
+  initialized = false;
+  layoutCache.clear();
+}
 const removedBlockTypes = new Set(['truthSocial', 'truthsocial', 'truth-social', 'truth_social']);
 
-function normalizeDocument(doc: CanonicalDocument): CanonicalDocument {
+export function normalizeDocument(doc: CanonicalDocument): CanonicalDocument {
   const rawBody = (doc as { body?: unknown }).body;
   if (!Array.isArray(rawBody)) return doc;
 

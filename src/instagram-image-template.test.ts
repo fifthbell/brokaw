@@ -29,4 +29,15 @@ describe('buildInstagramImageHtml', () => {
     expect(html).toContain('https://cdn.fifthbell.com/&lt;img&gt;.jpg');
     expect(html).not.toContain('<script>alert("x")</script>');
   });
+
+  it('falls back to default category and omits QR code when url is absent', () => {
+    const html = buildInstagramImageHtml({
+      imageUrl: 'https://cdn.fifthbell.com/fallback.jpg',
+      title: 'Story without metadata',
+    });
+
+    expect(html).toContain('LATEST STORY');
+    expect(html).toContain('Story without metadata');
+    expect(html).not.toContain('aria-label="QR Code"');
+  });
 });

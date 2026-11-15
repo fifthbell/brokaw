@@ -7,7 +7,7 @@ const ajv = new Ajv2020({ allErrors: true, strict: false, useDefaults: true });
 addContractFormats(ajv);
 const validateCanonicalDocument = ajv.compile(canonicalDocumentSchema);
 
-function summarizeValidationErrors(errors: ErrorObject[] | null | undefined) {
+export function summarizeValidationErrors(errors: ErrorObject[] | null | undefined) {
   return (errors ?? [])
     .slice(0, 8)
     .map(

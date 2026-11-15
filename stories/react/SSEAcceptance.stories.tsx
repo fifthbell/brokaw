@@ -10,7 +10,7 @@ const SECONDARY = `${PREFIX}secondary`;
 const RECONNECT_MS = 300;
 const encoder = new TextEncoder();
 
-type Plan = 'stream' | 'pending' | 'empty' | 'unavailable' | 'network-error';
+type Plan = 'stream' | 'pending' | 'empty' | 'unavailable' | 'network-error' | 'abort-immediate' | 'non-error-throw';
 type Message = { type: string; text: string };
 type Diagnostic = { version: number; message: string; data: string; errorName: string };
 type RequestRecord = {
@@ -45,6 +45,8 @@ class StreamBoundary {
     if (plan === 'unavailable') return new Response(null, { status: 503 });
     if (plan === 'empty') return new Response(null, { status: 200 });
     if (plan === 'network-error') throw new TypeError('Fixture connection unavailable');
+    if (plan === 'abort-immediate') throw new DOMException('The operation was aborted', 'AbortError');
+    if (plan === 'non-error-throw') throw 'String error from boundary';
     if (plan === 'pending') {
       return new Promise<Response>((_resolve, reject) => {
         record.signal.addEventListener('abort', () => {
@@ -328,5 +330,28 @@ export const DisableClearsErrorAndPendingReconnect: Story = {
     await userEvent.click(canvas.getByRole('button', { name: 'Enable feed' }));
     await connected(canvas, boundary, 2, 1);
     expect(values<string[]>(canvas, 'opens')).toEqual([`v1:${PRIMARY}`]);
+  }),
+};
+
+export const AbortImmediateAndNonErrorHandling: Story = {
+  play: async ({ canvasElement }) => scenario(canvasElement, { plans: ['abort-immediate', 'non-error-throw'] }, async (canvas, boundary) => {
+    // AbortImmediate is swallowed cleanly by AbortError check
+    await settleReconnectWindow();
+    // Non-error throw converts to Error(String(err))
+    await waitFor(() => expect(canvas.getByTestId('error')).toHaveTextContent('String error from boundary'));
+  }),
+};
+
+export const DisposedGuardOnReconnect: Story = {
+  play: async ({ canvasElement }) => scenario(canvasElement, { plans: ['unavailable', 'unavailable'] }, async (canvas, boundary) => {
+    await waitFor(() => expect(canvas.getByTestId('error')).toHaveTextContent('SSE fetch failed: 503'));
+    const origClearTimeout = window.clearTimeout;
+    window.clearTimeout = () => {};
+    try {
+      await userEvent.click(canvas.getByRole('button', { name: 'Unmount feed' }));
+      await settleReconnectWindow();
+    } finally {
+      window.clearTimeout = origClearTimeout;
+    }
   }),
 };

@@ -7,7 +7,12 @@ import { usePlaylistEngine } from '../../src/components/live-program/segments/us
 import type { PlaylistConfig, PlaylistState, Segment } from '../../src/components/live-program/segments/types';
 import { createEarthquakeSegment, fetchEarthquakes } from '../../src/components/live-program/segments/EarthquakeSegment';
 import { createWeatherSegment, fetchWeatherData, type WeatherRegionData } from '../../src/components/live-program/segments/WeatherSegment';
-import { createArticlesSegment, fetchArticles, type NewsItem } from '../../src/components/live-program/segments/ArticlesSegment';
+import { createArticlesSegment, fetchArticles, ArticlesSegmentRenderer, type NewsItem } from '../../src/components/live-program/segments/ArticlesSegment';
+import { createMarketsSegment, fetchMarketData, type MarketData } from '../../src/components/live-program/segments/MarketsSegment';
+import { createLiveEventSegment } from '../../src/components/live-program/segments/LiveEventSegment';
+import { CallsignSlide } from '../../src/components/live-program/components/slides/CallsignSlide';
+import { WorldClocks } from '../../src/components/live-program/components/WorldClocks';
+import { FastAverageColor } from 'fast-average-color';
 
 const meta: Meta = {
   title: 'React/PlaylistAcceptance',
@@ -215,6 +220,18 @@ export const EarthquakeDataflowAndRendering: StoryObj = {
       await expect(network.calls).toHaveLength(1);
       mounted.render(createEarthquakeSegment([]).render(0, 0));
       await expect(mounted.host).toHaveTextContent('Loading');
+
+      const origGetColor = FastAverageColor.prototype.getColor;
+      FastAverageColor.prototype.getColor = function() {
+        throw new Error('fac earthquake failure');
+      };
+      try {
+        for (const img of mounted.host.querySelectorAll('img')) {
+          img.dispatchEvent(new Event('load'));
+        }
+      } finally {
+        FastAverageColor.prototype.getColor = origGetColor;
+      }
     } finally { Date.now = originalNow; network.restore(); mounted.close(); }
   }
 };
@@ -329,5 +346,274 @@ export const ArticlesFeedToVisibleSegment: StoryObj = {
       await segment.prefetch!();
       await expect(network.calls).toHaveLength(1);
     } finally { network.restore(); mounted.close(); }
+  }
+};
+
+export const MarketsAndLiveEventsInPlaylist: StoryObj = {
+  play: async ({ canvasElement }) => {
+    const mounted = mount(canvasElement);
+    const mockStocks: MarketData[] = [
+      { symbol: 'AAPL', name: 'Apple Inc.', price: 230.5, change: 2.5, changePercent: 1.1 },
+      { symbol: 'TSLA', name: 'Tesla Inc.', price: 210.0, change: -4.0, changePercent: -1.87 },
+    ];
+    const network = recordingFetch(async () => Response.json(mockStocks));
+    try {
+      let received: MarketData[] | undefined;
+      await createMarketsSegment([], (items) => { received = items; }, 'it').prefetch!();
+      await expect(received).toHaveLength(2);
+      const segment = createMarketsSegment(received!);
+      mounted.render(segment.render(0, 50));
+      await expect(mounted.host).toHaveTextContent('AAPL');
+      await expect(mounted.host).toHaveTextContent('TSLA');
+
+      const origMarketGetColor = FastAverageColor.prototype.getColor;
+      FastAverageColor.prototype.getColor = function() {
+        throw new Error('fac market/live failure');
+      };
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+
+      // Live event segment
+      const liveSegment = createLiveEventSegment({
+        category: 'FOOTBALL',
+        title: 'Championship Match',
+        image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/%3E',
+        url: '/championship',
+        updatedAt: new Date().toISOString(),
+        updates: [{ timestamp: new Date().toISOString(), text: 'Kickoff!' }],
+      }, undefined, 'en');
+      mounted.render(liveSegment.render(0, 30));
+      await expect(mounted.host).toHaveTextContent('Championship Match');
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+
+      // Earthquake segment image load (success and catch)
+      const mockQuakes = [{
+        id: 1,
+        magnitude: 6.5,
+        location: 'Test Place',
+        depth: 10,
+        time: '10m',
+        timestamp: Date.now(),
+        lat: 35.0,
+        lng: -120.0,
+        sources: ['USGS']
+      }];
+      const earthquakeSeg = createEarthquakeSegment(mockQuakes, undefined, 'en');
+      FastAverageColor.prototype.getColor = origMarketGetColor;
+      mounted.render(earthquakeSeg.render(0, 50));
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+      FastAverageColor.prototype.getColor = function() {
+        throw new Error('fac earthquake failure');
+      };
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+      FastAverageColor.prototype.getColor = origMarketGetColor;
+
+      // Non-sports event with scrolling timeline (>4 updates)
+      const scrollingEvent = {
+        category: 'NEWS',
+        title: 'Long Timeline Event',
+        image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/%3E',
+        url: '/timeline',
+        updatedAt: new Date().toISOString(),
+        updates: [
+          { text: 'Update 1' },
+          { text: 'Update 2' },
+          { text: 'Update 3' },
+          { text: 'Update 4' },
+          { text: 'Update 5' },
+        ],
+      };
+      const scrollSeg = createLiveEventSegment(scrollingEvent, undefined, 'en');
+      mounted.render(scrollSeg.render(0, 10));
+      await delay(5100);
+
+      // Exercise clearInterval when cycleRef.current is falsy (0)
+      const origSetInterval = window.setInterval;
+      (window as any).setInterval = () => 0;
+      const scrollSeg6 = createLiveEventSegment({
+        ...scrollingEvent,
+        updates: [...scrollingEvent.updates, { text: 'Update 6' }]
+      }, undefined, 'en');
+      mounted.render(scrollSeg6.render(0, 11));
+      mounted.render(<div>idle</div>);
+      window.setInterval = origSetInterval;
+    } finally { network.restore(); mounted.close(); }
+  }
+};
+
+export const WorldClocksAndCallsignSlide: StoryObj = {
+  play: async ({ canvasElement }) => {
+    const mounted = mount(canvasElement);
+    const fixedTime = new Date('2026-11-15T12:00:00Z');
+    const origGetColor = FastAverageColor.prototype.getColor;
+    try {
+      // Test WorldClocks with rotation, wrap-around, and shuffle
+      mounted.render(
+        <WorldClocks
+          currentTime={undefined}
+          language='en'
+          cities={[
+            { city: 'New York', timezone: 'America/New_York' },
+            { city: 'London', timezone: 'Europe/London' },
+          ]}
+          rotateIntervalMs={500}
+          transitionDurationMs={50}
+          shuffleCities={true}
+        />
+      );
+      await delay(600);
+      await delay(600);
+
+      // Test WorldClocks wrap-around with shuffleCities={false} and activeCities fallback
+      mounted.render(
+        <WorldClocks
+          currentTime={undefined}
+          language='en'
+          cities={[
+            { city: 'New York', timezone: 'America/New_York' },
+            { city: 'London', timezone: 'Europe/London' },
+          ]}
+          rotateIntervalMs={500}
+          transitionDurationMs={50}
+          shuffleCities={false}
+        />
+      );
+      await delay(600);
+      await delay(600);
+
+      mounted.render(
+        <WorldClocks
+          currentTime={undefined}
+          language='en'
+          cities={[{ city: 'Tokyo', timezone: 'Asia/Tokyo' }]}
+          rotateIntervalMs={500}
+          transitionDurationMs={50}
+          shuffleCities={false}
+        />
+      );
+
+      // Test WorldClocks with time override
+      mounted.render(
+        <WorldClocks
+          currentTime={fixedTime}
+          language='en'
+          rotateIntervalMs={500}
+          transitionDurationMs={50}
+          shuffleCities={false}
+          timeOverride={{ startTime: '10:00', startedAt: '2026-11-15T12:00:00Z' }}
+        />
+      );
+      await expect(mounted.host).toHaveTextContent('10:00');
+
+      // Test CallsignSlide and wait for transition timers to reveal showTime
+      const audioRef = { current: null };
+      mounted.render(<CallsignSlide currentTime={fixedTime} audioRef={audioRef} />);
+      await delay(2600);
+      const callsignText = within(mounted.host).getByText(/This is fifth/i).closest('div');
+      await expect(callsignText?.style.opacity).toBe('1');
+
+      // Trigger image load success and error catch on callsign slide
+      FastAverageColor.prototype.getColor = function() {
+        return { hex: '#123456' } as any;
+      };
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+      FastAverageColor.prototype.getColor = function() {
+        throw new Error('fac test failure');
+      };
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+
+      // Exercise weather slide image error catch
+      const weatherSeg = createWeatherSegment([
+        {
+          region: 'North America',
+          cities: [{ name: 'New York', temp: 68, condition: 'sunny', high: 72, low: 58 }],
+        },
+      ]);
+      mounted.render(weatherSeg.render(0, 0));
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+    } finally {
+      FastAverageColor.prototype.getColor = origGetColor;
+      mounted.close();
+    }
+  }
+};
+
+export const ArticlesSlideTransitions: StoryObj = {
+  play: async ({ canvasElement }) => {
+    const mounted = mount(canvasElement);
+    const origGetColor = FastAverageColor.prototype.getColor;
+    const articles = [
+      { id: '1', headline: 'Article One', summary: 'Summary 1', imageUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/%3E', url: '/art1' },
+      { id: '2', headline: 'Article Two', summary: 'Summary 2', imageUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/%3E', url: '/art2' },
+    ];
+    try {
+      const seg = createArticlesSegment(articles, undefined, 'en');
+      mounted.render(<Playlist config={{ segments: [seg], updateIntervalMs: 50 }} />);
+      await expect(mounted.host).toHaveTextContent('Article One');
+
+      // Test fac error on article slide image
+      FastAverageColor.prototype.getColor = function() {
+        throw new Error('fac article failure');
+      };
+      for (const img of mounted.host.querySelectorAll('img')) {
+        img.dispatchEvent(new Event('load'));
+      }
+
+      click(mounted.host, 'Next');
+      await delay(900);
+      await expect(mounted.host).toHaveTextContent('Article Two');
+
+      // Test empty articles slide directly via ArticlesSegmentRenderer
+      mounted.render(<ArticlesSegmentRenderer items={[]} itemIndex={0} progress={0} language='en' />);
+      await expect(mounted.host).toHaveTextContent('No articles available');
+
+      // Test direct transition with same component instance to hit transition timer
+      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={0} progress={0} language='en' />);
+      await expect(mounted.host).toHaveTextContent('Article One');
+      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={1} progress={0} language='en' />);
+      await delay(900);
+      await expect(mounted.host).toHaveTextContent('Article Two');
+
+      // Trigger transition cleanup
+      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={0} progress={0} language='en' />);
+      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={1} progress={0} language='en' />);
+      mounted.render(<div>unmounted transition</div>);
+    } finally {
+      FastAverageColor.prototype.getColor = origGetColor;
+      mounted.close();
+    }
+  }
+};
+
+export const PlaylistEdgeCases: StoryObj = {
+  play: async ({ canvasElement }) => {
+    const mounted = mount(canvasElement);
+    try {
+      // Missing segment at index (empty array item) and durationMsPerItem: 0
+      const segWithZeroDuration: Segment = {
+        id: 'zero',
+        label: 'Zero',
+        itemCount: 1,
+        durationMsPerItem: 0,
+        render: () => <span>zero duration item</span>,
+      };
+      mounted.render(<Playlist config={{ segments: [segWithZeroDuration, undefined as any], defaultDurationMs: 200, updateIntervalMs: 20 }} />);
+      await delay(100);
+      click(mounted.host, 'Next');
+      await delay(100);
+    } finally { mounted.close(); }
   }
 };

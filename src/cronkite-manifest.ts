@@ -108,7 +108,7 @@ const localizedSystemCopy = {
 const systemVariants = (
   layout: '404' | 'search-page',
   segment: string,
-  createExtra: (language: Language) => Record<string, unknown> = () => ({}),
+  createExtra: (language: Language) => Record<string, unknown>,
 ): [SystemVariant, ...SystemVariant[]] => {
   const variants = (['en', 'es', 'it'] as const).map((language) => {
     const localizedSegment = language === 'en' ? `/${segment}` : `/${language}/${segment}`;

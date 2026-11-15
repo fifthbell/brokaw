@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canonicalArticleSchema } from "./canonical-article.js";
+import { canonicalArticleSchema, summarizeValidationErrors } from "./canonical-article.js";
 
 const document = {
   id: "5f55c9cf-56d0-48ec-8b5c-4474d94a612f",
@@ -72,5 +72,17 @@ describe("canonical document adapter", () => {
       expect(parsed).not.toHaveProperty("assignmentMediaBaseUrl");
       expect(parsed.fictionalExtension).toEqual({ enabled: true });
     }
+  });
+
+  it("summarizes empty, missing, or messageless validation errors", () => {
+    expect(summarizeValidationErrors(undefined)).toBe("");
+    expect(summarizeValidationErrors(null)).toBe("");
+    expect(summarizeValidationErrors([])).toBe("");
+    expect(
+      summarizeValidationErrors([
+        { instancePath: "", message: undefined, keyword: "custom", params: {}, schemaPath: "" },
+        { instancePath: "/slug", message: "is required", keyword: "required", params: {}, schemaPath: "" },
+      ]),
+    ).toBe("/ is invalid; /slug is required");
   });
 });

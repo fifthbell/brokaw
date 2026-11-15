@@ -365,6 +365,20 @@ function normalizeLaunchDate(rawDate: string): Date {
   return parsed;
 }
 
+export {
+  clampNumber,
+  normalizeBoolean,
+  normalizeStringArray,
+  normalizeLanguageRotation,
+  normalizeWorldClockCities,
+  normalizeCityKey,
+  toRecord,
+  parseSceneMetadata,
+  resolveFifthBellLayerAvailability,
+  extractConfigFromMetadata,
+  normalizeLaunchDate,
+};
+
 export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl }: LiveProgramProps) {
   const [state, setState] = useState<ProgramState | null>(null);
   const stateRef = useRef<ProgramState | null>(null);
