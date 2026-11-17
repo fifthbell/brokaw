@@ -137,3 +137,61 @@ export const MourningMode: Story = {
     }
   }
 };
+
+const previewPayloads: Record<string, unknown> = {
+  '/content/homepage-current-en.json': {
+    categories: [{ slug: 'politics', name: 'Politics' }, { slug: 'world', name: 'World' }],
+    docs: [
+      { title: 'Absolute URL story', url: 'https://fifthbell.com/politics/absolute-story' },
+      { title: 'Trailing slash story', url: '/politics/trailing-story/' },
+      { title: 'Multi-segment slug story', slug: 'politics/multi-story' },
+      { title: 'Category and slug story', slug: 'category-story', categories: [{ slug: 'politics', name: 'Politics' }] }
+    ]
+  },
+  '/content/politics-current-en.json': {
+    category: { name: 'Politics' },
+    docs: [{ title: 'Politics preview lead', slug: 'politics-lead' }, { title: 'Politics preview second', slug: 'politics-second' }]
+  }
+};
+
+export const MenuPreviewLinksAndCategoryName: Story = {
+  name: 'Menu preview links and category name',
+  // Repository fixtures for the two menu payloads; any other request is
+  // served normally. The stub is removed when the story ends.
+  beforeEach: () => {
+    const originalFetch = window.fetch;
+    window.fetch = async (input, init) => {
+      const url = new URL(String(input instanceof Request ? input.url : input), window.location.href);
+      const payload = url.origin === 'https://cdn.fifthbell.com' ? previewPayloads[url.pathname] : undefined;
+      return payload ? new Response(JSON.stringify(payload)) : originalFetch(input, init);
+    };
+    return () => {
+      window.fetch = originalFetch;
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole('button', { name: 'Menu' }));
+    const featured = canvasElement.querySelector<HTMLElement>('#mini-featured');
+    const hrefOf = (title: string) => within(featured!).getByRole('link', { name: title }).getAttribute('href');
+    await waitFor(() => expect(within(featured!).getByRole('link', { name: 'Category and slug story' })).toBeInTheDocument());
+    await expect(featured?.querySelector('h3')?.textContent?.trim()).toBe('FEATURED STORIES');
+    await expect(hrefOf('Absolute URL story')).toBe('/politics/absolute-story');
+    await expect(hrefOf('Trailing slash story')).toBe('/politics/trailing-story');
+    await expect(hrefOf('Multi-segment slug story')).toBe('/politics/multi-story');
+    await expect(hrefOf('Category and slug story')).toBe('/politics/category-story');
+
+    const politicsLink = canvasElement.querySelector<HTMLElement>('.category-link[data-category-slug="politics"]');
+    if (politicsLink) await userEvent.hover(politicsLink);
+    await waitFor(() => expect(featured?.querySelector('h3')?.textContent?.trim()).toBe('POLITICS'));
+    await expect(featured?.textContent).not.toContain('GENERAL');
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Menu previews link each story to its own path (absolute URL, trailing slash, multi-segment slug, category plus slug) and title a category preview with the category name. Top stories keep the "Featured Stories" heading.'
+      }
+    }
+  }
+};

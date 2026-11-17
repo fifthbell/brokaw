@@ -332,17 +332,12 @@
   (normalized.startsWith('/es/') || normalized.startsWith('/it/')) return normalized; if (lang === 'en') return normalized; return `/${lang}${normalized}`; }
   function normalizePathInput(value) { if (typeof value !== 'string') return ''; const trimmed = value.trim(); if (!trimmed) return ''; try { if
   (/^https?:\/\//i.test(trimmed)) { const parsed = new URL(trimmed); const normalizedAbsolute = `/${(parsed.pathname || '').replace(/^\/+/,
-  '')}`.replace(/\/{2,}/g, '/'); if (normalizedAbsolute !== '/' && normalizedAbsolute.endsWith('/')) { return normalizedAbsolute.slice(0, -1); } return
-  normalizedAbsolute || '/'; } } catch { /* Fall back to raw string normalization below */ } const withoutQueryOrHash = trimmed.split('#')[0].split('?')[0]; const
-  normalized = `/${withoutQueryOrHash.replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/'); if (normalized !== '/' && normalized.endsWith('/')) { return
-  normalized.slice(0, -1); } return normalized; } function cleanPathSegment(value) { if (typeof value !== 'string') return ''; return
-  value.trim().replace(/^\/+|\/+$/g, ''); } function getArticleLeafPath(article) { const explicitUrl = normalizePathInput(article?.url); if (explicitUrl &&
+  '')}`.replace(/\/{2,}/g, '/'); if (normalizedAbsolute !== '/' && normalizedAbsolute.endsWith('/')) { return normalizedAbsolute.slice(0, -1); } return normalizedAbsolute || '/'; } } catch { /* Fall back to raw string normalization below */ } const withoutQueryOrHash = trimmed.split('#')[0].split('?')[0]; const
+  normalized = `/${withoutQueryOrHash.replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/'); if (normalized !== '/' && normalized.endsWith('/')) { return normalized.slice(0, -1); } return normalized; } function cleanPathSegment(value) { if (typeof value !== 'string') return ''; return value.trim().replace(/^\/+|\/+$/g, ''); } function getArticleLeafPath(article) { const explicitUrl = normalizePathInput(article?.url); if (explicitUrl &&
   explicitUrl !== '/') { return buildLocalePath(explicitUrl); } const canonicalUrl = normalizePathInput(article?.canonicalUrl); if (canonicalUrl && canonicalUrl
   !== '/') { return buildLocalePath(canonicalUrl); } const slugRaw = typeof article?.slug === 'string' ? article.slug : ''; const normalizedSlugPath =
-  normalizePathInput(slugRaw); const slugSegments = normalizedSlugPath.split('/').filter(Boolean); if (slugSegments.length > 1) { return
-  buildLocalePath(normalizedSlugPath); } const slugSegment = cleanPathSegment(slugRaw); const primaryCategorySlug =
-  cleanPathSegment(article?.categories?.[0]?.slug) || cleanPathSegment(article?.category?.slug); if (slugSegment && primaryCategorySlug) { return
-  buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`); } if (slugSegment) { return buildLocalePath(`/${slugSegment}`); } return buildLocalePath('/'); }
+  normalizePathInput(slugRaw); const slugSegments = normalizedSlugPath.split('/').filter(Boolean); if (slugSegments.length > 1) { return buildLocalePath(normalizedSlugPath); } const slugSegment = cleanPathSegment(slugRaw); const primaryCategorySlug =
+  cleanPathSegment(article?.categories?.[0]?.slug) || cleanPathSegment(article?.category?.slug); if (slugSegment && primaryCategorySlug) { return buildLocalePath(`/${primaryCategorySlug}/${slugSegment}`); } if (slugSegment) { return buildLocalePath(`/${slugSegment}`); } return buildLocalePath('/'); }
   function getCdnUrl(categorySlug) { const lang = getCurrentLang(); const file = categorySlug ? `${categorySlug}-current-${lang}.json` :
   `homepage-current-${lang}.json`; return `https://cdn.fifthbell.com/content/${file}?v=${Date.now()}-${Math.random().toString(36).slice(2)}`; } function
   getArticlesFromPayload(payload) { if (!payload || typeof payload !== 'object') return []; return payload.docs || payload.articles || []; } function
@@ -376,8 +371,7 @@
   transition-colors'>${article?.title || ''}</a> </h3> </div> ` ) .join('')} </div> `); } miniFeatured.innerHTML = ` <h3 class='text-xs font-bold text-slate-400
   dark:text-slate-600 uppercase tracking-wider mb-6 border-b border-slate-200 dark:border-slate-800 pb-2'> ${(categoryName || 'Featured Stories').toUpperCase()}
   </h3> <div class='grid grid-cols-2 gap-8 mb-10'>${topHtml}</div> <div class='space-y-6'>${rows.join('')}</div> `; } function getCategoryName(payload,
-  categorySlug) { if (!categorySlug) return 'Featured Stories'; const fromPrimaryCategory = payload?.category?.name; if (fromPrimaryCategory) return
-  fromPrimaryCategory; const fromCategoriesArray = (payload?.categories || []).find((category) => category?.slug === categorySlug)?.name; if
+  categorySlug) { if (!categorySlug) return 'Featured Stories'; const fromPrimaryCategory = payload?.category?.name; if (fromPrimaryCategory) return fromPrimaryCategory; const fromCategoriesArray = (payload?.categories || []).find((category) => category?.slug === categorySlug)?.name; if
   (fromCategoriesArray) return fromCategoriesArray; return String(categorySlug).replace(/-/g, ' '); } async function fetchPayload(categorySlug) { {{#if capturedSelection}}return categorySlug ? window.brokawCapturedCatalog.read('category', `category:${categorySlug}`) : window.brokawCapturedCatalog.read('homepage', 'homepage');{{else}}const response
   = await fetch(getCdnUrl(categorySlug), { headers: { 'Content-Type': 'application/json' } }); if (!response.ok) throw new Error(`Failed to fetch ${categorySlug
   || 'homepage'} data`); return response.json();{{/if}} } async function loadCategoryContent(categorySlug) { const key = categorySlug || '__home__'; if (key ===
@@ -437,9 +431,7 @@
   JSON.parse(cached); const categories = parsed?.data; if (Array.isArray(categories)) { categorySlugs = new Set(categories.map((item) => item.slug)); } } }
   catch { /* ignore invalid local cache */ } const isHomepage = segments.length === 0; const isCategoryPage = segments.length === 1 &&
   categorySlugs.has(segments[0]); const isSearchPage = segments.length >= 1 && segments[0] === 'search'; if (!isHomepage && !isCategoryPage &&
-  !isSearchPage) { return targetLang === 'en' ? '/' : `/${targetLang}`; } if (isSearchPage) { const currentSearch = window.location.search || ''; return
-  targetLang === 'en' ? `/search${currentSearch}` : `/${targetLang}/search${currentSearch}`; } if (targetLang === 'en') return
-  basePath === '/' ? '/' : basePath; return basePath === '/' ? `/${targetLang}` : `/${targetLang}${basePath}`; } function closeMenuIfOpen() { const menuButton =
+  !isSearchPage) { return targetLang === 'en' ? '/' : `/${targetLang}`; } if (isSearchPage) { const currentSearch = window.location.search || ''; return targetLang === 'en' ? `/search${currentSearch}` : `/${targetLang}/search${currentSearch}`; } if (targetLang === 'en') return basePath === '/' ? '/' : basePath; return basePath === '/' ? `/${targetLang}` : `/${targetLang}${basePath}`; } function closeMenuIfOpen() { const menuButton =
   document.getElementById('menu-button'); const dropdownMenu = document.getElementById('dropdown-menu'); if (!(menuButton instanceof HTMLElement) ||
   !(dropdownMenu instanceof HTMLElement)) return; const isExpanded = menuButton.getAttribute('aria-expanded') === 'true'; if (!isExpanded) return;
   menuButton.setAttribute('aria-expanded', 'false'); dropdownMenu.style.pointerEvents = 'none'; dropdownMenu.style.transform = 'translateX(-100%)';
