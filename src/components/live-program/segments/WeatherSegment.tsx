@@ -21,6 +21,11 @@ export interface WeatherRegionData {
 let weatherCache: { data: WeatherRegionData[]; timestamp: number } | null = null;
 const CACHE_DURATION_MS = 60 * 60 * 1000;
 
+/**
+ * Weather is refetched only once its one-hour cache has expired, so when a
+ * refetch fails the last good data is already past the 30-minute retention
+ * (fifthbell/brokaw#35) and the weather drops.
+ */
 export async function fetchWeatherData(): Promise<WeatherRegionData[]> {
   const now = Date.now();
   if (weatherCache && now - weatherCache.timestamp < CACHE_DURATION_MS) {
@@ -30,14 +35,14 @@ export async function fetchWeatherData(): Promise<WeatherRegionData[]> {
   try {
     const response = await fetch('https://api.monitor.gaulatti.com/broadcast/weather');
     if (!response.ok) {
-      return weatherCache?.data || [];
+      return [];
     }
     const data: WeatherRegionData[] = await response.json();
     weatherCache = { data, timestamp: now };
     return data;
   } catch (error) {
     console.error('Failed to fetch weather data:', error);
-    return weatherCache?.data || [];
+    return [];
   }
 }
 

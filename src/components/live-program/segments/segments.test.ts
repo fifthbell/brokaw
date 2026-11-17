@@ -81,11 +81,12 @@ describe('segments suite', () => {
         const data3 = await fetchMarketData();
         expect(data3).toEqual(mockStocks);
 
-        // HTTP error response fallback
+        // An HTTP error 32 minutes after the last good fetch: past the
+        // 30-minute retention (fifthbell/brokaw#35), the markets drop.
         Date.now = () => origNow() + 32 * 60 * 1000;
         fetchMock.mockResolvedValueOnce(new Response('Error', { status: 500 }));
         const data4 = await fetchMarketData();
-        expect(data4).toEqual(mockStocks);
+        expect(data4).toEqual([]);
         errSpy.mockRestore();
       } finally {
         Date.now = origNow;
@@ -230,13 +231,17 @@ describe('segments suite', () => {
       expect(quakesDaysAgo[0].time).toContain('days ago');
       dateSpy.mockRestore();
 
-      // Test HTTP error and catch error
-      fetchMock.mockResolvedValueOnce(new Response('Error', { status: 500 }));
-      expect(await fetchEarthquakes('en')).toEqual([]);
-
+      // An HTTP error or a network error keeps the last good list while it is
+      // at most 30 minutes old, then drops it (fifthbell/brokaw#35).
       const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      fetchMock.mockResolvedValueOnce(new Response('Error', { status: 500 }));
+      expect(await fetchEarthquakes('en')).toEqual(quakesDaysAgo);
+      // The last good list was stored on the shifted clock above (4 days on); a day after that it is long past 30 minutes.
+      const later = Date.now() + 5 * 24 * 60 * 60 * 1000;
+      const laterSpy = vi.spyOn(Date, 'now').mockReturnValue(later);
       fetchMock.mockRejectedValueOnce(new Error('Network error'));
       expect(await fetchEarthquakes('en')).toEqual([]);
+      laterSpy.mockRestore();
       errSpy.mockRestore();
     });
 
@@ -329,14 +334,16 @@ describe('segments suite', () => {
       // HTTP error and exception
       const origNow = Date.now;
       try {
+        // Weather refetches only after its one-hour cache, so a failed refetch
+        // finds its data past the 30-minute retention and drops it (fifthbell/brokaw#35).
         Date.now = () => origNow() + 65 * 60 * 1000;
         fetchMock.mockResolvedValueOnce(new Response('Error', { status: 500 }));
-        expect(await fetchWeatherData()).toEqual(mockWeather);
+        expect(await fetchWeatherData()).toEqual([]);
 
         Date.now = () => origNow() + 130 * 60 * 1000;
         const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
         fetchMock.mockRejectedValueOnce(new Error('Network fail'));
-        expect(await fetchWeatherData()).toEqual(mockWeather);
+        expect(await fetchWeatherData()).toEqual([]);
         errSpy.mockRestore();
       } finally {
         Date.now = origNow;

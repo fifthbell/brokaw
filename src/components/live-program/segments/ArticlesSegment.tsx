@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createLastGood } from '../source-retention.js';
 import { ArticleSlide, type NewsItem } from '../components/slides/ArticleSlide.js';
 import type { Segment } from './types.js';
 import { t, type SupportedLanguage } from '../i18n.js';
@@ -103,6 +104,13 @@ function buildArticlePath(article: ApiArticle, language: SupportedLanguage): str
   );
 }
 
+const lastGoodArticles = createLastGood<NewsItem[]>();
+
+/**
+ * The homepage feed's stories. When the feed fails, the last good stories for
+ * the language stay for up to 30 minutes (fifthbell/brokaw#35); after that, or
+ * when there never were any, the built-in sample stories fill the segment.
+ */
 export async function fetchArticles(language: SupportedLanguage = 'en'): Promise<NewsItem[]> {
   try {
     const response = await fetch(`https://cdn.fifthbell.com/content/homepage-current-${language}.json?_=${Date.now()}`, {
@@ -147,10 +155,10 @@ export async function fetchArticles(language: SupportedLanguage = 'en'): Promise
       image.src = item.imageUrl;
     });
 
-    return finalItems;
+    return lastGoodArticles.keep(language, finalItems);
   } catch (error) {
     console.error('Error fetching news items:', error);
-    return MOCK_ARTICLES;
+    return lastGoodArticles.recall(language) ?? MOCK_ARTICLES;
   }
 }
 

@@ -1,4 +1,5 @@
 import type { SupportedLanguage } from '../i18n.js';
+import { createLastGood } from '../source-retention.js';
 
 export interface LiveEventUpdate {
   timestamp?: string;
@@ -74,19 +75,22 @@ function extractUpdatesFromAuburnaleEvent(updates?: AuburnaleEvent['updates']): 
   });
 }
 
-async function fetchFromAuburnale(language: SupportedLanguage): Promise<LiveEventData | null> {
+/** What a live-event source said: its event (or none), or nothing because it failed. */
+type LiveEventAnswer = { answered: true; event: LiveEventData | null } | { answered: false };
+
+async function fetchFromAuburnale(language: SupportedLanguage): Promise<LiveEventAnswer> {
   const baseUrl = typeof window !== 'undefined' ? `http://${window.location.hostname}:3000` : 'http://127.0.0.1:3000';
   try {
     const res = await fetch(`${baseUrl}/events?status=published&limit=1&sort=-eventDate&language=${language}`, {
       signal: AbortSignal.timeout(3000),
     });
-    if (!res.ok) return null;
+    if (!res.ok) return { answered: false };
     const body: AuburnaleListResponse = await res.json();
     const items = body.data || [];
     const event = items.find((e) => typeof e.sofascore_id === 'number' && e.sofascore_id > 0);
-    if (!event) return null;
+    if (!event) return { answered: true, event: null };
 
-    return {
+    return { answered: true, event: {
       category: event.categories?.[0]?.name || 'EVENT',
       title: event.title,
       excerpt: '',
@@ -96,13 +100,13 @@ async function fetchFromAuburnale(language: SupportedLanguage): Promise<LiveEven
       sofascore_id: event.sofascore_id,
       updatedAt: event.eventDate || new Date().toISOString(),
       updates: extractUpdatesFromAuburnaleEvent(event.updates),
-    };
+    } };
   } catch {
-    return null;
+    return { answered: false };
   }
 }
 
-export async function fetchLiveEvent(language: SupportedLanguage = 'en'): Promise<LiveEventData | null> {
+async function fetchLiveEventAnswer(language: SupportedLanguage): Promise<LiveEventAnswer> {
   try {
     const response = await fetch(
       `https://cdn.fifthbell.com/content/homepage-current-${language}.json?_=${Date.now()}`,
@@ -119,7 +123,7 @@ export async function fetchLiveEvent(language: SupportedLanguage = 'en'): Promis
       return fetchFromAuburnale(language);
     }
 
-    return {
+    return { answered: true, event: {
       category: main.category || 'LIVE',
       title: main.title,
       excerpt: main.excerpt,
@@ -130,9 +134,24 @@ export async function fetchLiveEvent(language: SupportedLanguage = 'en'): Promis
       sofascore_id: main.sofascore_id,
       updatedAt: data.updatedAt || new Date().toISOString(),
       updates: data.breakingNews?.updates || [],
-    };
+    } };
   } catch (error) {
     console.error('Error fetching live event:', error);
     return fetchFromAuburnale(language);
   }
+}
+
+const lastGoodLiveEvents = createLastGood<LiveEventData | null>();
+
+/**
+ * The live event from the homepage feed, or from Auburnale when the feed has
+ * none. An answer of "no live event" is shown at once; when both sources
+ * fail, the last answer for the language stays for up to 30 minutes
+ * (fifthbell/brokaw#35), then the live event drops.
+ */
+export async function fetchLiveEvent(language: SupportedLanguage = 'en'): Promise<LiveEventData | null> {
+  const answer = await fetchLiveEventAnswer(language);
+  if (answer.answered) return lastGoodLiveEvents.keep(language, answer.event);
+  console.warn('[live-program] live event unavailable');
+  return lastGoodLiveEvents.recall(language) ?? null;
 }

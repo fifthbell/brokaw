@@ -168,6 +168,10 @@ describe('fetchLiveEvents', () => {
 
   it('handles Auburnale empty data, missing event, and network failures', async () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    // Past the 30-minute retention (fifthbell/brokaw#35), an earlier test's event is not kept.
+    const later = Date.now() + 31 * 60 * 1000;
+    const laterSpy = vi.spyOn(Date, 'now').mockReturnValue(later);
     // CDN throws
     fetchMock.mockRejectedValueOnce(new Error('CDN offline'));
     // Auburnale returns 500
@@ -199,6 +203,7 @@ describe('fetchLiveEvents', () => {
     const res3 = await fetchLiveEvent('en');
     expect(res3).toBeNull();
 
+    laterSpy.mockRestore();
     errSpy.mockRestore();
   });
 });

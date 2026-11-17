@@ -17,7 +17,8 @@ import Marquee from './components/Marquee.js';
 import { WorldClocks } from './components/WorldClocks.js';
 import { CallsignSlide } from './components/slides/CallsignSlide.js';
 import { slideStyles } from './components/slides/slideStyles.js';
-import { fetchEvents, getCachedEvents, hasEventChanges, type Event } from './events.js';
+import { fetchEventsRetained, hasEventChanges, type Event } from './events.js';
+import { loadProgramData } from './program-data.js';
 import { clearCachesAndReload } from './program-reload.js';
 import { type SupportedLanguage } from './i18n.js';
 import {
@@ -26,11 +27,6 @@ import {
   createLiveEventSegment,
   createMarketsSegment,
   createWeatherSegment,
-  fetchArticles,
-  fetchEarthquakes,
-  fetchLiveEvent,
-  fetchMarketData,
-  fetchWeatherData,
   type EarthquakeData,
   type LiveEventData,
   type MarketData,
@@ -152,28 +148,16 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   }, [controlledBySceneRenderer, refreshProgramState]);
 
   const refreshAllData = useCallback(async () => {
-    const [articlesData, weatherDataResult, earthquakesData, marketsData, liveEventData] = await Promise.all([
-      fetchArticles(currentLanguage),
-      fetchWeatherData(),
-      fetchEarthquakes(currentLanguage),
-      fetchMarketData(),
-      fetchLiveEvent(currentLanguage),
-      fetchEvents({
-        language: currentLanguage,
-        allowedLanguages: [currentLanguage]
-      })
-    ]);
+    // No source holds the program back: each answers with its own fallback (fifthbell/brokaw#35).
+    const data = await loadProgramData(currentLanguage);
 
-    setArticles(articlesData);
-    setWeatherData(weatherDataResult);
-    setEarthquakes(earthquakesData);
-    setMarkets(marketsData);
-    setLiveEvent(liveEventData);
-
-    // fetchEvents resolved above, so it has just filled the active cache entry.
-    const cachedEvents = getCachedEvents()!;
-    setStageEvents(cachedEvents);
-    setProgramEvents(cachedEvents);
+    setArticles(data.articles);
+    setWeatherData(data.weather);
+    setEarthquakes(data.earthquakes);
+    setMarkets(data.markets);
+    setLiveEvent(data.liveEvent);
+    setStageEvents(data.events);
+    setProgramEvents(data.events);
 
     setDataLoaded(true);
   }, [currentLanguage]);
@@ -438,17 +422,15 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   });
 
   const refreshEvents = useCallback(async () => {
-    await fetchEvents({
+    const events = await fetchEventsRetained({
       language: currentLanguage,
       allowedLanguages: [currentLanguage]
     });
-    // fetchEvents resolved above, so it has just filled the active cache entry.
-    const cachedEvents = getCachedEvents()!;
 
     setStageEvents((prevStage) => {
       const prevJson = JSON.stringify(prevStage);
-      const nextJson = JSON.stringify(cachedEvents);
-      return prevJson === nextJson ? prevStage : cachedEvents;
+      const nextJson = JSON.stringify(events);
+      return prevJson === nextJson ? prevStage : events;
     });
   }, [currentLanguage]);
 

@@ -1,4 +1,5 @@
 import type { SupportedLanguage } from './i18n.js';
+import { SOURCE_RETENTION_MS } from './source-retention.js';
 
 export interface EventPost {
   id: number;
@@ -129,10 +130,14 @@ function buildCacheKey(language: SupportedLanguage | undefined, allowedLanguages
   return `${languagePart}__${allowedPart}`;
 }
 
+function cacheKeyFor(options: FetchEventsOptions): string {
+  return buildCacheKey(normalizeLanguageToken(options.language) ?? undefined, normalizeAllowedLanguages(options.allowedLanguages));
+}
+
 export async function fetchEvents(options: FetchEventsOptions = {}): Promise<Event[]> {
   const allowedLanguages = normalizeAllowedLanguages(options.allowedLanguages);
   const preferredLanguage = normalizeLanguageToken(options.language);
-  const cacheKey = buildCacheKey(preferredLanguage ?? undefined, allowedLanguages);
+  const cacheKey = cacheKeyFor(options);
   const eventsApiUrl = new URL('https://api.monitor.gaulatti.com/events');
   if (preferredLanguage) {
     eventsApiUrl.searchParams.set('language', preferredLanguage);
@@ -195,6 +200,27 @@ export async function fetchEvents(options: FetchEventsOptions = {}): Promise<Eve
   activeCacheKey = cacheKey;
 
   return nextEvents;
+}
+
+/**
+ * fetchEvents that never throws (fifthbell/brokaw#35). When the events service
+ * fails, the last good events for the same options stay for up to
+ * SOURCE_RETENTION_MS after their fetch; older ones are dropped, and an empty
+ * list is returned so the program runs without event segments.
+ */
+export async function fetchEventsRetained(options: FetchEventsOptions = {}): Promise<Event[]> {
+  try {
+    return await fetchEvents(options);
+  } catch (error) {
+    console.warn('[live-program] events unavailable', error);
+    const cacheKey = cacheKeyFor(options);
+    const lastGood = eventCacheByKey.get(cacheKey);
+    if (lastGood && Date.now() - lastGood.lastFetchTime.getTime() <= SOURCE_RETENTION_MS) {
+      return lastGood.events;
+    }
+    eventCacheByKey.delete(cacheKey);
+    return [];
+  }
 }
 
 export function getCachedEvents(): Event[] | null {

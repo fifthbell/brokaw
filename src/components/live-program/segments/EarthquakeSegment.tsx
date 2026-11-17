@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createLastGood } from '../source-retention.js';
 import { AlertTriangle, Clock, Layers, Link, MapPin } from 'lucide-react';
 import { FastAverageColor } from 'fast-average-color';
 import { FIFTHBELL_ASSETS } from '../assets.js';
@@ -55,11 +56,17 @@ function formatTimeAgo(timestamp: number, language: SupportedLanguage = 'en'): s
   return t('earthquakes.timeAgo.justNow', language);
 }
 
+const lastGoodEarthquakes = createLastGood<EarthquakeData[]>();
+
+/**
+ * The last day's notable earthquakes. When the service fails, the last good
+ * list for the language stays for up to 30 minutes (fifthbell/brokaw#35), then drops.
+ */
 export async function fetchEarthquakes(language: SupportedLanguage = 'en'): Promise<EarthquakeData[]> {
   try {
     const response = await fetch(`https://api.monitor.gaulatti.com/earthquakes?_=${Date.now()}`);
     if (!response.ok) {
-      return [];
+      throw new Error(`Failed to fetch earthquakes: ${response.status}`);
     }
 
     const data: ApiEarthquake[] = await response.json();
@@ -69,7 +76,7 @@ export async function fetchEarthquakes(language: SupportedLanguage = 'en'): Prom
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 6);
 
-    return recentQuakes.map((quake) => {
+    return lastGoodEarthquakes.keep(language, recentQuakes.map((quake) => {
       const timestamp = new Date(quake.timestamp).getTime();
       let detailedPlace = '';
       const sources: string[] = [];
@@ -95,10 +102,10 @@ export async function fetchEarthquakes(language: SupportedLanguage = 'en'): Prom
         sources: [...new Set(sources)],
         detailedPlace
       };
-    });
+    }));
   } catch (error) {
     console.error('Failed to fetch earthquake data:', error);
-    return [];
+    return lastGoodEarthquakes.recall(language) ?? [];
   }
 }
 

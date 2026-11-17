@@ -254,14 +254,22 @@ export const EarthquakeFailuresRetainCause: StoryObj = {
       if (shouldReject) throw unavailable;
       return new Response('', { status: 503 });
     });
+    const originalNow = Date.now;
     try {
+      // Past the 30-minute retention (fifthbell/brokaw#35), no earlier good list is kept.
+      const later = originalNow() + 31 * 60 * 1000;
+      Date.now = () => later;
       await expect(await fetchEarthquakes()).toEqual([]);
       shouldReject = true;
       await expect(await fetchEarthquakes()).toEqual([]);
       await expect(network.calls).toHaveLength(2);
-      await expect(errors.calls).toEqual([['Failed to fetch earthquake data:', unavailable]]);
-      await expect(errors.calls[0][1]).toBe(unavailable);
-    } finally { network.restore(); errors.restore(); }
+      // A non-OK answer and a rejected request are both reported with their cause.
+      await expect(errors.calls).toHaveLength(2);
+      await expect(errors.calls[0][0]).toBe('Failed to fetch earthquake data:');
+      await expect((errors.calls[0][1] as Error).message).toBe('Failed to fetch earthquakes: 503');
+      await expect(errors.calls[1]).toEqual(['Failed to fetch earthquake data:', unavailable]);
+      await expect(errors.calls[1][1]).toBe(unavailable);
+    } finally { Date.now = originalNow; network.restore(); errors.restore(); }
   }
 };
 
@@ -307,10 +315,12 @@ export const WeatherUnitsCacheAndDegradedRefresh: StoryObj = {
       // write a future timestamp, so restoration leaves no future cache behind.
       const expired = originalNow() + 2 * 60 * 60 * 1000;
       Date.now = () => expired;
+      // Two hours on, the last good data is past the 30-minute retention
+      // (fifthbell/brokaw#35), so a failed refresh drops it.
       mode = 'http-error';
-      await expect(await fetchWeatherData()).toBe(received);
+      await expect(await fetchWeatherData()).toEqual([]);
       mode = 'rejected';
-      await expect(await fetchWeatherData()).toBe(received);
+      await expect(await fetchWeatherData()).toEqual([]);
       await expect(network.calls).toHaveLength(3);
       await expect(errors.calls).toEqual([['Failed to fetch weather data:', unavailable]]);
       await expect(errors.calls[0][1]).toBe(unavailable);

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { SOURCE_RETENTION_MS } from '../source-retention.js';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { FastAverageColor } from 'fast-average-color';
 import { FIFTHBELL_ASSETS } from '../assets.js';
@@ -16,6 +17,11 @@ export interface MarketData {
 let marketCache: { data: MarketData[]; timestamp: number; updateTime: string } | null = null;
 const CACHE_DURATION_MS = 15 * 60 * 1000;
 
+/** The last good data while it is at most SOURCE_RETENTION_MS old (fifthbell/brokaw#35). */
+function lastGoodMarkets(now: number): MarketData[] {
+  return marketCache && now - marketCache.timestamp <= SOURCE_RETENTION_MS ? marketCache.data : [];
+}
+
 export async function fetchMarketData(): Promise<MarketData[]> {
   const now = Date.now();
   if (marketCache && now - marketCache.timestamp < CACHE_DURATION_MS) {
@@ -25,7 +31,7 @@ export async function fetchMarketData(): Promise<MarketData[]> {
   try {
     const response = await fetch(`https://api.monitor.gaulatti.com/broadcast/markets?_=${Date.now()}`);
     if (!response.ok) {
-      return marketCache?.data || [];
+      return lastGoodMarkets(now);
     }
 
     const data: MarketData[] = await response.json();
@@ -39,7 +45,7 @@ export async function fetchMarketData(): Promise<MarketData[]> {
     return data;
   } catch (error) {
     console.error('[MarketsSegment] Failed to fetch market data:', error);
-    return marketCache?.data || [];
+    return lastGoodMarkets(now);
   }
 }
 
