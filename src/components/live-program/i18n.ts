@@ -8,7 +8,7 @@ interface Translations {
   };
 }
 
-export const translations: Translations = {
+const translations: Translations = {
   'segment.articles': {
     en: 'News Articles',
     es: 'Artículos',
@@ -303,7 +303,7 @@ export function t(key: string, language: SupportedLanguage, replacements?: Recor
     return key;
   }
 
-  let text = translation[language] || translation.en || key;
+  let text = translation[language] || translation.en;
 
   if (replacements) {
     Object.entries(replacements).forEach(([placeholder, value]) => {

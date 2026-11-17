@@ -1,6 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import ReactDOM from 'react-dom/client';
 
+// main.tsx only wires LiveProgram into the page; the component itself is
+// exercised in the browser by the LiveProgram acceptance stories.
+vi.mock('../components/live-program/LiveProgram.js', () => ({
+  default: function LiveProgram() { return null; },
+}));
+
+
+/** The LiveProgram props main.tsx rendered (inside React.StrictMode). */
+function renderedProps(render: ReturnType<typeof vi.fn>) {
+  expect(render).toHaveBeenCalledTimes(1);
+  return render.mock.calls[0][0].props.children.props as { programId: string; apiBaseUrl?: string };
+}
+
 describe('live-program main entrypoint', () => {
   let origWindow: any;
   let origDocument: any;
@@ -40,7 +53,8 @@ describe('live-program main entrypoint', () => {
     await import(`./main.js?case=${1}`);
 
     expect(createRootSpy).toHaveBeenCalledWith(rootElement);
-    expect(renderFn).toHaveBeenCalled();
+    // The runtime config wins over the query string.
+    expect(renderedProps(renderFn)).toEqual({ programId: 'config-prog', apiBaseUrl: 'https://config.test' });
   }, 15000);
 
   it('falls back to query parameters and default programId when runtime config is absent', async () => {
@@ -61,7 +75,7 @@ describe('live-program main entrypoint', () => {
     await import(`./main.js?case=${2}`);
 
     expect(createRootSpy).toHaveBeenCalledWith(rootElement);
-    expect(renderFn).toHaveBeenCalled();
+    expect(renderedProps(renderFn).programId).toBe('query-only-id');
   }, 15000);
 
   it('falls back to default fifthbell and handles missing root element', async () => {

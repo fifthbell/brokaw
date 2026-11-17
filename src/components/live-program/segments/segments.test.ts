@@ -10,7 +10,6 @@ import {
 import {
   fetchEarthquakes,
   createEarthquakeSegment,
-  EarthquakeSlide,
   type EarthquakeData,
 } from './EarthquakeSegment.js';
 import {
@@ -21,10 +20,8 @@ import {
 import {
   fetchArticles,
   createArticlesSegment,
-  normalizePath,
 } from './ArticlesSegment.js';
 import { createLiveEventSegment } from './LiveEventSegment.js';
-import { usePlaylistEngine } from './usePlaylistEngine.js';
 
 describe('segments suite', () => {
   const fetchMock = vi.fn<typeof fetch>();
@@ -118,7 +115,8 @@ describe('segments suite', () => {
       const renderedEmpty = emptySegment.render(0, 0);
       expect(React.isValidElement(renderedEmpty)).toBe(true);
       const emptyHtml = renderToStaticMarkup(renderedEmpty);
-      expect(emptyHtml).toBeDefined();
+      expect(emptyHtml).toContain('Cargando datos del mercado...');
+      expect(emptyHtml).not.toContain('AAPL');
 
       // Prefetch with onDataUpdate
       fetchMock.mockResolvedValueOnce(new Response(JSON.stringify(mockStocks), { status: 200 }));
@@ -266,25 +264,12 @@ describe('segments suite', () => {
       expect(React.isValidElement(rendered)).toBe(true);
       expect(renderToStaticMarkup(rendered)).toContain('Test Location');
 
-      // Test null regex match fallback in magnitude color parser
-      const execSpy = vi.spyOn(RegExp.prototype, 'exec').mockImplementationOnce(() => null);
-      const renderedFallbackRgb = segment.render(0, 20);
-      expect(renderToStaticMarkup(renderedFallbackRgb)).toBeDefined();
-      execSpy.mockRestore();
+      // A magnitude 7.5 quake takes the red #dc2626 (220, 38, 38) scale.
+      expect(renderToStaticMarkup(rendered)).toContain('220, 38, 38');
 
+      // Without data the segment shows its loading slide, not an empty list.
       const emptySegment = createEarthquakeSegment([], undefined, 'es');
-      expect(React.isValidElement(emptySegment.render(0, 0))).toBe(true);
-      expect(renderToStaticMarkup(emptySegment.render(0, 0))).toBeDefined();
-
-      // Empty earthquake slide with no earthquakes
-      const emptyEarthquakeSlideHtml = renderToStaticMarkup(
-        React.createElement(EarthquakeSlide, {
-          earthquakes: [],
-          progress: 0,
-          language: 'en',
-        })
-      );
-      expect(emptyEarthquakeSlideHtml).toContain('No significant earthquakes in the last 24 hours');
+      expect(renderToStaticMarkup(emptySegment.render(0, 0))).toContain('Cargando datos de terremotos...');
 
       fetchMock.mockResolvedValueOnce(new Response(JSON.stringify([]), { status: 200 }));
       await segment.prefetch?.();
@@ -394,8 +379,7 @@ describe('segments suite', () => {
 
       const emptyWeatherSegment = createWeatherSegment([], undefined, 'es');
       expect(emptyWeatherSegment.itemCount).toBe(8);
-      expect(React.isValidElement(emptyWeatherSegment.render(0, 0))).toBe(true);
-      expect(renderToStaticMarkup(emptyWeatherSegment.render(0, 0))).toBeDefined();
+      expect(renderToStaticMarkup(emptyWeatherSegment.render(0, 0))).toContain('Cargando datos del clima...');
 
       fetchMock.mockResolvedValueOnce(new Response(JSON.stringify(mockWeather), { status: 200 }));
       await segmentFahrenheit.prefetch?.();
@@ -491,6 +475,19 @@ describe('segments suite', () => {
       errSpy.mockRestore();
     });
 
+    it('normalizes an explicit article url into one clean site path', async () => {
+      const base = {
+        excerpt: 'Excerpt', featured: false, featuredImage: { url: 'https://img.test/a.jpg' },
+        categories: [{ name: 'News', slug: 'news' }], publishedAt: new Date().toISOString(),
+      };
+      fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ articles: [
+        { ...base, id: 201, title: 'Query only', url: '?ref=feed' },
+        { ...base, id: 202, title: 'Repeated slashes', url: '//world///news/' },
+      ] }), { status: 200 }));
+      const urls = (await fetchArticles('en')).map((article) => article.url);
+      expect(urls).toEqual(expect.arrayContaining(['https://fifthbell.com/', 'https://fifthbell.com/world/news']));
+    });
+
     it('renders articles segment slides and prefetch', async () => {
       const items = [
         {
@@ -514,13 +511,8 @@ describe('segments suite', () => {
 
       const emptySegment = createArticlesSegment([], undefined, 'es');
       expect(emptySegment.itemCount).toBe(5);
-      expect(React.isValidElement(emptySegment.render(0, 0))).toBe(true);
-      expect(renderToStaticMarkup(emptySegment.render(0, 0))).toBeDefined();
-
-      expect(normalizePath('')).toBe('/');
-      expect(normalizePath('?query=param')).toBe('/');
-      expect(normalizePath('/world/news/')).toBe('/world/news');
-      expect(normalizePath('//world///news')).toBe('/world/news');
+      // Without articles the segment shows its built-in sample stories.
+      expect(renderToStaticMarkup(emptySegment.render(0, 0))).toContain('Global Climate Summit Reaches Historic Agreement');
 
       fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ articles: [] }), { status: 200 }));
       await segment.prefetch?.();
@@ -554,8 +546,7 @@ describe('segments suite', () => {
       expect(segmentWithoutEvent.itemCount).toBe(0);
 
       const renderedFallback = segmentWithoutEvent.render(0, 0);
-      expect(React.isValidElement(renderedFallback)).toBe(true);
-      expect(renderToStaticMarkup(renderedFallback)).toBeDefined();
+      expect(renderToStaticMarkup(renderedFallback)).toContain('Nessun evento in diretta');
 
       // Prefetch with onDataUpdate
       fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({
@@ -566,42 +557,6 @@ describe('segments suite', () => {
 
       // Prefetch without onDataUpdate returns immediately
       await segmentWithoutEvent.prefetch?.();
-    });
-  });
-
-  describe('usePlaylistEngine', () => {
-    it('handles empty segments, single item, transitions, and prefetch errors', () => {
-      // Test empty segments
-      const emptyConfig = { segments: [] };
-      // Verify calculateNextState / transitions using segment definitions
-      const enter0 = vi.fn();
-      const exit0 = vi.fn();
-      const enter1 = vi.fn();
-      const exit1 = vi.fn();
-      const loopCb = vi.fn();
-      const prefetchErr = vi.fn().mockRejectedValue(new Error('Prefetch fail'));
-
-      const seg0 = {
-        id: 'seg0',
-        label: 'Segment 0',
-        itemCount: 2,
-        render: () => React.createElement('div'),
-        onEnter: enter0,
-        onExit: exit0,
-      };
-
-      const seg1 = {
-        id: 'seg1',
-        label: 'Segment 1',
-        itemCount: 1,
-        render: () => React.createElement('div'),
-        onEnter: enter1,
-        onExit: exit1,
-        prefetch: prefetchErr,
-      };
-
-      expect(seg0.itemCount).toBe(2);
-      expect(seg1.itemCount).toBe(1);
     });
   });
 });

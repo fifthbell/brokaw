@@ -59,9 +59,8 @@ export function useSSE({ url, onMessage, onOpen, onDiagnostic, reconnectInterval
       }
     };
 
+    // Only the mount and the reconnect timer call connect; cleanup clears that timer.
     const connect = async () => {
-      if (disposed) return;
-
       try {
         abortController = new AbortController();
         bufferRef.current = '';

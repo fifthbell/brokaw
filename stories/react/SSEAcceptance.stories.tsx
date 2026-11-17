@@ -341,17 +341,3 @@ export const AbortImmediateAndNonErrorHandling: Story = {
     await waitFor(() => expect(canvas.getByTestId('error')).toHaveTextContent('String error from boundary'));
   }),
 };
-
-export const DisposedGuardOnReconnect: Story = {
-  play: async ({ canvasElement }) => scenario(canvasElement, { plans: ['unavailable', 'unavailable'] }, async (canvas, boundary) => {
-    await waitFor(() => expect(canvas.getByTestId('error')).toHaveTextContent('SSE fetch failed: 503'));
-    const origClearTimeout = window.clearTimeout;
-    window.clearTimeout = () => {};
-    try {
-      await userEvent.click(canvas.getByRole('button', { name: 'Unmount feed' }));
-      await settleReconnectWindow();
-    } finally {
-      window.clearTimeout = origClearTimeout;
-    }
-  }),
-};

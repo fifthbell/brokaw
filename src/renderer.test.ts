@@ -3,10 +3,7 @@ import Handlebars from 'handlebars';
 import { describe, expect, it, vi } from 'vitest';
 import {
   initializeHandlebars,
-  normalizeDocument,
   renderWithAssets,
-  resetHandlebarsForTests,
-  layoutCache,
   type RendererAssets,
 } from './renderer.core.js';
 import {
@@ -15,9 +12,14 @@ import {
   liveProgramPageFiles,
   liveProgramPageHtml,
   render,
-  resetAssetsForTests,
 } from './renderer.node.js';
 import type { CanonicalDocument } from './types/canonical-article.js';
+
+/** A renderer with fresh module state: no cached disk assets, Handlebars not initialized. */
+async function freshRenderer(): Promise<typeof import('./renderer.node.js')> {
+  vi.resetModules();
+  return import('./renderer.node.js');
+}
 
 const minimalDoc: CanonicalDocument = {
   id: 'test-article-1',
@@ -59,10 +61,10 @@ describe('renderer.core Handlebars helpers and normalization', () => {
     styles: 'body { color: black; }',
   };
 
-  it('initializes helpers, registers partials, and respects idempotency', () => {
+  it('initializes once: a second call keeps the first layouts', () => {
     initializeHandlebars(assets);
-    // calling a second time hits early return if (initialized) return;
-    initializeHandlebars(assets);
+    initializeHandlebars({ ...assets, layouts: { ...assets.layouts, 'article-page': '<p>replaced</p>' } });
+    expect(renderWithAssets(minimalDoc, assets)).toBe('<h1>Test Article</h1>heading');
   });
 
   it('tests eq and add helpers', () => {
@@ -169,15 +171,16 @@ describe('renderer.core Handlebars helpers and normalization', () => {
     expect(rendered).toContain('<h1>Test Article</h1>');
     expect(rendered).not.toContain('truthSocial');
 
-    // test normalizeDocument directly with non-array body and non-object blocks
-    const nonArrayDoc = { ...minimalDoc, body: null as any };
-    expect(normalizeDocument(nonArrayDoc)).toBe(nonArrayDoc);
+  });
 
-    const withNonObj = normalizeDocument({
-      ...minimalDoc,
-      body: [{ type: 'heading' }, 'string-block' as any, null as any],
-    });
-    expect(withNonObj.body?.length).toBe(3);
+  it('passes a body that is not a block list to validation unchanged, which rejects it', () => {
+    expect(() => renderWithAssets({ ...minimalDoc, body: null as any }, assets)).toThrow(
+      'Canonical document validation failed: /body must be array',
+    );
+    // Non-object entries are kept, not dropped as removed block types, so validation names them.
+    expect(() =>
+      renderWithAssets({ ...minimalDoc, body: [{ type: 'heading', level: 2, text: 'A' }, 'string-block' as any] }, assets),
+    ).toThrow('Canonical document validation failed: /body/1 must be object');
   });
 
   it('rejects unknown or missing layout in renderWithAssets', () => {
@@ -285,67 +288,58 @@ describe('renderer.node file resolution and exports', () => {
     }
   });
 
-  it('handles non-.hbs entries in partials directory', () => {
-    resetAssetsForTests();
+  it('ignores partials-directory entries that are not .hbs files', async () => {
+    const renderer = await freshRenderer();
     const realReaddirSync = fs.readdirSync.bind(fs);
-    const readdirSpy = vi.spyOn(fs, 'readdirSync').mockImplementation((p: any, opts: any) => {
+    const readdirSpy = vi.spyOn(fs, 'readdirSync').mockImplementation(((p: any, opts: any) => {
       const res = realReaddirSync(p, opts);
-      if (String(p).includes('partials') && Array.isArray(res)) {
+      if (String(p).endsWith('partials') && Array.isArray(res)) {
         return [
           ...res,
-          { name: 'ignore.txt', isFile: () => true, isDirectory: () => false } as any,
-          { name: 'ignore-dir', isFile: () => false, isDirectory: () => false } as any,
+          { name: 'notes.txt', isFile: () => true, isDirectory: () => false },
+          { name: 'socket', isFile: () => false, isDirectory: () => false },
         ];
       }
       return res;
-    });
+    }) as typeof fs.readdirSync);
     try {
-      const result = render(minimalDoc);
-      expect(result).toContain('Test Article');
+      const html = renderer.render(minimalDoc);
+      expect(html).toContain('<h2');
+      expect(html).toContain('Hello World');
+      expect(html).not.toContain('truthSocial');
     } finally {
       readdirSpy.mockRestore();
-      resetAssetsForTests();
     }
   });
 
-  it('throws when compiledStylesPath or layout template is missing during loadAssetsFromDisk', () => {
-    resetAssetsForTests();
+  it('refuses to render when compiled.css or a layout template is missing on disk', async () => {
     const realExists = fs.existsSync.bind(fs);
-    const existsSpy = vi.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
-      if (String(p).includes('compiled.css')) return false;
-      return realExists(p);
-    });
-    try {
-      expect(() => render(minimalDoc)).toThrow('compiled.css not found');
-    } finally {
-      existsSpy.mockRestore();
-    }
-
-    resetAssetsForTests();
-    const layoutSpy = vi.spyOn(fs, 'existsSync').mockImplementation((p: any) => {
-      if (String(p).includes('article-page.hbs')) return false;
-      return realExists(p);
-    });
-    try {
-      expect(() => render(minimalDoc)).toThrow('Layout template missing');
-    } finally {
-      layoutSpy.mockRestore();
-      resetAssetsForTests();
+    for (const [missing, message] of [
+      ['compiled.css', 'compiled.css not found — run npm run build:css first'],
+      ['article-page.hbs', 'Layout template missing for "article-page"'],
+    ] as const) {
+      const renderer = await freshRenderer();
+      const existsSpy = vi.spyOn(fs, 'existsSync').mockImplementation((p: any) =>
+        String(p).endsWith(missing) ? false : realExists(p));
+      try {
+        expect(() => renderer.render(minimalDoc)).toThrow(message);
+      } finally {
+        existsSpy.mockRestore();
+      }
     }
   });
 
-  it('handles uninitialized renderWithAssets and missing cached template', () => {
-    resetHandlebarsForTests();
-    const result = render(minimalDoc);
-    expect(result).toContain('Test Article');
-
-    // Simulate layoutCache missing template after layout check
-    const originalTemplate = layoutCache.get('article-page');
-    (layoutCache as any).set('article-page', undefined);
+  it('loads disk assets once and reuses them for later renders', async () => {
+    const renderer = await freshRenderer();
+    const readSpy = vi.spyOn(fs, 'readFileSync');
     try {
-      expect(() => render(minimalDoc)).toThrow('Layout template missing for "article-page"');
+      const first = renderer.render(minimalDoc);
+      const reads = readSpy.mock.calls.length;
+      expect(reads).toBeGreaterThan(0);
+      expect(renderer.render(minimalDoc)).toBe(first);
+      expect(readSpy.mock.calls.length).toBe(reads);
     } finally {
-      layoutCache.set('article-page', originalTemplate!);
+      readSpy.mockRestore();
     }
   });
 

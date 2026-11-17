@@ -68,8 +68,7 @@ type Scenario =
   | "pending-snapshot"
   | "snapshot-failure"
   | "reconnect"
-  | "controlled"
-  | "callsign";
+  | "controlled";
 
 /** Only the HTTP transport is substituted: the component, reconciliation and SSE hook run unchanged. */
 class ProgramTransport {
@@ -220,22 +219,6 @@ const meta = {
     const container = document.createElement("div");
     container.style.height = "600px";
     transport.root = createRoot(container);
-    if (args.scenario === "callsign") {
-      let nullRefCount = 0;
-      const origRef = React.useRef;
-      (React as any).useRef = function(init: any) {
-        const ref = origRef.call(this, init);
-        if (init === null) {
-          if (nullRefCount === 1) {
-            const audio = document.createElement("audio");
-            ref.current = audio;
-          }
-          nullRefCount++;
-        }
-        return ref;
-      };
-    }
-    const now = new Date();
     transport.root.render(
       <LiveProgram
         programId={PROGRAM}
@@ -244,32 +227,6 @@ const meta = {
         {...(args.scenario === "controlled"
           ? {
               sceneMetadata: metadata("HOST STUDIO"),
-              activeComponents: ["fifthbell-content"],
-            }
-          : args.scenario === "callsign"
-          ? {
-              sceneMetadata: {
-                "fifthbell-content": {
-                  showArticles: true,
-                  showWeather: false,
-                  showEarthquakes: false,
-                  showMarkets: false,
-                  showLiveEvents: true,
-                  showCallsignTake: true,
-                  callsignPrelaunchUntilNyc: "2099-01-01T00:00:00",
-                  callsignWindowStartSecond: 0,
-                  callsignWindowEndSecond: 59,
-                  audioCueEnabled: true,
-                  audioCueMinute: now.getMinutes(),
-                  audioCueSecond: (now.getSeconds() + 1) % 60,
-                  playlistDefaultDurationMs: 50,
-                  playlistUpdateIntervalMs: 16,
-                  languageRotation: ["en", "es", "it"],
-                },
-                "fifthbell-corner": {
-                  showWorldClocks: false,
-                },
-              },
               activeComponents: ["fifthbell-content"],
             }
           : {})}
@@ -505,31 +462,5 @@ export const SceneRendererOwnsMetadataWithoutAProgramSubscription: Story = {
     await expect(transport.streams).toEqual([]);
     await expect(transport.unexpected).toEqual([]);
     await expect(transport.errors).toEqual([]);
-  },
-};
-
-export const CallsignTakeAndAudioCueLifecycle: Story = {
-  args: { scenario: "callsign" },
-  play: async ({ canvasElement }) => {
-    await within(canvasElement).findByText("fifth", { exact: false });
-    await new Promise((r) => setTimeout(r, 1400));
-    const marqueeContent = canvasElement.querySelector("[class*='translate-y-0']");
-    marqueeContent?.dispatchEvent(new Event("animationiteration"));
-    transport.root?.render(
-      <LiveProgram
-        programId={PROGRAM}
-        apiBaseUrl={ENDPOINT}
-        embedded
-        sceneMetadata={{
-          "fifthbell-content": {
-            showArticles: true,
-            showCallsignTake: false,
-            languageRotation: ["en"],
-          },
-        }}
-        activeComponents={["fifthbell-marquee"]}
-      />,
-    );
-    await new Promise((r) => setTimeout(r, 100));
   },
 };

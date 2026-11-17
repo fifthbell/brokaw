@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/html';
 import Handlebars from 'handlebars';
+import { expect } from 'storybook/test';
 import templateSource from '../../src/templates/templates/instagram-image.hbs?raw';
 import { buildInstagramImageHtml } from '../../src/instagram-image-template.js';
 
@@ -54,5 +55,11 @@ export const GeneratedHelper: Story = {
       url: 'https://fifthbell.com/technology/article',
     });
     return el;
+  },
+  // In the browser the helper reads the template through Vite's ?raw import.
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement).toHaveTextContent('Helper Generated Instagram Image');
+    await expect(canvasElement).toHaveTextContent('TECHNOLOGY');
+    await expect(canvasElement.querySelector('img')?.getAttribute('src')).toContain('photo-1495020689067');
   },
 };

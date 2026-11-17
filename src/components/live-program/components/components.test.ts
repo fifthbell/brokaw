@@ -2,7 +2,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { FastAverageColor } from 'fast-average-color';
-import { Marquee, calculateAverageRelevance, calculateMedianRelevance } from './Marquee.js';
+import { Marquee } from './Marquee.js';
 import { WorldClocks, DEFAULT_WORLD_CLOCK_CITIES } from './WorldClocks.js';
 import { ArticleSlide } from './slides/ArticleSlide.js';
 import { CallsignSlide } from './slides/CallsignSlide.js';
@@ -91,9 +91,33 @@ describe('live-program components suite', () => {
       );
       expect(emptyHtml).toBe('');
 
-      // Test calculateMedianRelevance and calculateAverageRelevance with empty array
-      expect(calculateMedianRelevance([])).toBe(0);
-      expect(calculateAverageRelevance([])).toBe(0);
+    });
+
+    it('scores an event without posts as relevance 0, so only zero thresholds keep it', () => {
+      const postless: ProgramEvent = { ...mockEvents[0], uuid: 'ev-empty', title: 'Postless Event', posts_count: 9, posts: [] };
+      const strict = renderToStaticMarkup(React.createElement(Marquee, { events: [postless], minAverageRelevance: 1, minMedianRelevance: 0 }));
+      expect(strict).toBe('');
+      const median = renderToStaticMarkup(React.createElement(Marquee, { events: [postless], minAverageRelevance: 0, minMedianRelevance: 1 }));
+      expect(median).toBe('');
+      const open = renderToStaticMarkup(React.createElement(Marquee, { events: [postless], minAverageRelevance: 0, minMedianRelevance: 0 }));
+      expect(open).toContain('Postless Event');
+    });
+
+    it('uses the middle post for an odd count and the mean of the two middle posts for an even count', () => {
+      const posts = mockEvents[0].posts;
+      // Odd: relevances 1, 9, 9 have median 9 and mean about 6.3.
+      const odd: ProgramEvent = { ...mockEvents[0], uuid: 'ev-odd', title: 'Odd Event', posts_count: 3,
+        posts: [{ ...posts[0], relevance: 1 }, { ...posts[1], relevance: 9 }, { ...posts[2], relevance: 9 }] };
+      // Even: relevances 1, 6, 8, 9 have median 7 and mean 6.
+      const even: ProgramEvent = { ...mockEvents[0], uuid: 'ev-even', title: 'Even Event', posts_count: 4,
+        posts: [{ ...posts[0], relevance: 1 }, { ...posts[1], relevance: 6 }, { ...posts[2], relevance: 8 }, { ...posts[3], relevance: 9 }] };
+      const render = (minMedianRelevance: number) => renderToStaticMarkup(React.createElement(Marquee, {
+        events: [odd, even], minPostsCount: 0, minAverageRelevance: 0, minMedianRelevance,
+      }));
+      expect(render(9)).toContain('Odd Event');
+      expect(render(9)).not.toContain('Even Event');
+      expect(render(7)).toContain('Even Event');
+      expect(render(7.5)).not.toContain('Even Event');
     });
   });
 
@@ -107,9 +131,11 @@ describe('live-program components suite', () => {
           shuffleCities: false,
         })
       );
-      expect(htmlDefault).toBeDefined();
+      // Unshuffled, the first default city leads: New York, 07:00 at 12:00Z.
+      expect(htmlDefault).toContain('07:00');
+      expect(htmlDefault).toContain('NEW YORK');
 
-      // Custom non-translatable city
+      // A city without a translation keeps its own name; a valid override replaces the clock.
       const customCities = [{ city: 'CUSTOMTOWN', timezone: 'UTC' }];
       const htmlCustom = renderToStaticMarkup(
         React.createElement(WorldClocks, {
@@ -125,34 +151,34 @@ describe('live-program components suite', () => {
       expect(htmlCustom).toContain('CUSTOMTOWN');
       expect(htmlCustom).toContain('10:00');
 
-      // Fallback city when cityPool item is undefined and invalid timeOverride
-      const trickyCities: any = [{ city: 'CUSTOMTOWN', timezone: 'UTC' }];
-      trickyCities[Symbol.iterator] = function* () {
-        yield undefined;
-      };
-
-      const htmlFallbackCity = renderToStaticMarkup(
+      // An unusable override falls back to the city's own time zone.
+      const htmlBadOverride = renderToStaticMarkup(
         React.createElement(WorldClocks, {
           currentTime: fixedTime,
-          cities: trickyCities,
-          timeOverride: {
-            startTime: 'invalid',
-            startedAt: 'invalid',
-          },
+          cities: customCities,
+          timeOverride: { startTime: 'invalid', startedAt: 'invalid' },
           shuffleCities: false,
         })
       );
-      expect(htmlFallbackCity).toContain('CUSTOMTOWN');
+      expect(htmlBadOverride).toContain('12:00');
 
-      // WorldClocks without currentTime uses interval
+      // Spanish labels translate the default cities.
+      const htmlSpanish = renderToStaticMarkup(
+        React.createElement(WorldClocks, { currentTime: fixedTime, language: 'es', shuffleCities: false })
+      );
+      expect(htmlSpanish).toContain('NUEVA YORK');
+
+      // Without currentTime the clock starts from the current instant.
+      vi.setSystemTime(new Date('2026-11-15T18:30:00Z'));
       const htmlNoTime = renderToStaticMarkup(
         React.createElement(WorldClocks, {
           currentTime: undefined,
           language: 'en',
-          cities: DEFAULT_WORLD_CLOCK_CITIES,
+          cities: [{ city: 'LONDON', timezone: 'Europe/London' }],
         })
       );
-      expect(htmlNoTime).toBeDefined();
+      expect(htmlNoTime).toContain('18:30');
+      expect(htmlNoTime).toContain('LONDON');
     });
   });
 
@@ -246,7 +272,8 @@ describe('live-program components suite', () => {
           language: 'es',
         })
       );
-      expect(htmlEmpty).toBeDefined();
+      expect(htmlEmpty).toContain('Sin actualizaciones');
+      expect(htmlEmpty).toContain('Real Madrid vs Liverpool');
 
       // Non-sports with updates exercising html vs text vs null
       const nonSportsEvent = {

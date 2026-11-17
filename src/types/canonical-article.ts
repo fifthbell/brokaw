@@ -7,13 +7,11 @@ const ajv = new Ajv2020({ allErrors: true, strict: false, useDefaults: true });
 addContractFormats(ajv);
 const validateCanonicalDocument = ajv.compile(canonicalDocumentSchema);
 
-export function summarizeValidationErrors(errors: ErrorObject[] | null | undefined) {
-  return (errors ?? [])
+// After a failed validation Ajv always sets errors, each with a message.
+function summarizeValidationErrors(errors: ErrorObject[]) {
+  return errors
     .slice(0, 8)
-    .map(
-      (error) =>
-        `${error.instancePath || "/"} ${error.message ?? "is invalid"}`,
-    )
+    .map((error) => `${error.instancePath || "/"} ${error.message}`)
     .join("; ");
 }
 
@@ -23,7 +21,7 @@ export const canonicalArticleSchema = {
     if (!validateCanonicalDocument(candidate)) {
       throw new Error(
         `Canonical document validation failed: ${summarizeValidationErrors(
-          validateCanonicalDocument.errors,
+          validateCanonicalDocument.errors!,
         )}`,
       );
     }

@@ -15,14 +15,14 @@ interface MarqueeProps {
   borderColor?: string;
 }
 
-export function calculateMedianRelevance(posts: { relevance: number }[]): number {
+function calculateMedianRelevance(posts: { relevance: number }[]): number {
   if (posts.length === 0) return 0;
   const scores = posts.map((post) => post.relevance).sort((a, b) => a - b);
   const mid = Math.floor(scores.length / 2);
   return scores.length % 2 === 0 ? (scores[mid - 1] + scores[mid]) / 2 : scores[mid];
 }
 
-export function calculateAverageRelevance(posts: { relevance: number }[]): number {
+function calculateAverageRelevance(posts: { relevance: number }[]): number {
   if (posts.length === 0) return 0;
   const sum = posts.reduce((acc, post) => acc + post.relevance, 0);
   return sum / posts.length;

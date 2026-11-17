@@ -69,8 +69,7 @@ const MOCK_ARTICLES: NewsItem[] = [
   }
 ];
 
-export function normalizePath(input: string): string {
-  if (!input) return '/';
+function normalizePath(input: string): string {
   const stripped = input.split('?')[0] || '/';
   const normalized = `/${stripped.replace(/^\/+/, '')}`.replace(/\/{2,}/g, '/');
   return normalized !== '/' && normalized.endsWith('/') ? normalized.slice(0, -1) : normalized;
@@ -162,7 +161,7 @@ interface ArticlesSegmentRendererProps {
   language: SupportedLanguage;
 }
 
-export function ArticlesSegmentRenderer({ items, itemIndex, progress, language }: ArticlesSegmentRendererProps) {
+function ArticlesSegmentRenderer({ items, itemIndex, progress, language }: ArticlesSegmentRendererProps) {
   const [displayedIndex, setDisplayedIndex] = useState(itemIndex);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const previousIndexRef = useRef(itemIndex);

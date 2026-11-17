@@ -110,7 +110,7 @@ function getMagnitudeColor(magnitude: number): string {
 
 const fac = new FastAverageColor();
 
-export function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: EarthquakeData[]; progress: number; language: SupportedLanguage }) {
+function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: EarthquakeData[]; progress: number; language: SupportedLanguage }) {
   const [dominantColor, setDominantColor] = useState('#7c2d12');
   const backgroundImage = FIFTHBELL_ASSETS.images.seismograph;
 
@@ -124,16 +124,7 @@ export function EarthquakeSlide({ earthquakes, progress, language }: { earthquak
     }
   };
 
-  if (earthquakes.length === 0) {
-    return (
-      <div className='absolute inset-0'>
-        <div className='absolute inset-0 opacity-75' style={{ background: 'linear-gradient(to bottom right, #7c2d12, #000000)' }} />
-        <div className='relative z-10 h-full flex items-center justify-center'>
-          <div className='text-4xl font-light font-secondary'>{t('earthquakes.noData', language)}</div>
-        </div>
-      </div>
-    );
-  }
+  // The earthquakes segment shows its loading slide instead of this one when the list is empty.
 
   return (
     <div className='absolute inset-0 animate-slide-transition'>
@@ -166,10 +157,9 @@ export function EarthquakeSlide({ earthquakes, progress, language }: { earthquak
         <div className='grid grid-cols-2 gap-6 animate-slide-up'>
           {earthquakes.map((quake, index) => {
             const baseColor = getMagnitudeColor(quake.magnitude);
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(baseColor);
-            const rgb = result
-              ? { r: Number.parseInt(result[1], 16), g: Number.parseInt(result[2], 16), b: Number.parseInt(result[3], 16) }
-              : { r: 239, g: 68, b: 68 };
+            // getMagnitudeColor only returns #rrggbb literals, so the pattern always matches.
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(baseColor)!;
+            const rgb = { r: Number.parseInt(result[1], 16), g: Number.parseInt(result[2], 16), b: Number.parseInt(result[3], 16) };
 
             let magnitudeIntensity;
             if (quake.magnitude < 5.0) {

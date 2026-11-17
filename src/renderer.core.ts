@@ -11,15 +11,10 @@ export type RendererAssets = {
 };
 
 let initialized = false;
-export const layoutCache = new Map<LayoutName, HandlebarsTemplateDelegate>();
-
-export function resetHandlebarsForTests(): void {
-  initialized = false;
-  layoutCache.clear();
-}
+const layoutCache = new Map<LayoutName, HandlebarsTemplateDelegate>();
 const removedBlockTypes = new Set(['truthSocial', 'truthsocial', 'truth-social', 'truth_social']);
 
-export function normalizeDocument(doc: CanonicalDocument): CanonicalDocument {
+function normalizeDocument(doc: CanonicalDocument): CanonicalDocument {
   const rawBody = (doc as { body?: unknown }).body;
   if (!Array.isArray(rawBody)) return doc;
 
@@ -144,15 +139,10 @@ export function renderWithAssets(doc: CanonicalDocument, assets: RendererAssets)
   }
 
   const requestedLayout = (doc as { layout?: string }).layout;
-  if (!requestedLayout || !layoutCache.has(requestedLayout as LayoutName)) {
+  const template = requestedLayout ? layoutCache.get(requestedLayout as LayoutName) : undefined;
+  if (!template) {
     throw new Error(`Unknown layout "${requestedLayout ?? 'undefined'}". Expected one of: ${layoutNames.join(', ')}`);
   }
 
-  const parsed = canonicalArticleSchema.parse(normalizeDocument(doc));
-  const template = layoutCache.get(parsed.layout as LayoutName);
-  if (!template) {
-    throw new Error(`Layout template missing for \"${parsed.layout}\"`);
-  }
-
-  return template(parsed);
+  return template(canonicalArticleSchema.parse(normalizeDocument(doc)));
 }

@@ -7,7 +7,7 @@ import { usePlaylistEngine } from '../../src/components/live-program/segments/us
 import type { PlaylistConfig, PlaylistState, Segment } from '../../src/components/live-program/segments/types';
 import { createEarthquakeSegment, fetchEarthquakes } from '../../src/components/live-program/segments/EarthquakeSegment';
 import { createWeatherSegment, fetchWeatherData, type WeatherRegionData } from '../../src/components/live-program/segments/WeatherSegment';
-import { createArticlesSegment, fetchArticles, ArticlesSegmentRenderer, type NewsItem } from '../../src/components/live-program/segments/ArticlesSegment';
+import { createArticlesSegment, fetchArticles, type NewsItem } from '../../src/components/live-program/segments/ArticlesSegment';
 import { createMarketsSegment, fetchMarketData, type MarketData } from '../../src/components/live-program/segments/MarketsSegment';
 import { createLiveEventSegment } from '../../src/components/live-program/segments/LiveEventSegment';
 import { CallsignSlide } from '../../src/components/live-program/components/slides/CallsignSlide';
@@ -33,6 +33,27 @@ function mount(canvas: HTMLElement) {
     render(node: React.ReactNode) { flushSync(() => root.render(node)); },
     close() { flushSync(() => root.unmount()); host.remove(); }
   };
+}
+
+
+/**
+ * Loads every image in host with the colour reader first succeeding, then failing,
+ * and returns the backdrop markup after each. The reader is restored afterwards.
+ */
+async function backdropAfterImageLoads(host: HTMLElement) {
+  const original = FastAverageColor.prototype.getColor;
+  const load = () => { for (const img of host.querySelectorAll('img')) img.dispatchEvent(new Event('load')); };
+  try {
+    FastAverageColor.prototype.getColor = function() { return { hex: '#123456' } as any; };
+    load();
+    await waitFor(() => expect(host.innerHTML).toContain('rgb(18, 52, 86)'));
+    FastAverageColor.prototype.getColor = function() { throw new Error('fixture colour failure'); };
+    load();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    return host.innerHTML;
+  } finally {
+    FastAverageColor.prototype.getColor = original;
+  }
 }
 
 function Playlist({ config }: { config: PlaylistConfig }) {
@@ -220,18 +241,6 @@ export const EarthquakeDataflowAndRendering: StoryObj = {
       await expect(network.calls).toHaveLength(1);
       mounted.render(createEarthquakeSegment([]).render(0, 0));
       await expect(mounted.host).toHaveTextContent('Loading');
-
-      const origGetColor = FastAverageColor.prototype.getColor;
-      FastAverageColor.prototype.getColor = function() {
-        throw new Error('fac earthquake failure');
-      };
-      try {
-        for (const img of mounted.host.querySelectorAll('img')) {
-          img.dispatchEvent(new Event('load'));
-        }
-      } finally {
-        FastAverageColor.prototype.getColor = origGetColor;
-      }
     } finally { Date.now = originalNow; network.restore(); mounted.close(); }
   }
 };
@@ -366,13 +375,8 @@ export const MarketsAndLiveEventsInPlaylist: StoryObj = {
       await expect(mounted.host).toHaveTextContent('AAPL');
       await expect(mounted.host).toHaveTextContent('TSLA');
 
-      const origMarketGetColor = FastAverageColor.prototype.getColor;
-      FastAverageColor.prototype.getColor = function() {
-        throw new Error('fac market/live failure');
-      };
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
+      // A failed colour read puts back the markets green.
+      await expect(await backdropAfterImageLoads(mounted.host)).toContain('rgb(6, 95, 70)');
 
       // Live event segment
       const liveSegment = createLiveEventSegment({
@@ -385,9 +389,8 @@ export const MarketsAndLiveEventsInPlaylist: StoryObj = {
       }, undefined, 'en');
       mounted.render(liveSegment.render(0, 30));
       await expect(mounted.host).toHaveTextContent('Championship Match');
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
+      // A failed colour read puts back the brand red.
+      await expect(await backdropAfterImageLoads(mounted.host)).toContain('rgb(178, 17, 0)');
 
       // Earthquake segment image load (success and catch)
       const mockQuakes = [{
@@ -402,18 +405,10 @@ export const MarketsAndLiveEventsInPlaylist: StoryObj = {
         sources: ['USGS']
       }];
       const earthquakeSeg = createEarthquakeSegment(mockQuakes, undefined, 'en');
-      FastAverageColor.prototype.getColor = origMarketGetColor;
       mounted.render(earthquakeSeg.render(0, 50));
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
-      FastAverageColor.prototype.getColor = function() {
-        throw new Error('fac earthquake failure');
-      };
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
-      FastAverageColor.prototype.getColor = origMarketGetColor;
+      await expect(mounted.host).toHaveTextContent('Test Place');
+      // A failed colour read puts back the earthquake brown.
+      await expect(await backdropAfterImageLoads(mounted.host)).toContain('rgb(124, 45, 18)');
 
       // Non-sports event with scrolling timeline (>4 updates)
       const scrollingEvent = {
@@ -434,16 +429,6 @@ export const MarketsAndLiveEventsInPlaylist: StoryObj = {
       mounted.render(scrollSeg.render(0, 10));
       await delay(5100);
 
-      // Exercise clearInterval when cycleRef.current is falsy (0)
-      const origSetInterval = window.setInterval;
-      (window as any).setInterval = () => 0;
-      const scrollSeg6 = createLiveEventSegment({
-        ...scrollingEvent,
-        updates: [...scrollingEvent.updates, { text: 'Update 6' }]
-      }, undefined, 'en');
-      mounted.render(scrollSeg6.render(0, 11));
-      mounted.render(<div>idle</div>);
-      window.setInterval = origSetInterval;
     } finally { network.restore(); mounted.close(); }
   }
 };
@@ -468,8 +453,11 @@ export const WorldClocksAndCallsignSlide: StoryObj = {
           shuffleCities={true}
         />
       );
-      await delay(600);
-      await delay(600);
+      // Shuffled, the clock still only ever shows the configured cities.
+      for (let tick = 0; tick < 2; tick += 1) {
+        await delay(600);
+        await expect(mounted.host.textContent).toMatch(/New York|London/);
+      }
 
       // Test WorldClocks wrap-around with shuffleCities={false} and activeCities fallback
       mounted.render(
@@ -485,8 +473,10 @@ export const WorldClocksAndCallsignSlide: StoryObj = {
           shuffleCities={false}
         />
       );
-      await delay(600);
-      await delay(600);
+      // Unshuffled, the clock restarts at the first city, moves on, then wraps back to it.
+      await waitFor(() => expect(mounted.host).toHaveTextContent('New York'), { timeout: 1500 });
+      await waitFor(() => expect(mounted.host).toHaveTextContent('London'), { timeout: 1500 });
+      await waitFor(() => expect(mounted.host).toHaveTextContent('New York'), { timeout: 1500 });
 
       mounted.render(
         <WorldClocks
@@ -498,6 +488,7 @@ export const WorldClocksAndCallsignSlide: StoryObj = {
           shuffleCities={false}
         />
       );
+      await waitFor(() => expect(mounted.host).toHaveTextContent('Tokyo'));
 
       // Test WorldClocks with time override
       mounted.render(
@@ -510,7 +501,8 @@ export const WorldClocksAndCallsignSlide: StoryObj = {
           timeOverride={{ startTime: '10:00', startedAt: '2026-11-15T12:00:00Z' }}
         />
       );
-      await expect(mounted.host).toHaveTextContent('10:00');
+      // The clock takes the new currentTime in an effect, then shows the override.
+      await waitFor(() => expect(mounted.host).toHaveTextContent('10:00'));
 
       // Test CallsignSlide and wait for transition timers to reveal showTime
       const audioRef = { current: null };
@@ -519,21 +511,22 @@ export const WorldClocksAndCallsignSlide: StoryObj = {
       const callsignText = within(mounted.host).getByText(/This is fifth/i).closest('div');
       await expect(callsignText?.style.opacity).toBe('1');
 
-      // Trigger image load success and error catch on callsign slide
+      // The backdrop takes the image's average colour, and keeps the brand red when that fails.
+      const gradient = () => [...mounted.host.querySelectorAll<HTMLElement>('div')]
+        .map((element) => element.style.background).find((value) => value.includes('linear-gradient')) ?? '';
+      const loadImages = () => { for (const img of mounted.host.querySelectorAll('img')) img.dispatchEvent(new Event('load')); };
       FastAverageColor.prototype.getColor = function() {
         return { hex: '#123456' } as any;
       };
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
+      loadImages();
+      await waitFor(() => expect(gradient()).toContain('rgb(18, 52, 86)'));
       FastAverageColor.prototype.getColor = function() {
         throw new Error('fac test failure');
       };
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
+      loadImages();
+      await waitFor(() => expect(gradient()).toContain('rgb(178, 17, 0)'));
 
-      // Exercise weather slide image error catch
+      // The weather slide keeps its blue backdrop when the colour cannot be read.
       const weatherSeg = createWeatherSegment([
         {
           region: 'North America',
@@ -541,9 +534,9 @@ export const WorldClocksAndCallsignSlide: StoryObj = {
         },
       ]);
       mounted.render(weatherSeg.render(0, 0));
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
+      loadImages();
+      await waitFor(() => expect(gradient()).toContain('rgb(30, 64, 175)'));
+      await expect(mounted.host).toHaveTextContent('New York');
     } finally {
       FastAverageColor.prototype.getColor = origGetColor;
       mounted.close();
@@ -554,7 +547,6 @@ export const WorldClocksAndCallsignSlide: StoryObj = {
 export const ArticlesSlideTransitions: StoryObj = {
   play: async ({ canvasElement }) => {
     const mounted = mount(canvasElement);
-    const origGetColor = FastAverageColor.prototype.getColor;
     const articles = [
       { id: '1', headline: 'Article One', summary: 'Summary 1', imageUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/%3E', url: '/art1' },
       { id: '2', headline: 'Article Two', summary: 'Summary 2', imageUrl: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/%3E', url: '/art2' },
@@ -564,35 +556,19 @@ export const ArticlesSlideTransitions: StoryObj = {
       mounted.render(<Playlist config={{ segments: [seg], updateIntervalMs: 50 }} />);
       await expect(mounted.host).toHaveTextContent('Article One');
 
-      // Test fac error on article slide image
-      FastAverageColor.prototype.getColor = function() {
-        throw new Error('fac article failure');
-      };
-      for (const img of mounted.host.querySelectorAll('img')) {
-        img.dispatchEvent(new Event('load'));
-      }
+      // A failed colour read keeps the colour already read; the slide stays up.
+      await expect(await backdropAfterImageLoads(mounted.host)).toContain('rgb(18, 52, 86)');
+      await expect(mounted.host).toHaveTextContent('Article One');
 
       click(mounted.host, 'Next');
       await delay(900);
       await expect(mounted.host).toHaveTextContent('Article Two');
 
-      // Test empty articles slide directly via ArticlesSegmentRenderer
-      mounted.render(<ArticlesSegmentRenderer items={[]} itemIndex={0} progress={0} language='en' />);
-      await expect(mounted.host).toHaveTextContent('No articles available');
-
-      // Test direct transition with same component instance to hit transition timer
-      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={0} progress={0} language='en' />);
-      await expect(mounted.host).toHaveTextContent('Article One');
-      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={1} progress={0} language='en' />);
-      await delay(900);
+      // Each item index is its own slide: rendering index 1 shows the second article at once.
+      mounted.render(seg.render(1, 0));
       await expect(mounted.host).toHaveTextContent('Article Two');
-
-      // Trigger transition cleanup
-      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={0} progress={0} language='en' />);
-      mounted.render(<ArticlesSegmentRenderer items={articles} itemIndex={1} progress={0} language='en' />);
-      mounted.render(<div>unmounted transition</div>);
+      await expect(mounted.host).not.toHaveTextContent('Article One');
     } finally {
-      FastAverageColor.prototype.getColor = origGetColor;
       mounted.close();
     }
   }

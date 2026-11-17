@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { t, getNextLanguageIndex, LANGUAGE_ROTATION, translations } from './i18n.js';
+import { t, getNextLanguageIndex, LANGUAGE_ROTATION } from './i18n.js';
 
 describe('i18n', () => {
   it('translates known keys for supported languages', () => {
@@ -20,13 +20,9 @@ describe('i18n', () => {
     warnSpy.mockRestore();
   });
 
-  it('falls back to en or raw key when target language is missing', () => {
-    // Unsupported language code falls back to en
-    expect(t('segment.weather', 'fr' as any)).toBe('Weather');
-    // If a translation key had empty strings, fall back to key
-    (translations as any)['empty.test'] = { en: '', es: '', it: '' };
-    expect(t('empty.test', 'es')).toBe('empty.test');
-    delete (translations as any)['empty.test'];
+  it('falls back to English for a language outside the supported set', () => {
+    // Callers pass a SupportedLanguage; a value from untyped JavaScript still gets text.
+    expect(t('segment.weather', 'fr' as never)).toBe('Weather');
   });
 
   it('cycles through language rotation correctly', () => {

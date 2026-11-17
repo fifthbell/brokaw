@@ -25,7 +25,7 @@ vi.mock('remotion', async (importOriginal) => {
 describe('video package and RemotionRoot', () => {
   it('exports components and registers root', () => {
     expect(typeof videoPkg.getDurationInFrames).toBe('function');
-    expect(videoPkg.ShortVideo).toBeDefined();
+    expect(typeof videoPkg.ShortVideo).toBe('function');
 
     const rootElement = RemotionRoot();
     expect(rootElement.props.id).toBe('BrokawShort');

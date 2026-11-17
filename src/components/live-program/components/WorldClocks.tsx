@@ -123,7 +123,8 @@ export function WorldClocks({
     };
   }, [cityPool, rotateIntervalMs, transitionDurationMs, shuffleCities, activeCities]);
 
-  const currentCity = cityPool[currentCityIndex] ?? activeCities[0];
+  // The index only advances within the pool and the pool is never empty.
+  const currentCity = cityPool[currentCityIndex]!;
   const formatTime = (timezone: string) => {
     if (timeOverride) {
       const parts = getOverrideClockParts(timeOverride, time);

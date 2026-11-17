@@ -69,9 +69,8 @@ function ScrollingTimeline({ updates, language }: { updates: LiveEventUpdate[]; 
       setVisibleStart((prev) => (prev + 1) % updates.length);
     }, 5000);
 
-    return () => {
-      if (cycleRef.current) clearInterval(cycleRef.current);
-    };
+    // The cleanup exists only once the interval is set.
+    return () => clearInterval(cycleRef.current!);
   }, [updates.length]);
 
   const visibleUpdates = useMemo(() => {

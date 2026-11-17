@@ -65,7 +65,7 @@ describe('fetchLiveEvents', () => {
       url: '/',
       updates: [],
     });
-    expect(data?.updatedAt).toBeDefined();
+    expect(Number.isNaN(Date.parse(data!.updatedAt))).toBe(false);
   });
 
   it('falls back to Auburnale when CDN response is not ok', async () => {

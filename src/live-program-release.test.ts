@@ -3,10 +3,7 @@ import { Ajv2020 } from "ajv/dist/2020.js";
 import fs from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { addContractFormats } from "./json-schema-formats.js";
-import {
-  configureCanonicalDocument,
-  liveProgramReleaseFiles,
-} from "./live-program-release.js";
+import { liveProgramReleaseFiles } from "./live-program-release.js";
 import { liveProgramPageFiles } from "./renderer.node.js";
 import { version } from "./version.js";
 
@@ -150,25 +147,24 @@ describe("live-program release renderable", () => {
     ).toBe(false);
   });
 
-  it("handles configureCanonicalDocument errors and unicode escaping", () => {
-    expect(() =>
-      configureCanonicalDocument("<html><body>No head</body></html>", "test", {
-        programId: "fifthbell",
-        apiBaseUrl: "https://api.example.test",
-      }),
-    ).toThrow("live-program index.html is missing <head>");
-
-    const output = configureCanonicalDocument(
-      "<html><head><title>Test</title></head><body></body></html>",
-      "test",
-      {
-        programId: "<script>\u2028\u2029",
-        apiBaseUrl: "https://api.example.test",
-      } as any,
-    );
-    expect(output).toContain("\\u003cscript>");
-    expect(output).toContain("\\u2028");
-    expect(output).toContain("\\u2029");
+  it("refuses a bundle whose index.html has no <head>", () => {
+    const realRead = fs.readFileSync.bind(fs);
+    const readSpy = vi.spyOn(fs, "readFileSync").mockImplementation(((path: any, options: any) => {
+      const contents = realRead(path, options);
+      return String(path).endsWith("index.html")
+        ? Buffer.from("<html><body>No head</body></html>")
+        : contents;
+    }) as typeof fs.readFileSync);
+    try {
+      expect(() =>
+        liveProgramReleaseFiles({
+          programId: "fifthbell",
+          apiBaseUrl: "https://api.example.test",
+        }),
+      ).toThrow("live-program index.html is missing <head>");
+    } finally {
+      readSpy.mockRestore();
+    }
   });
 
   it("throws when bundle is missing index.html", () => {

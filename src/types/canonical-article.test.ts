@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canonicalArticleSchema, summarizeValidationErrors } from "./canonical-article.js";
+import { canonicalArticleSchema } from "./canonical-article.js";
 
 const document = {
   id: "5f55c9cf-56d0-48ec-8b5c-4474d94a612f",
@@ -74,15 +74,13 @@ describe("canonical document adapter", () => {
     }
   });
 
-  it("summarizes empty, missing, or messageless validation errors", () => {
-    expect(summarizeValidationErrors(undefined)).toBe("");
-    expect(summarizeValidationErrors(null)).toBe("");
-    expect(summarizeValidationErrors([])).toBe("");
-    expect(
-      summarizeValidationErrors([
-        { instancePath: "", message: undefined, keyword: "custom", params: {}, schemaPath: "" },
-        { instancePath: "/slug", message: "is required", keyword: "required", params: {}, schemaPath: "" },
-      ]),
-    ).toBe("/ is invalid; /slug is required");
+  it("names a root-level failure by / and a field failure by its path", () => {
+    const { slug: _slug, ...withoutSlug } = document;
+    expect(() => canonicalArticleSchema.parse(withoutSlug)).toThrow(
+      "Canonical document validation failed: / must have required property 'slug'",
+    );
+    expect(() => canonicalArticleSchema.parse({ ...document, slug: 7 })).toThrow(
+      "Canonical document validation failed: /slug must be string",
+    );
   });
 });

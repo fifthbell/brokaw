@@ -635,34 +635,129 @@ export const InterruptedRestoredSceneReleasesItsOwner: Story = {
   },
 };
 
-export const ExtraProgramSseMessages: Story = {
+/** A blob URL revoked before use: the native element reports a load error and play() rejects. */
+function unavailableUrl() {
+  const url = wavUrl(1);
+  URL.revokeObjectURL(url);
+  fixture.urls.push(url);
+  return url;
+}
+
+const logged = (text: string) => fixture.errors.some((args) => args.map(String).join(' ').includes(text));
+
+export const InstantsWithoutVolumeTakeTheMasterLevel: Story = {
   play: async ({ canvasElement }) => {
     await ready(canvasElement);
-    const delay = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-
-    fixture.send({ type: 'scene_instant_state', state: 'stopped' });
-    await delay(50);
-
-    fixture.send({
-      type: 'program_stingers_changed',
-      version: 10,
-      state: {
-        id: 1,
-        programId: PROGRAM,
-        activeSceneId: 1,
-        updatedAt: '2026-10-25T12:00:00.000Z',
-        version: 10,
-      },
-    });
-    await delay(50);
-
-    fixture.send({ type: 'instant_play', instant: { name: 'inst1', audioUrl: fixture.urls[0], volume: 0.8 } });
-    await delay(50);
-
-    fixture.bus({ songMasterVolume: 0.5 }, { loop: true, activeItemId: 'song-1', items: [{ id: 'song-1', audioUrl: fixture.urls[1] }] });
-    await delay(50);
-
+    // A bus update without mixer settings resets the levels to full.
+    fixture.send({ type: 'audio_bus_update', settings: {} });
+    fixture.send({ type: 'instant_play', instant: { id: 1, name: 'No volume', audioUrl: fixture.urls[0] } });
+    const instant = await playing(0);
+    await expect(instant.volume).toBe(1);
+    fixture.bus({ sceneInstantMasterVolume: 0.5, sceneInstantMuted: true });
+    fixture.send({ type: 'scene_instant_take', instant: { id: 2, name: 'Muted take', audioUrl: fixture.urls[1] } });
+    const take = await playing(1);
+    await expect(take.volume).toBe(0);
+    // A muted instant bus starts a new instant silent.
+    fixture.bus({ instantMasterVolume: 0.8, instantMuted: true });
+    fixture.instant('instant_play', 0, 1);
+    const muted = await playing(2);
+    await expect(muted.volume).toBe(0);
     fixture.send({ type: 'instant_stop_all' });
-    await delay(50);
+    await waitFor(() => expect(instant.paused && take.paused && muted.paused).toBe(true));
+  },
+};
+
+export const RestoredSceneWithoutVolumePlaysAtFullLevel: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    fixture.send({ type: 'scene_instant_state', playback: {
+      isPlaying: true,
+      instant: { id: 3, name: 'Restored without volume', audioUrl: fixture.urls[0] },
+    } });
+    // A restore starts after the 1.5 s handover.
+    await waitFor(() => expect(fixture.players).toHaveLength(1), { timeout: 3000 });
+    const restored = await playing(0);
+    await expect(restored.volume).toBe(1);
+    await expect(restored.loop).toBe(true);
+    // A state that reports nothing playing stops the restored take.
+    fixture.send({ type: 'scene_instant_state', playback: { isPlaying: false } });
+    await waitFor(() => expect(restored.paused).toBe(true));
+  },
+};
+
+export const FailedInstantIsReleasedAndReported: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    fixture.send({ type: 'instant_play', instant: { id: 4, name: 'Unavailable', audioUrl: unavailableUrl() } });
+    await waitFor(() => {
+      expect(fixture.players[0]?.error).not.toBeNull();
+      expect(logged('[instant_play] error')).toBe(true);
+      expect(logged('[instant_play] play failed:')).toBe(true);
+    });
+    // The released element no longer follows the bus.
+    const failed = fixture.players[0];
+    const before = failed.volume;
+    fixture.bus({ instantMasterVolume: 0.2 });
+    await settle(1);
+    await expect(failed.volume).toBe(before);
+    fixture.send({ type: 'instant_stop_all' });
+  },
+};
+
+export const SongSequenceFallsBackToTheFirstItemAndReportsFailures: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    // An unknown active item plays the first item.
+    fixture.bus({ songMasterVolume: 0.5 }, { loop: true, activeItemId: 'missing', items: [{ id: 'song-1', audioUrl: fixture.urls[0] }] });
+    const song = await playing(0);
+    await expect(song.volume).toBeCloseTo(0.5);
+    // An active item without audio keeps the current song instead of loading nothing.
+    fixture.bus({ songMasterVolume: 0.5 }, { activeItemId: 'silent', items: [{ id: 'silent' }, { id: 'song-1', audioUrl: fixture.urls[0] }] });
+    await settle(1);
+    await expect(fixture.players).toHaveLength(2);
+    await expect(song.paused).toBe(false);
+    // A song that cannot load is reported.
+    fixture.bus({ songMasterVolume: 0.5 }, { activeItemId: 'broken', items: [{ id: 'broken', audioUrl: unavailableUrl() }] });
+    await waitFor(() => {
+      expect(logged('[song] playback error')).toBe(true);
+      expect(logged('[song] play failed:')).toBe(true);
+    });
+    await expect(song.paused).toBe(true);
+    fixture.send({ type: 'song_off_air' });
+    fixture.send({ type: 'instant_stop_all' });
+  },
+};
+
+export const BroadcastSettingsStingersAndUnknownEventsStartNoAudio: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    fixture.send({ type: 'broadcast_settings_update', settings: { tickerText: 'Fixture ticker' } });
+    fixture.send({ type: 'program_stingers_changed', version: 2, state: { ...snapshot(null), version: 2 } });
+    fixture.send({ type: 'fixture_unknown_event' });
+    // Settle proves both were processed: the only player is the settling instant.
+    await settle(0);
+    await expect(fixture.players).toHaveLength(1);
+    await expect(fixture.errors).toEqual([]);
+    fixture.send({ type: 'instant_stop_all' });
+  },
+};
+
+export const ProgramReloadClearsTheCachesFirst: Story = {
+  play: async ({ canvasElement }) => {
+    await ready(canvasElement);
+    // Cache Storage is stubbed with a clear that never finishes, so the test page is never navigated.
+    const descriptor = Object.getOwnPropertyDescriptor(window, 'caches');
+    let keysRequested = 0;
+    Object.defineProperty(window, 'caches', {
+      configurable: true,
+      value: { keys: () => { keysRequested += 1; return new Promise<string[]>(() => {}); }, delete: async () => true },
+    });
+    try {
+      fixture.send({ type: 'program_reload' });
+      await waitFor(() => expect(keysRequested).toBe(1));
+    } finally {
+      if (descriptor) Object.defineProperty(window, 'caches', descriptor);
+      else delete (window as { caches?: unknown }).caches;
+    }
   },
 };
