@@ -86,7 +86,8 @@ describe('captured catalog reader', () => {
 
   it('keeps the contract error for a selection whose shape it rejects', async () => {
     const { selection, fetchImpl } = fixture();
-    const error = await rejection(createCapturedCatalogReader({ ...selection, extra: 1 }, page, fetchImpl).read('weather', 'weather'));
+    const { locale: _missing, ...incomplete } = selection;
+    const error = await rejection(createCapturedCatalogReader(incomplete, page, fetchImpl).read('weather', 'weather'));
     expect(error).toBeInstanceOf(CapturedCatalogError);
   });
 

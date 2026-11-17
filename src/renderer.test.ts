@@ -13,6 +13,7 @@ import {
   liveProgramPageHtml,
   render,
 } from './renderer.node.js';
+import { ignoredInputCounts } from './ignored-input.js';
 import type { CanonicalDocument } from './types/canonical-article.js';
 
 /** A renderer with fresh module state: no cached disk assets, Handlebars not initialized. */
@@ -123,14 +124,15 @@ describe('renderer.core Handlebars helpers and normalization', () => {
       embedUrl('sofascore-match', { hash: { id: '42' } } as any),
     ).toBe('https://www.sofascore.com/football/match#id:42');
 
-    expect(() => embedUrl('unknown-provider', { hash: {} } as any)).toThrow(
-      'Unknown embed provider "unknown-provider"',
-    );
+    // An undeclared provider yields '' and is counted, as Cronkite's helper (gaulatti/ariston#217).
+    const before = ignoredInputCounts().embed_provider;
+    expect(embedUrl('unknown-provider', { hash: {} } as any)).toBe('');
     expect(() =>
       embedUrl('x-status', { hash: { username: '', id: '123' } } as any),
     ).toThrow('Embed provider "x-status" requires parameter username');
     // Non-string embed provider
-    expect(() => Handlebars.helpers['embedUrl'](123, { hash: {} })).toThrow('Unknown embed provider "123"');
+    expect(Handlebars.helpers['embedUrl'](123, { hash: {} })).toBe('');
+    expect(ignoredInputCounts().embed_provider - before).toBe(2);
   });
 
   it('tests jsonString helper with escaping and error handling', () => {

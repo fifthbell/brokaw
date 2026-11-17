@@ -33,7 +33,7 @@ against the same artifact.
 
 ### Optional real user monitoring
 
-Public pages render without monitoring unless a complete `rumConfig` is supplied. The contract requires the public app monitor ID, application version, AWS region, Cognito identity pool ID, and guest role ARN. Brokaw validates the complete configuration and does not embed tenant deployment identifiers in the package.
+Public pages render without monitoring unless a complete `rumConfig` is supplied. The contract requires the public app monitor ID, application version, AWS region, Cognito identity pool ID, and guest role ARN. Brokaw validates the complete configuration and does not embed tenant deployment identifiers in the package. Members it does not know are ignored and counted, never rendered (see [docs/cronkite-compatibility.md](docs/cronkite-compatibility.md#unrecognized-input)).
 
 When enabled, the shared standard and 404 shells collect only performance and filtered JavaScript-error telemetry. Page IDs use `window.location.pathname`; cookies, HTTP telemetry, resource URLs, X-Ray, and replay are disabled. Loader failures are isolated from page rendering and navigation.
 

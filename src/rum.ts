@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { recordUnknownMembers } from './ignored-input.js';
 
 const awsRegion = z.string().regex(/^[a-z]{2}(?:-gov)?-[a-z]+-\d$/);
 const uuid = z.string().uuid();
@@ -13,7 +14,7 @@ export const rumConfigSchema = z
       .string()
       .regex(/^arn:(?:aws|aws-us-gov|aws-cn):iam::\d{12}:role\/[A-Za-z0-9+=,.@_\/-]{1,512}$/)
   })
-  .strict()
+  // Members other than these are stripped and never rendered (gaulatti/ariston#217).
   .superRefine((config, context) => {
     if (!config.identityPoolId.startsWith(`${config.region}:`)) {
       context.addIssue({
@@ -57,6 +58,7 @@ export function renderRumLoader(
   language: ContentLanguage
 ): string {
   const parsed = rumConfigSchema.parse(config);
+  recordUnknownMembers(config, Object.keys(parsed), 'rum_config_field');
   const endpoint = `https://dataplane.rum.${parsed.region}.amazonaws.com`;
 
   return `<script data-brokaw-rum-loader>

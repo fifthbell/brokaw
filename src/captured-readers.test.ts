@@ -311,9 +311,16 @@ describe('public readers and the captured catalog', () => {
     }
   });
 
-  it('rejects a null or malformed selection at the document boundary', () => {
+  it('rejects a null or incomplete selection at the document boundary', () => {
     expect(() => render(page('homepage', 'en', '/', { capturedSelection: null }))).toThrow('Canonical document validation failed');
-    expect(() => render(page('homepage', 'en', '/', { capturedSelection: { ...selectionFor('en'), extra: true } }))).toThrow('Canonical document validation failed');
+    const { catalogUrl: _missing, ...incomplete } = selectionFor('en');
+    expect(() => render(page('homepage', 'en', '/', { capturedSelection: incomplete }))).toThrow('Canonical document validation failed');
+  });
+
+  it('carries a selection with members it does not know to the page, which ignores them (gaulatti/ariston#217)', () => {
+    const selection = { ...selectionFor('en'), issuedBy: 'cms', context: { ...selectionFor('en').context, region: 'eu' } };
+    const html = render(page('homepage', 'en', '/', { capturedSelection: selection }));
+    expect(html).toContain('"issuedBy":"cms"');
   });
 
   it('shows the captured weather, navigation, homepage and category resources', async () => {

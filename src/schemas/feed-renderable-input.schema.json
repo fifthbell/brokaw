@@ -3,7 +3,6 @@
   "$id": "https://schemas.fifthbell.com/brokaw/feed-renderable-input.schema.json",
   "title": "Brokaw feed renderable input",
   "type": "object",
-  "additionalProperties": false,
   "required": ["document"],
   "properties": {
     "document": {

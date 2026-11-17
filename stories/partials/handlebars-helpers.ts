@@ -68,7 +68,8 @@ export function registerCommonHelpers(): void {
       'sofascore-match': 'https://www.sofascore.com/football/match#id:{id}'
     };
     const template = typeof name === 'string' ? templates[name] : undefined;
-    if (!template) throw new Error(`Unknown embed provider "${String(name)}"`);
+    // As Cronkite's helper: an undeclared provider yields '' (gaulatti/ariston#217).
+    if (!template) return '';
     return template.replace(/\{([A-Za-z][A-Za-z0-9]*)\}/g, (_token, parameter: string) => {
       const value = options.hash[parameter];
       if (value === undefined || value === null || value === '') {

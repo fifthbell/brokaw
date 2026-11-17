@@ -3,7 +3,6 @@
   "$id": "https://fifthbell.com/schemas/social-image-input-v1.schema.json",
   "title": "Fifthbell social image input",
   "type": "object",
-  "additionalProperties": false,
   "required": ["imageUrl", "categoryName", "title", "qrCodeHtml"],
   "properties": {
     "imageUrl": { "type": "string", "format": "uri" },

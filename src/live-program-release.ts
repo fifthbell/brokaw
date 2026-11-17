@@ -3,6 +3,7 @@ import {
   type LiveProgramFileEntry,
 } from "./renderer.node.js";
 import type { FifthbellLiveProgramReleaseInput } from "./types/live-program-release-input.generated.js";
+import { recordUnknownMembers } from "./ignored-input.js";
 import { version } from "./version.js";
 
 const PROGRAM_ID = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
@@ -13,12 +14,14 @@ function validateInput(input: unknown): FifthbellLiveProgramReleaseInput {
   }
 
   const values = input as Record<string, unknown>;
-  const keys = Object.keys(values).sort();
-  if (keys.join(",") !== "apiBaseUrl,programId") {
+  // Both members are required; any other member is ignored and counted
+  // (gaulatti/ariston#217), and never reaches the page.
+  if (!Object.hasOwn(values, "apiBaseUrl") || !Object.hasOwn(values, "programId")) {
     throw new Error(
-      "live-program release input requires only apiBaseUrl and programId",
+      "live-program release input requires apiBaseUrl and programId",
     );
   }
+  recordUnknownMembers(values, ["apiBaseUrl", "programId"], "live_program_release_field");
   if (
     typeof values.programId !== "string" ||
     !PROGRAM_ID.test(values.programId) ||

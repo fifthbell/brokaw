@@ -1,3 +1,4 @@
+import { recordIgnoredInput, recordUnknownMembers } from './ignored-input.js';
 import { outletConfig } from './outlet-config.js';
 
 const CONTEXT_KEYS = ['rendererVersion', 'templateVersion', 'tenant', 'origin', 'build'] as const;
@@ -42,10 +43,12 @@ function fail(code: CapturedCatalogErrorCode): never {
   throw new CapturedCatalogError(code);
 }
 
+// Every listed member is required. Members this release does not know are
+// ignored and counted (gaulatti/ariston#217); they are never read.
 function record(raw: unknown, keys: readonly string[], code: 'invalid_selection' | 'invalid_catalog'): Record<string, unknown> {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) fail(code);
-  const actual = Object.keys(raw);
-  if (actual.length !== keys.length || keys.some(key => !Object.hasOwn(raw, key))) fail(code);
+  if (keys.some(key => !Object.hasOwn(raw, key))) fail(code);
+  recordUnknownMembers(raw, keys, code === 'invalid_selection' ? 'captured_selection_field' : 'captured_catalog_field');
   return raw as Record<string, unknown>;
 }
 
@@ -86,19 +89,29 @@ export function resolveCapturedCatalog(selection: unknown, rawCatalog: unknown):
   const expectedContext = context(expected.context, 'invalid_selection');
   const expectedLocale = locale(expected.locale, 'invalid_selection');
   const catalog = record(rawCatalog, ['contractVersion', 'selectionId', 'context', 'locale', 'state', 'resources'], 'invalid_catalog');
-  if (catalog.contractVersion !== 1 || (catalog.state !== 'selected' && catalog.state !== 'withdrawn')) fail('invalid_catalog');
+  if (catalog.contractVersion !== 1 || typeof catalog.state !== 'string') fail('invalid_catalog');
   const catalogId = token(catalog.selectionId, 'invalid_catalog');
   const actualContext = context(catalog.context, 'invalid_catalog');
   const actualLocale = locale(catalog.locale, 'invalid_catalog');
   if (catalogId !== selectionId || actualLocale !== expectedLocale || CONTEXT_KEYS.some(key => actualContext[key] !== expectedContext[key])) fail('context_mismatch');
-  if (catalog.state === 'withdrawn') fail('withdrawn');
+  if (catalog.state !== 'selected') {
+    // A state this release does not know is not readable: it reads as withdrawn.
+    if (catalog.state !== 'withdrawn') recordIgnoredInput('captured_catalog_state');
+    fail('withdrawn');
+  }
   if (!Array.isArray(catalog.resources) || catalog.resources.length === 0 || catalog.resources.length > MAX_RESOURCES) fail('invalid_catalog');
 
   const resources = new Map<string, CapturedResource>();
   for (const raw of catalog.resources) {
     const fields = record(raw, ['key', 'kind', 'url', 'sha256'], 'invalid_catalog');
     const key = token(fields.key, 'invalid_catalog');
-    if (!(RESOURCE_KINDS as readonly unknown[]).includes(fields.kind) || resources.has(key)) fail('invalid_catalog');
+    if (typeof fields.kind !== 'string') fail('invalid_catalog');
+    if (!(RESOURCE_KINDS as readonly string[]).includes(fields.kind)) {
+      // No reader asks for a kind this release does not know: skip the resource.
+      recordIgnoredInput('captured_resource_kind');
+      continue;
+    }
+    if (resources.has(key)) fail('invalid_catalog');
     if (url(fields.url, 'invalid_catalog').origin !== catalogOrigin) fail('context_mismatch');
     if (typeof fields.sha256 !== 'string' || !HASH.test(fields.sha256)) fail('invalid_catalog');
     resources.set(key, Object.freeze({ key, kind: fields.kind as CapturedResourceKind, url: fields.url as string, sha256: fields.sha256 }));

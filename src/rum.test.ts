@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { renderWithAssets, type LayoutName, type RendererAssets } from './renderer.core.js';
+import { ignoredInputCounts } from './ignored-input.js';
 import { renderRumLoader, rumConfigSchema, type RumConfig } from './rum.js';
 import type { CanonicalDocument } from './types/canonical-article.js';
 
@@ -117,9 +118,17 @@ describe('tenant-neutral RUM rendering contract', () => {
     expect(loader).toContain('window[namespace] = function () {}');
   });
 
-  it('rejects incomplete, mismatched, or legacy display-name configuration', () => {
+  it('rejects incomplete or mismatched configuration', () => {
     expect(() => rumConfigSchema.parse({ ...config, identityPoolId: 'eu-west-1:bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' })).toThrow();
-    expect(() => rumConfigSchema.parse({ ...config, appMonitorName: 'legacy-name' })).toThrow();
     expect(() => rumConfigSchema.parse({ appMonitorName: 'legacy-name' })).toThrow();
+  });
+
+  it('ignores and counts configuration members it does not know, and never renders them (gaulatti/ariston#217)', () => {
+    const before = ignoredInputCounts().rum_config_field;
+    const loader = renderRumLoader({ ...config, appMonitorName: 'legacy-name', sessionSampleRate: 0.5 } as RumConfig, 'article-page', 'en');
+    expect(ignoredInputCounts().rum_config_field - before).toBe(2);
+    expect(loader).toContain(config.appMonitorId);
+    expect(loader).not.toContain('legacy-name');
+    expect(loader).toContain('sessionSampleRate: 1');
   });
 });

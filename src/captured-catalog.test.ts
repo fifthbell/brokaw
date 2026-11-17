@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CapturedCatalogError, resolveCapturedCatalog, type CapturedResourceKind } from './captured-catalog.js';
+import { ignoredInputCounts, type IgnoredInputReason } from './ignored-input.js';
 
 const bytes = new TextEncoder().encode('{"data":[]}');
 const sha256 = createHash('sha256').update(bytes).digest('hex');
@@ -27,6 +28,13 @@ function expectCode(task: () => unknown, code: string) {
 }
 
 afterEach(() => vi.unstubAllGlobals());
+
+// How many inputs `task` ignored under `reason` (gaulatti/ariston#217).
+function ignoredBy<T>(reason: IgnoredInputReason, task: () => T): [T, number] {
+  const before = ignoredInputCounts()[reason];
+  const result = task();
+  return [result, ignoredInputCounts()[reason] - before];
+}
 
 describe('dormant captured catalog contract', () => {
   it('leaves only an absent selection to the legacy adapter, without inspecting a catalog', () => {
@@ -64,14 +72,50 @@ describe('dormant captured catalog contract', () => {
     expectCode(() => resolveCapturedCatalog(input, fixture().catalog), 'invalid_selection');
   });
 
-  it('rejects unknown or missing keys even when the property count matches', () => {
+  it('rejects missing keys even when the property count matches', () => {
     const { selection, catalog } = fixture();
     const { locale: ignored, ...rest } = selection;
     expectCode(() => resolveCapturedCatalog({ ...rest, language: ignored }, catalog), 'invalid_selection');
-    expectCode(() => resolveCapturedCatalog({ ...selection, extra: true }, catalog), 'invalid_selection');
-    expectCode(() => resolveCapturedCatalog(selection, { ...catalog, extra: true }), 'invalid_catalog');
     const { state: omitted, ...other } = catalog;
     expectCode(() => resolveCapturedCatalog(selection, { ...other, status: omitted }), 'invalid_catalog');
+  });
+
+  it('ignores and counts members it does not know, and never reads them', () => {
+    const { selection, catalog } = fixture();
+    const [fromSelection, selectionFields] = ignoredBy('captured_selection_field', () =>
+      resolveCapturedCatalog({ ...selection, extra: true, context: { ...selection.context, region: 'eu' } }, catalog)!);
+    expect(selectionFields).toBe(2);
+    expect(fromSelection.context).toEqual(selection.context);
+    expect(Object.keys(fromSelection.context)).not.toContain('region');
+
+    const resources = catalog.resources.map(resource => ({ ...resource, size: 11 }));
+    const [fromCatalog, catalogFields] = ignoredBy('captured_catalog_field', () =>
+      resolveCapturedCatalog(selection, { ...catalog, issuedAt: 'now', context: { ...catalog.context, region: 'eu' }, resources })!);
+    expect(catalogFields).toBe(2 + resources.length);
+    expect(fromCatalog.resource('navigation', 'navigation')).toEqual(catalog.resources[0]);
+  });
+
+  it('reads a catalog state it does not know as withdrawn, and counts it', () => {
+    const { selection, catalog } = fixture();
+    const [, unknownStates] = ignoredBy('captured_catalog_state', () =>
+      expectCode(() => resolveCapturedCatalog(selection, { ...catalog, state: 'archived' }), 'withdrawn'));
+    expect(unknownStates).toBe(1);
+    const [, withdrawn] = ignoredBy('captured_catalog_state', () =>
+      expectCode(() => resolveCapturedCatalog(selection, { ...catalog, state: 'withdrawn' }), 'withdrawn'));
+    expect(withdrawn).toBe(0);
+    expectCode(() => resolveCapturedCatalog(selection, { ...catalog, state: 1 }), 'invalid_catalog');
+  });
+
+  it('skips and counts a resource of a kind it does not read, and keeps the rest', () => {
+    const { selection, catalog } = fixture();
+    const descriptor = catalog.resources[0];
+    const podcast = { ...descriptor, key: 'navigation', kind: 'podcast', url: 'https://elsewhere.example/podcast.json', sha256: 'unchecked' };
+    const [resolved, skipped] = ignoredBy('captured_resource_kind', () =>
+      resolveCapturedCatalog(selection, { ...catalog, resources: [podcast, ...catalog.resources] })!);
+    expect(skipped).toBe(1);
+    // The skipped resource neither takes its key nor gets checked.
+    expect(resolved.resource('navigation', 'navigation')).toEqual(descriptor);
+    expectCode(() => resolved.resource('navigation', 'podcast' as CapturedResourceKind), 'unknown_resource');
   });
 
   it.each([undefined, null, 1, '', ' ', 'x'.repeat(201), 'a\u0000b'])('rejects invalid opaque identity %#', value => {
@@ -96,7 +140,7 @@ describe('dormant captured catalog contract', () => {
 
   it('requires exact context fields and a bare canonical public origin', () => {
     const { selection, catalog } = fixture();
-    for (const invalid of [null, {}, { ...selection.context, extra: true }, { ...selection.context, origin: 'https://fifthbell.com/path' }, { ...selection.context, build: '' }]) {
+    for (const invalid of [null, {}, { ...selection.context, origin: 'https://fifthbell.com/path' }, { ...selection.context, build: '' }]) {
       expectCode(() => resolveCapturedCatalog({ ...selection, context: invalid }, catalog), 'invalid_selection');
       expectCode(() => resolveCapturedCatalog(selection, { ...catalog, context: invalid }), 'invalid_catalog');
     }
@@ -115,7 +159,6 @@ describe('dormant captured catalog contract', () => {
     expectCode(() => resolveCapturedCatalog({ ...selection, locale: 'xx' }, catalog), 'invalid_selection');
     expectCode(() => resolveCapturedCatalog(selection, { ...catalog, locale: 'xx' }), 'invalid_catalog');
     expectCode(() => resolveCapturedCatalog(selection, { ...catalog, state: 'withdrawn', resources: [] }), 'withdrawn');
-    expectCode(() => resolveCapturedCatalog(selection, { ...catalog, state: 'other' }), 'invalid_catalog');
     expectCode(() => resolveCapturedCatalog(selection, { ...catalog, contractVersion: 2 }), 'invalid_catalog');
     expectCode(() => resolveCapturedCatalog(selection, null), 'invalid_catalog');
   });
@@ -123,7 +166,7 @@ describe('dormant captured catalog contract', () => {
   it('bounds resource count and rejects ambiguous or malformed descriptors', () => {
     const { selection, catalog } = fixture();
     const descriptor = catalog.resources[0];
-    for (const resources of [null, [], Array(513).fill(descriptor), [null], [[descriptor]], [{ ...descriptor, extra: true }], [{ ...descriptor, key: '' }], [{ ...descriptor, kind: 'other' }], [descriptor, descriptor], [{ ...descriptor, sha256: 1 }], [{ ...descriptor, sha256: 'not-a-hash' }]]) {
+    for (const resources of [null, [], Array(513).fill(descriptor), [null], [[descriptor]], [{ ...descriptor, key: '' }], [{ ...descriptor, kind: 1 }], [descriptor, descriptor], [{ ...descriptor, sha256: 1 }], [{ ...descriptor, sha256: 'not-a-hash' }]]) {
       expectCode(() => resolveCapturedCatalog(selection, { ...catalog, resources }), 'invalid_catalog');
     }
     const maximum = Array.from({ length: 512 }, (_, index) => ({ ...descriptor, key: `item-${index}` }));

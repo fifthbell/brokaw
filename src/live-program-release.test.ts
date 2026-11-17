@@ -2,6 +2,7 @@ import { createRequire } from "node:module";
 import { Ajv2020 } from "ajv/dist/2020.js";
 import fs from "node:fs";
 import { describe, expect, it, vi } from "vitest";
+import { ignoredInputCounts } from "./ignored-input.js";
 import { addContractFormats } from "./json-schema-formats.js";
 import { liveProgramReleaseFiles } from "./live-program-release.js";
 import { liveProgramPageFiles } from "./renderer.node.js";
@@ -42,15 +43,11 @@ describe("live-program release renderable", () => {
     expect(() => liveProgramReleaseFiles([] as any)).toThrow("live-program release input must be an object");
     expect(() => liveProgramReleaseFiles("string" as any)).toThrow("live-program release input must be an object");
     expect(() => liveProgramReleaseFiles({ programId: "fifthbell" } as any)).toThrow(
-      "live-program release input requires only apiBaseUrl and programId",
+      "live-program release input requires apiBaseUrl and programId",
     );
-    expect(() =>
-      liveProgramReleaseFiles({
-        programId: "fifthbell",
-        apiBaseUrl: "https://api.example.test",
-        extraProp: true,
-      } as any),
-    ).toThrow("live-program release input requires only apiBaseUrl and programId");
+    expect(() => liveProgramReleaseFiles({ apiBaseUrl: "https://api.example.test" } as any)).toThrow(
+      "live-program release input requires apiBaseUrl and programId",
+    );
     expect(() =>
       liveProgramReleaseFiles({
         programId: 123 as any,
@@ -107,6 +104,21 @@ describe("live-program release renderable", () => {
     ).toThrow("programId is invalid");
   });
 
+  it("ignores and counts input members it does not know, and keeps them off the page (gaulatti/ariston#217)", () => {
+    const before = ignoredInputCounts().live_program_release_field;
+    const release = liveProgramReleaseFiles({
+      programId: "fifthbell",
+      apiBaseUrl: "https://api.example.test/program/fifthbell",
+      extraProp: true,
+    } as any);
+    expect(ignoredInputCounts().live_program_release_field - before).toBe(1);
+    const canonical = release.at(-1)?.body.toString("utf8") ?? "";
+    expect(canonical).toContain(
+      'window.__FIFTHBELL_LIVE_PROGRAM_CONFIG__={"programId":"fifthbell","apiBaseUrl":"https://api.example.test/program/fifthbell"}',
+    );
+    expect(canonical).not.toContain("extraProp");
+  });
+
   it("preserves the existing local-development HTTP exception", () => {
     expect(() =>
       liveProgramReleaseFiles({
@@ -131,6 +143,13 @@ describe("live-program release renderable", () => {
       validate({
         programId: "fifthbell",
         apiBaseUrl: "http://localhost:3000/program/fifthbell",
+      }),
+    ).toBe(true);
+    expect(
+      validate({
+        programId: "fifthbell",
+        apiBaseUrl: "https://api.example.test/program/fifthbell",
+        extraProp: true,
       }),
     ).toBe(true);
     expect(

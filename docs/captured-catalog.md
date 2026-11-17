@@ -23,15 +23,16 @@ grant publication authority, fetch data, poll, cache or choose a release.
 
 ## Version 1
 
-Expected selection has exactly `selectionId`, `catalogUrl`, `context`, `locale`.
-The fetched catalog has exactly:
+Expected selection has `selectionId`, `catalogUrl`, `context`, `locale`.
+The fetched catalog has:
 
 - `contractVersion`: number `1`;
 - `selectionId`: the same opaque, nonempty identity;
-- `context`: exactly `rendererVersion`, `templateVersion`, `tenant`, `origin`,
+- `context`: `rendererVersion`, `templateVersion`, `tenant`, `origin`,
   `build`, all equal to the independently supplied expected context;
 - `locale`: the same supported locale;
-- `state`: `selected` or `withdrawn`;
+- `state`: `selected` or `withdrawn`. Any other string is not readable: it
+  reads as `withdrawn` and is counted under `captured_catalog_state`;
 - `resources`: one to 512 descriptors for a selected catalog. A withdrawal
   needs no usable resources and always rejects reading.
 
@@ -41,9 +42,11 @@ catalog URL is an issued canonical absolute HTTPS URL without credentials or a
 fragment. Its origin may differ from the public page origin, as existing content
 does on the CDN; it is supplied explicitly, never guessed from the public origin.
 
-Each resource has exactly `key`, `kind`, `url`, `sha256`. Keys are unique opaque
+Each resource has `key`, `kind`, `url`, `sha256`. Keys are unique opaque
 tokens, not paths from which to reconstruct a URL. Kind is one of `navigation`,
 `homepage`, `category`, `assignment`, `media`, `search`, `weather`, `system`.
+A resource of any other kind is skipped unchecked (no reader asks for it) and
+counted under `captured_resource_kind`.
 URLs must be canonical absolute HTTPS locations on the issued catalog's origin,
 without credentials or fragments. The exact issued string, including its query,
 is preserved. SHA-256 is 64 lowercase hexadecimal characters. A separate origin
@@ -52,8 +55,14 @@ requires a future explicit contract; this version does not infer an allowlist.
 `resolveCapturedCatalog(undefined, ...)` returns `null`, allowing #30 to retain
 the current source only when no selection exists. Null, malformed, stale,
 mismatched or withdrawn selections throw a bounded `CapturedCatalogError`;
-they never return a legacy URL or an empty success. Unknown descriptor fields,
-duplicates and missing requested resources reject too. Error text contains only
+they never return a legacy URL or an empty success. Duplicates and missing
+requested resources reject too.
+
+Every member listed above is required. A member this version does not list,
+in the selection, a context, the catalog or a descriptor, is ignored, never
+read, and counted under `captured_selection_field` or `captured_catalog_field`
+(gaulatti/ariston#217). `contractVersion` stays pinned to `1`: it is the
+contract's major version. Error text contains only
 the controlled code, not URLs, content or identities.
 
 The resolved object, copied context and copied descriptors are frozen. Looking

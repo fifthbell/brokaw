@@ -18,19 +18,24 @@ export type CronkiteCanonicalDocument =
       excerpt?: string;
       language: BCP47LanguageTag;
       /**
-       * CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full.
+       * CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full. Members other than these are ignored and counted.
        */
       capturedSelection?: {
         selectionId: string;
         catalogUrl: string;
+        /**
+         * Members other than these are ignored.
+         */
         context: {
           rendererVersion: string;
           templateVersion: string;
           tenant: string;
           origin: string;
           build: string;
+          [k: string]: unknown;
         };
         locale: "en" | "es" | "it";
+        [k: string]: unknown;
       };
       rumConfig?: {
         appMonitorId: string;
@@ -75,7 +80,10 @@ export type CronkiteCanonicalDocument =
         | {
             type: "heading";
             text: string;
-            level?: 2 | 3 | 4;
+            /**
+             * 2, 3 or 4. Any other number renders as 2.
+             */
+            level?: number;
             [k: string]: unknown;
           }
         | {
@@ -101,7 +109,10 @@ export type CronkiteCanonicalDocument =
         | {
             type: "infoBox";
             title?: string;
-            tone?: "neutral" | "info" | "warning" | "success";
+            /**
+             * neutral, info, warning or success. Any other value renders as neutral.
+             */
+            tone?: string;
             html: string;
             [k: string]: unknown;
           }
@@ -180,6 +191,10 @@ export type CronkiteCanonicalDocument =
             attribution?: string;
             [k: string]: unknown;
           }
+        | {
+            type: string;
+            [k: string]: unknown;
+          }
       )[];
       seo?: {
         metaTitle?: string;
@@ -232,7 +247,10 @@ export type CronkiteCanonicalDocument =
         alt?: string;
         [k: string]: unknown;
       }[];
-      heroLayout?: "spotlight" | "editorial";
+      /**
+       * spotlight or editorial. Any other value is treated as absent.
+       */
+      heroLayout?: string;
       heroCategories?: {
         name: string;
         slug: string;
@@ -322,19 +340,24 @@ export type CronkiteCanonicalDocument =
       excerpt?: string;
       language: BCP47LanguageTag1;
       /**
-       * CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full.
+       * CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full. Members other than these are ignored and counted.
        */
       capturedSelection?: {
         selectionId: string;
         catalogUrl: string;
+        /**
+         * Members other than these are ignored.
+         */
         context: {
           rendererVersion: string;
           templateVersion: string;
           tenant: string;
           origin: string;
           build: string;
+          [k: string]: unknown;
         };
         locale: "en" | "es" | "it";
+        [k: string]: unknown;
       };
       rumConfig?: {
         appMonitorId: string;
@@ -379,7 +402,10 @@ export type CronkiteCanonicalDocument =
         | {
             type: "heading";
             text: string;
-            level?: 2 | 3 | 4;
+            /**
+             * 2, 3 or 4. Any other number renders as 2.
+             */
+            level?: number;
             [k: string]: unknown;
           }
         | {
@@ -405,7 +431,10 @@ export type CronkiteCanonicalDocument =
         | {
             type: "infoBox";
             title?: string;
-            tone?: "neutral" | "info" | "warning" | "success";
+            /**
+             * neutral, info, warning or success. Any other value renders as neutral.
+             */
+            tone?: string;
             html: string;
             [k: string]: unknown;
           }
@@ -484,6 +513,10 @@ export type CronkiteCanonicalDocument =
             attribution?: string;
             [k: string]: unknown;
           }
+        | {
+            type: string;
+            [k: string]: unknown;
+          }
       )[];
       seo?: {
         metaTitle?: string;
@@ -536,7 +569,10 @@ export type CronkiteCanonicalDocument =
         alt?: string;
         [k: string]: unknown;
       }[];
-      heroLayout?: "spotlight" | "editorial";
+      /**
+       * spotlight or editorial. Any other value is treated as absent.
+       */
+      heroLayout?: string;
       heroCategories?: {
         name: string;
         slug: string;

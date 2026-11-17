@@ -4,4 +4,5 @@
 export interface FifthbellLiveProgramReleaseInput {
   programId: string;
   apiBaseUrl: string;
+  [k: string]: unknown;
 }

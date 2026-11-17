@@ -15,7 +15,7 @@ const rendering = cronkiteManifest.templateRendering;
 type Renderable = (typeof rendering.renderables)[keyof typeof rendering.renderables];
 type EmbedDefinition = (typeof rendering.embedRegistry)[keyof typeof rendering.embedRegistry];
 
-function createDeclarativeEnvironment() {
+function createDeclarativeEnvironment(undeclared: ReadonlySet<string> = new Set()) {
   const environment = Handlebars.create();
   environment.unregisterHelper('log');
   environment.registerHelper('eq', (left, right) => left === right);
@@ -32,8 +32,9 @@ function createDeclarativeEnvironment() {
   environment.registerHelper('jsonString', (value) => new environment.SafeString(JSON.stringify(value).replace(/[<>&\u2028\u2029]/g, (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`)));
   environment.registerHelper('embedUrl', (name: unknown, options: Handlebars.HelperOptions) => {
     if (typeof name !== 'string') throw new Error('embed provider must be a string');
-    const definition = (rendering.embedRegistry as Record<string, EmbedDefinition>)[name];
-    if (!definition) throw new Error(`unknown embed provider ${name}`);
+    const definition = undeclared.has(name) ? undefined : (rendering.embedRegistry as Record<string, EmbedDefinition>)[name];
+    // Cronkite yields '' for an undeclared provider (gaulatti/ariston#217).
+    if (!definition) return '';
     return definition.urlTemplate.replace(/\{([A-Za-z][A-Za-z0-9]*)\}/g, (_token: string, parameter: string) => {
       const parameters = definition.parameters as Record<string, { default?: string | number }>;
       const value = options.hash[parameter] ?? parameters[parameter]?.default;
@@ -62,10 +63,10 @@ function createDeclarativeEnvironment() {
   return environment;
 }
 
-function declarativeRender(name: string, document: CanonicalArticle): string {
+function declarativeRender(name: string, document: CanonicalArticle, undeclared?: ReadonlySet<string>): string {
   const definition = (rendering.renderables as Record<string, Renderable>)[name];
   if (!definition) throw new Error(`missing declarative renderable ${name}`);
-  const environment = createDeclarativeEnvironment();
+  const environment = createDeclarativeEnvironment(undeclared);
   const source = fs.readFileSync(path.join(projectRoot, definition.template.entry), 'utf8');
   return environment.compile(source)(document);
 }
@@ -216,6 +217,49 @@ describe('declarative template output parity', () => {
       `https://www.sofascore.com/football/match#id:${sofascoreId}`,
     );
     expect(html).toContain(`${title} Live Score`);
+  });
+
+  // gaulatti/ariston#217: Cronkite renders these templates without Brokaw's
+  // JS renderer, so the templates themselves must give the documented
+  // fallback for values the contract accepts but this release does not know.
+  it('gives unknown block types, heading levels, tones and hero layouts the same fallback as the renderer', () => {
+    const unknownValues = {
+      ...articleFixture,
+      heroLayout: 'mosaic',
+      body: [
+        { type: 'poll', question: 'Unrendered question' },
+        { type: 'infoBox', tone: 'critical', html: '<p>Box text</p>' },
+        { type: 'heading', level: 6, text: 'Deep heading' },
+        ...articleFixture.body,
+      ],
+    } as unknown as CanonicalArticle;
+    const fallback = {
+      ...articleFixture,
+      body: [
+        { type: 'infoBox', tone: 'neutral', html: '<p>Box text</p>' },
+        { type: 'heading', level: 2, text: 'Deep heading' },
+        ...articleFixture.body,
+      ],
+    } as CanonicalArticle;
+    const html = declarativeRender('article-page', unknownValues);
+    expect(html).toBe(declarativeRender('article-page', fallback));
+    expect(html).toBe(render(unknownValues));
+    expect(html).not.toContain('Unrendered question');
+  });
+
+  // gaulatti/ariston#217: when Cronkite's registry does not declare a
+  // provider its helper yields '', and each guarded embed renders nothing.
+  const undeclared = new Set(['tiktok', 'sofascore-widget', 'sofascore-match']);
+  it.each([
+    ['a TikTok block', 'article-page', articleFixture, 'TikTok post'],
+    ['the live-story SofaScore widget', 'live-story', liveStoryFixture, 'SofaScore Attack Momentum'],
+    ['the breaking-news SofaScore widget', 'homepage', homepageWithBreakingNews, 'SofaScore Attack Momentum'],
+  ] as const)('renders no iframe for %s whose provider is undeclared', (_label, renderable, fixture, frameTitle) => {
+    expect(declarativeRender(renderable, fixture)).toContain(`title='${frameTitle}'`);
+    const html = declarativeRender(renderable, fixture, undeclared);
+    expect(html).not.toContain(`title='${frameTitle}'`);
+    expect(html).not.toContain("src=''");
+    expect(html).not.toContain('Live Score</a>');
   });
 
   it.each([

@@ -8,11 +8,12 @@ document carries one, and otherwise reads exactly what it reads today.
 ## When it applies
 
 A page document may carry an optional `capturedSelection` member. It holds the
-expected selection from #29: exactly `selectionId`, `catalogUrl`, `context`
+expected selection from #29: `selectionId`, `catalogUrl`, `context`
 (`rendererVersion`, `templateVersion`, `tenant`, `origin`, `build`) and
 `locale`. The canonical-document schema declares this member on both branches,
-so Cronkite rejects a `null`, malformed or extended selection at the document
-boundary.
+so Cronkite rejects a `null`, malformed or incomplete selection at the document
+boundary. Members it does not list are carried to the page and ignored there
+(gaulatti/ariston#217).
 
 The producer supplies the member in the completed render document. That
 producer is Ariston's captured site generations, turned on through

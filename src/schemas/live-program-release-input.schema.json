@@ -3,7 +3,6 @@
   "$id": "https://fifthbell.invalid/schemas/live-program-release-input-v1.schema.json",
   "title": "Fifthbell live-program release input",
   "type": "object",
-  "additionalProperties": false,
   "required": ["programId", "apiBaseUrl"],
   "properties": {
     "programId": {

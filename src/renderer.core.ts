@@ -1,4 +1,5 @@
 import Handlebars from 'handlebars';
+import { recordIgnoredInput } from './ignored-input.js';
 import { layoutNames, type LayoutName } from './layouts.js';
 import { canonicalArticleSchema, type CanonicalDocument } from './types/canonical-article.js';
 
@@ -13,19 +14,51 @@ export type RendererAssets = {
 let initialized = false;
 const layoutCache = new Map<LayoutName, HandlebarsTemplateDelegate>();
 const removedBlockTypes = new Set(['truthSocial', 'truthsocial', 'truth-social', 'truth_social']);
+// The block types, info-box tones and hero layouts this release renders. The
+// contract accepts any other value (gaulatti/ariston#217); it is ignored,
+// counted, and given the fallback below.
+const knownBlockTypes = new Set([
+  'richText', 'heading', 'image', 'list', 'divider', 'infoBox', 'keyPoints', 'dataTable',
+  'liveUpdate', 'audio', 'youtube', 'x', 'instagram', 'tiktok', 'spotify', 'pullQuote'
+]);
+const knownHeadingLevels = new Set([2, 3, 4]);
+const knownInfoBoxTones = new Set(['neutral', 'info', 'warning', 'success']);
+const knownHeroLayouts = new Set(['spotlight', 'editorial']);
+
+function normalizeBlock(block: unknown): unknown[] {
+  if (!block || typeof block !== 'object') return [block];
+  const record = block as { type?: unknown; tone?: unknown; level?: unknown };
+  if (typeof record.type !== 'string') return [block];
+  if (removedBlockTypes.has(record.type)) return [];
+  if (!knownBlockTypes.has(record.type)) {
+    // Fallback: a block this release does not render is dropped.
+    recordIgnoredInput('document_body_block_type');
+    return [];
+  }
+  if (record.type === 'heading' && typeof record.level === 'number' && !knownHeadingLevels.has(record.level)) {
+    // Fallback: an unknown heading level renders as level 2.
+    recordIgnoredInput('document_heading_level');
+    return [{ ...record, level: 2 }];
+  }
+  if (record.type === 'infoBox' && typeof record.tone === 'string' && !knownInfoBoxTones.has(record.tone)) {
+    // Fallback: an unknown tone renders as neutral.
+    recordIgnoredInput('document_info_box_tone');
+    return [{ ...record, tone: 'neutral' }];
+  }
+  return [block];
+}
 
 function normalizeDocument(doc: CanonicalDocument): CanonicalDocument {
-  const rawBody = (doc as { body?: unknown }).body;
-  if (!Array.isArray(rawBody)) return doc;
-
-  return {
-    ...doc,
-    body: rawBody.filter((block) => {
-      if (!block || typeof block !== 'object') return true;
-      const type = (block as { type?: unknown }).type;
-      return typeof type !== 'string' || !removedBlockTypes.has(type);
-    }) as CanonicalDocument['body']
-  };
+  const source = doc as { body?: unknown; heroLayout?: unknown };
+  let normalized: Record<string, unknown> = doc as unknown as Record<string, unknown>;
+  if (typeof source.heroLayout === 'string' && !knownHeroLayouts.has(source.heroLayout)) {
+    // Fallback: an unknown hero layout is treated as absent.
+    recordIgnoredInput('document_hero_layout');
+    const { heroLayout: _ignored, ...rest } = normalized;
+    normalized = rest;
+  }
+  if (Array.isArray(source.body)) normalized = { ...normalized, body: source.body.flatMap(normalizeBlock) };
+  return normalized as unknown as CanonicalDocument;
 }
 
 function registerHelpers(): void {
@@ -58,7 +91,12 @@ function registerHelpers(): void {
       'sofascore-match': 'https://www.sofascore.com/football/match#id:{id}'
     };
     const template = typeof name === 'string' ? templates[name] : undefined;
-    if (!template) throw new Error(`Unknown embed provider "${String(name)}"`);
+    if (!template) {
+      // As Cronkite's helper: an undeclared provider yields '', and every
+      // template guards its embed, so nothing renders (gaulatti/ariston#217).
+      recordIgnoredInput('embed_provider');
+      return '';
+    }
     return template.replace(/\{([A-Za-z][A-Za-z0-9]*)\}/g, (_token, parameter: string) => {
       const value = options.hash[parameter];
       if (value === undefined || value === null || value === '') {

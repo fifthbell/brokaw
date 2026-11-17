@@ -47,6 +47,35 @@ The browser and Node renderers remain as local and Storybook compatibility
 exports. They render the same completed document without composing editorial
 state or deriving vendor identifiers.
 
+## Unrecognized input
+
+Owner's rule (gaulatti/ariston#217): if we don't recognize it, we ignore it.
+The packaged input schemas (`canonical-document`, `feed-renderable-input`,
+`social-image-input`, `live-program-release-input`) accept members they do not
+define, and accept values this release does not know where a fallback exists:
+
+| Input | Fallback |
+|---|---|
+| Body block with an unknown `type` | Dropped (the `body-block` partial renders nothing) |
+| Heading `level` other than 2, 3 or 4 | Rendered as level 2 |
+| `infoBox.tone` other than neutral/info/warning/success | Rendered as `neutral` |
+| `heroLayout` other than spotlight/editorial | Treated as absent |
+| Unknown member of `capturedSelection` or its `context` | Ignored by the page's catalog reader |
+| Unknown member of `rumConfig` or the live-program release input | Ignored, never rendered |
+| Embed provider the helper does not declare | `embedUrl` yields `''`; the guarded embed is omitted |
+
+These stay strict, because accepting them would be unsafe or leave nothing to
+render: `status` (the publication guard), `layout`, `capturedSelection.locale`
+(within the outlet's languages), a known block type's own required members,
+and the captured catalog's `contractVersion`, URL, origin and SHA-256 checks.
+
+Brokaw's own renderers count each ignored item by reason. `ignoredInputCounts()`
+(root export) returns the counters, and the first item of each reason writes one
+`[brokaw] ignored unrecognized input: <reason>` warning naming only the reason.
+Cronkite renders the declarative templates without those renderers, so on that
+path the template gives the same fallback and any count belongs to Cronkite's
+input validation.
+
 ## Templates, helpers, and embeds
 
 The manifest names every direct partial dependency in source order. Dynamic
@@ -64,7 +93,12 @@ not part of declarative rendering.
 SofaScore embeds are optional. Live-story and breaking-news templates guard
 the entire embed section on `sofascore_id` and expand both URLs without
 changing the document context. A missing identifier omits the section; it is
-never passed to Cronkite's fail-closed `embedUrl` helper.
+never passed to Cronkite's `embedUrl` helper.
+
+Every `embedUrl` call (X, TikTok, both SofaScore URLs) sits inside
+`{{#with (embedUrl ...)}}`. Cronkite's helper yields `''` for a provider its
+registry does not declare, and Brokaw's local helper does the same and counts
+it under `embed_provider`; the guarded iframe or link then renders nothing.
 
 The conditional RUM loader is a declared Handlebars partial. It retains
 pathname-only page IDs, strips resource performance entries, disables cookies,

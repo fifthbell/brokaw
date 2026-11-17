@@ -4,6 +4,7 @@ export { liveProgramReleaseFiles } from './live-program-release.js';
 export { buildInstagramImageHtml, type InstagramImageTemplateParams } from './instagram-image-template.js';
 export { outletConfig } from './outlet-config.js';
 export { version } from './version.js';
+export { IGNORED_INPUT_REASONS, ignoredInputCounts, type IgnoredInputReason } from './ignored-input.js';
 export { cronkiteManifest } from './cronkite-manifest.js';
 export { PROGRAM_TEMPLATE_CONTRACT_VERSION, PROGRAM_TEMPLATE_KIND, liveProgramTemplateContract } from './program-template-manifest.js';
 export type { ProgramTemplateContract } from './program-template-manifest.js';
