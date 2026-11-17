@@ -166,16 +166,16 @@ interface ArticlesSegmentRendererProps {
   items: NewsItem[];
   itemIndex: number;
   progress: number;
-  language: SupportedLanguage;
 }
 
-function ArticlesSegmentRenderer({ items, itemIndex, progress, language }: ArticlesSegmentRendererProps) {
+function ArticlesSegmentRenderer({ items, itemIndex, progress }: ArticlesSegmentRendererProps) {
   const [displayedIndex, setDisplayedIndex] = useState(itemIndex);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const previousIndexRef = useRef(itemIndex);
 
   useEffect(() => {
-    if (itemIndex !== previousIndexRef.current && items.length > 0) {
+    // items is never empty: the segment falls back to its sample stories.
+    if (itemIndex !== previousIndexRef.current) {
       setIsTransitioning(true);
       const timer = window.setTimeout(() => {
         setDisplayedIndex(itemIndex);
@@ -187,16 +187,12 @@ function ArticlesSegmentRenderer({ items, itemIndex, progress, language }: Artic
     return undefined;
   }, [itemIndex, items.length]);
 
-  if (items.length === 0) {
-    return <div className='text-white'>{t('articles.noArticles', language)}</div>;
-  }
-
   const currentItem = items[itemIndex % items.length];
   const previousItem = items[displayedIndex % items.length];
 
   return (
     <div className='relative w-full h-full'>
-      {isTransitioning && previousItem && (
+      {isTransitioning && (
         <div className='absolute inset-0'>
           <ArticleSlide newsItem={previousItem} progress={100} />
         </div>
@@ -218,7 +214,8 @@ export function createArticlesSegment(articles: NewsItem[], onDataUpdate?: (next
     durationMsPerItem: 10000,
     render: (itemIndex: number, progress: number) => {
       const items = articles.length > 0 ? articles : MOCK_ARTICLES;
-      return <ArticlesSegmentRenderer key={`article-${itemIndex}`} items={items} itemIndex={itemIndex} progress={progress} language={language} />;
+      // One key for the whole segment: the renderer persists across items and plays its transition.
+      return <ArticlesSegmentRenderer key='articles' items={items} itemIndex={itemIndex} progress={progress} />;
     },
     prefetch: async () => {
       if (!onDataUpdate) {

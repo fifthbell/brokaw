@@ -603,3 +603,47 @@ export const PlaylistEdgeCases: StoryObj = {
     } finally { mounted.close(); }
   }
 };
+const TRANSITION_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/%3E';
+const TRANSITION_ARTICLES: NewsItem[] = [
+  { id: 't1', headline: 'Transition One', summary: 'First fixture story', imageUrl: TRANSITION_IMAGE, url: '/transition-one' },
+  { id: 't2', headline: 'Transition Two', summary: 'Second fixture story', imageUrl: TRANSITION_IMAGE, url: '/transition-two' },
+];
+
+// fifthbell/brokaw#34: one article slide persists across items and plays its 800 ms transition.
+export const ArticleItemsTransitionWithinOneSlide: StoryObj = {
+  play: async ({ canvasElement }) => {
+    const mounted = mount(canvasElement);
+    const transitioning = () => mounted.host.querySelector('.animate-slide-transition');
+    try {
+      const segment = createArticlesSegment(TRANSITION_ARTICLES, undefined, 'en');
+      mounted.render(segment.render(0, 0));
+      const slide = mounted.host.firstElementChild;
+      await expect(mounted.host).toHaveTextContent('Transition One');
+      await expect(transitioning()).toBeNull();
+
+      // The next item keeps the same slide and plays the transition with both stories on stage.
+      const started = performance.now();
+      mounted.render(segment.render(1, 0));
+      await expect(mounted.host.firstElementChild).toBe(slide);
+      await waitFor(() => expect(transitioning()).not.toBeNull());
+      await expect(transitioning()).toHaveTextContent('Transition Two');
+      await expect(mounted.host).toHaveTextContent('Transition One');
+
+      // After about 800 ms only the new story remains.
+      await waitFor(() => expect(transitioning()).toBeNull(), { timeout: 2000 });
+      await expect(performance.now() - started).toBeGreaterThanOrEqual(750);
+      await expect(mounted.host).toHaveTextContent('Transition Two');
+      await expect(mounted.host).not.toHaveTextContent('Transition One');
+      await expect(mounted.host.firstElementChild).toBe(slide);
+
+      // Another segment in between replaces the slide; coming back mounts a fresh one with no transition.
+      mounted.render(createMarketsSegment([], undefined, 'en').render(0, 0));
+      await expect(mounted.host).toHaveTextContent('Loading market data...');
+      mounted.render(segment.render(0, 0));
+      await expect(mounted.host.firstElementChild).not.toBe(slide);
+      await expect(transitioning()).toBeNull();
+      await expect(mounted.host).toHaveTextContent('Transition One');
+    } finally { mounted.close(); }
+  }
+};
+
