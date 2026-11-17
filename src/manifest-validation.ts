@@ -15,9 +15,12 @@ function assertSameOrderedValues(label: string, manifestValues: readonly string[
   }
 }
 
+export const NON_PAGE_RENDERABLES: ReadonlySet<string> = new Set(['redirect', 'social-image']);
+
 export function assertManifestAlignment(manifest: CronkiteDeclarativeTemplateManifest, sources: ManifestAlignmentSources) {
   const rendering = manifest.templateRendering;
-  const declaredLayouts = Object.keys(rendering.renderables).filter((name) => name !== 'social-image');
+  // Renderables whose input is not a canonical document have no page layout.
+  const declaredLayouts = Object.keys(rendering.renderables).filter((name) => !NON_PAGE_RENDERABLES.has(name));
   assertSameOrderedValues('layout', declaredLayouts, sources.layouts);
   assertSameOrderedValues('language', rendering.helperConfig.supportedLanguages, sources.languages);
 

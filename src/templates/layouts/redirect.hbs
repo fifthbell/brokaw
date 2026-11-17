@@ -1,0 +1,24 @@
+{{!--
+  Redirect page for a story that left its address (fifthbell/cronkite#148). It is
+  written at the old page key because the static origin does not honour object
+  redirect metadata. It sends the reader to the current story at once, tells
+  crawlers where the story lives now and keeps itself out of the index. The
+  target is the public site origin plus the intent's route only; the input
+  schema allows only path routes, and each context escapes it: HTML attributes
+  through Handlebars, the script through jsonString. If an edge 301 answers
+  first, this page is simply never served.
+--}}
+<!doctype html>
+<html lang='{{language}}'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='robots' content='noindex' />
+    <meta http-equiv='refresh' content='0; url=https://fifthbell.com{{toRoute}}' />
+    <link rel='canonical' href='https://fifthbell.com{{toRoute}}' />
+    <title>fifthbell</title>
+    <script>window.location.replace('https://fifthbell.com' + {{{jsonString toRoute}}});</script>
+  </head>
+  <body>
+    <p><a href='https://fifthbell.com{{toRoute}}'>{{#if (eq language 'es')}}Ir a la noticia{{else if (eq language 'it')}}Vai alla notizia{{else}}Go to the story{{/if}}</a></p>
+  </body>
+</html>

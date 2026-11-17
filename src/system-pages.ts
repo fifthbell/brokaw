@@ -1,5 +1,6 @@
 import type { searchCopyByLanguage } from './search-copy.js';
 import type { SystemPage } from './types/cronkite-manifest.generated.js';
+import { pageUrl } from './outlet-config.js';
 
 export type Language = keyof typeof searchCopyByLanguage;
 
@@ -13,7 +14,7 @@ export const systemDocument = (
 ) => ({
   id: `system-${layout}-${language}`,
   slug,
-  canonicalUrl: `https://fifthbell.com${slug}`,
+  canonicalUrl: pageUrl(slug),
   contentVersion: '2026-09-21T00:00:00.000Z',
   publishedAt: '2026-09-21T00:00:00.000Z',
   updatedAt: '2026-09-21T00:00:00.000Z',

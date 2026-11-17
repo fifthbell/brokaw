@@ -51,6 +51,7 @@ describe('Cronkite declarative template manifest', () => {
   it('declares every page layout plus the retained social-card raster', () => {
     expect(Object.keys(cronkiteManifest.templateRendering.renderables)).toEqual([
       ...Object.keys(layoutFiles),
+      'redirect',
       'social-image',
     ]);
     expect(cronkiteManifest.templateRendering.renderables['social-image']).toMatchObject({

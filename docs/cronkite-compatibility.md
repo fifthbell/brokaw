@@ -51,7 +51,7 @@ state or deriving vendor identifiers.
 
 Owner's rule (gaulatti/ariston#217): if we don't recognize it, we ignore it.
 The packaged input schemas (`canonical-document`, `feed-renderable-input`,
-`social-image-input`, `live-program-release-input`) accept members they do not
+`social-image-input`, `live-program-release-input`, `redirect-input`) accept members they do not
 define, and accept values this release does not know where a fallback exists:
 
 | Input | Fallback |
@@ -130,6 +130,27 @@ to be injected by renderer code.
 The `social-image` renderable retains JPEG rasterization at 1080 by 1350. Its
 input schema requires `imageUrl`, `categoryName`, `title`, and
 caller-supplied `qrCodeHtml`.
+
+The `redirect` renderable (fifthbell/cronkite#148) is an HTML page written at
+a story's old page key, because the fifthbell.com origin (S3 REST with an
+origin access identity) does not honour object redirect metadata and answers
+403/404 with `/html/404.html`. Its input is one **active** redirect intent as
+Ariston records it (gaulatti/ariston#211): `reason` (`combined` or
+`route_moved`), `language`, `fromRoute`/`fromKey`, `toRoute`/`toKey` and
+`status: "active"`. A retired intent (`route_reclaimed`, `target_withdrawn`)
+does not validate, so no redirect is written for it: the producer writes the
+article page instead, or removes the old page. Chains arrive flattened to
+depth 1, so the page never points at another redirect.
+
+The page sends the reader to `https://fifthbell.com` plus `toRoute`, the same
+`pageUrl` builder system pages use, through an immediate meta refresh, a
+`location.replace` and a visible link, carries `<link rel="canonical">` to the
+current story and `robots: noindex`. The target comes only from the route: the
+schema accepts only lowercase path routes (optional `es`/`it` prefix, one or
+two segments) starting with one slash, never a URL, and each output context
+escapes it (attributes through Handlebars, the script through `jsonString`). A
+future edge 301 answers before the page is served, so the page stays correct
+as a fallback. Keys the schema does not define are ignored.
 
 Brokaw's legacy live-program and short-video exports remain available to their
 existing direct consumers, but they are not members of the declarative page

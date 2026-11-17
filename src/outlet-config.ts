@@ -26,3 +26,9 @@ export const outletConfig = {
   socialImageExport: 'buildInstagramImageHtml',
   hashtagServiceBaseUrl: 'http://192.168.0.99:8000'
 } as const;
+
+/**
+ * The public address of a site route: the builder pages and the redirect page
+ * share. The route is a path that starts with one slash.
+ */
+export const pageUrl = (route: string): string => `${outletConfig.publicSiteUrl}${route}`;

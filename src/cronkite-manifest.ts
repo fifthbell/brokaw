@@ -249,6 +249,14 @@ export const cronkiteManifest = {
       'link-in-bio': page('link-in-bio', []),
       'media-page': page('media-page', [pagePartials[0], pagePartials[1], 'components/media/main', pagePartials[2], pagePartials[3]]),
       'standalone-page': page('standalone-page', [pagePartials[0], pagePartials[1], 'components/standalone-main', pagePartials[2], pagePartials[3]]),
+      // A page that sends readers from a story's old address to its current one
+      // (fifthbell/cronkite#148). Its input is an active redirect intent, not a
+      // canonical document.
+      redirect: {
+        template: { entry: 'src/templates/layouts/redirect.hbs', partials: [] },
+        inputSchema: 'dist/schemas/redirect-input.schema.json',
+        contentType: 'text/html; charset=utf-8',
+      },
       'social-image': {
         template: { entry: 'src/templates/templates/instagram-image.hbs', partials: [] },
         inputSchema: 'dist/schemas/social-image-input.schema.json',

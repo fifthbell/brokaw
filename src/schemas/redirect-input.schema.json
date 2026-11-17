@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fifthbell.com/schemas/redirect-input-v1.schema.json",
+  "title": "Fifthbell redirect page input",
+  "description": "An active redirect intent as Ariston records it (gaulatti/ariston#211). The page is written at fromKey and sends the reader to toRoute on the public site. Only an active intent renders: a retired one (route_reclaimed, target_withdrawn) is refused so no redirect is written. Routes are site paths, never URLs. Keys Brokaw does not know are ignored.",
+  "type": "object",
+  "required": ["reason", "language", "fromRoute", "fromKey", "toRoute", "toKey", "status"],
+  "properties": {
+    "reason": { "enum": ["combined", "route_moved"] },
+    "language": { "enum": ["en", "es", "it"] },
+    "fromRoute": { "$ref": "#/$defs/route" },
+    "fromKey": { "$ref": "#/$defs/pageKey" },
+    "toRoute": { "$ref": "#/$defs/route" },
+    "toKey": { "$ref": "#/$defs/pageKey" },
+    "status": { "const": "active" },
+    "retiredReason": { "const": null }
+  },
+  "$defs": {
+    "route": {
+      "description": "An article route: an optional es/it prefix, then lowercase ASCII segments. It always starts with one slash, so it can only add a path to the site origin.",
+      "type": "string",
+      "maxLength": 512,
+      "pattern": "^(?:/(?:es|it))?(?:/[a-z0-9]+(?:-[a-z0-9]+)*){1,2}$"
+    },
+    "pageKey": {
+      "type": "string",
+      "maxLength": 600,
+      "pattern": "^html/(?:(?:es|it)/)?[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)?/index\\.html$"
+    }
+  }
+}
