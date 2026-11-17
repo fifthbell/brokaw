@@ -12,6 +12,7 @@ const config: StorybookConfig = {
     '../stories/LiveStoryPage.stories.ts',
     '../stories/LinkInBioPage.stories.ts',
     '../stories/MediaPage.stories.ts',
+    '../stories/CapturedCatalog.stories.ts',
     '../stories/StandalonePage.stories.ts',
     '../stories/partials/*.stories.ts',
     '../stories/react/**/*.stories.tsx'

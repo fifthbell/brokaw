@@ -53,6 +53,11 @@ The root module also exports `cronkiteManifest`, `outletConfig`, `version`,
 `liveProgramReleaseFiles`. See [docs/cronkite-compatibility.md](docs/cronkite-compatibility.md)
 for ownership, validation, system-page, asset, and release-ordering details.
 
+A document may carry an optional `capturedSelection`. When it does, every runtime
+reader on the page (weather, menu navigation and previews, search, Mediathek)
+reads that captured generation instead of its current source. Without one, the
+page is unchanged. See [docs/captured-catalog-readers.md](docs/captured-catalog-readers.md).
+
 ## Fifthbell live-program bundle
 
 `liveProgramPageFiles()` returns the deployable bundle as deterministic `{ key, body, contentType }` entries. It includes `index.html`, versioned JavaScript and CSS, every image/audio/font dependency, and `live-program-manifest.json`. The manifest records the Brokaw package version, renderer schema version, file byte sizes, content types, and SHA-256 digests. It is also an `alcantara.program-template` contract: it declares the renderer entrypoint, supported capabilities, accepted signals, and the runtime parameters Alcantara supplies. A publisher such as Cronkite must upload every returned key under the same public prefix; the relative URLs then work at any Cronkite-owned path.

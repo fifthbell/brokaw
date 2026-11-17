@@ -61,6 +61,67 @@ export const canonicalDocumentSchema = {
             "An open language tag. The active renderer declares the allowed set for each request.",
           examples: ["en", "pt-BR", "zh-Hant-TW"],
         },
+        capturedSelection: {
+          type: "object",
+          description:
+            "CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full.",
+          properties: {
+            selectionId: {
+              type: "string",
+              minLength: 1,
+              maxLength: 200,
+            },
+            catalogUrl: {
+              type: "string",
+              format: "uri",
+              pattern: "^https://",
+            },
+            context: {
+              type: "object",
+              properties: {
+                rendererVersion: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+                templateVersion: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+                tenant: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+                origin: {
+                  type: "string",
+                  format: "uri",
+                  pattern: "^https://",
+                },
+                build: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+              },
+              required: [
+                "rendererVersion",
+                "templateVersion",
+                "tenant",
+                "origin",
+                "build",
+              ],
+              additionalProperties: false,
+            },
+            locale: {
+              type: "string",
+              enum: ["en", "es", "it"],
+            },
+          },
+          required: ["selectionId", "catalogUrl", "context", "locale"],
+          additionalProperties: false,
+        },
         rumConfig: {
           type: "object",
           properties: {
@@ -948,6 +1009,67 @@ export const canonicalDocumentSchema = {
           description:
             "An open language tag. The active renderer declares the allowed set for each request.",
           examples: ["en", "pt-BR", "zh-Hant-TW"],
+        },
+        capturedSelection: {
+          type: "object",
+          description:
+            "CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full.",
+          properties: {
+            selectionId: {
+              type: "string",
+              minLength: 1,
+              maxLength: 200,
+            },
+            catalogUrl: {
+              type: "string",
+              format: "uri",
+              pattern: "^https://",
+            },
+            context: {
+              type: "object",
+              properties: {
+                rendererVersion: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+                templateVersion: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+                tenant: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+                origin: {
+                  type: "string",
+                  format: "uri",
+                  pattern: "^https://",
+                },
+                build: {
+                  type: "string",
+                  minLength: 1,
+                  maxLength: 200,
+                },
+              },
+              required: [
+                "rendererVersion",
+                "templateVersion",
+                "tenant",
+                "origin",
+                "build",
+              ],
+              additionalProperties: false,
+            },
+            locale: {
+              type: "string",
+              enum: ["en", "es", "it"],
+            },
+          },
+          required: ["selectionId", "catalogUrl", "context", "locale"],
+          additionalProperties: false,
         },
         rumConfig: {
           type: "object",

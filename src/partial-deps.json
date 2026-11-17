@@ -56,6 +56,15 @@
     "media-page",
     "standalone-page"
   ],
+  "shell/captured-catalog": [
+    "article-page",
+    "homepage",
+    "category-page",
+    "search-page",
+    "live-story",
+    "media-page",
+    "standalone-page"
+  ],
   "components/article-main": [
     "article-page"
   ],

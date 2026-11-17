@@ -21,7 +21,9 @@ including:
 - `logoLink`, `statusVariant`, and localized `searchCopy` when applicable;
 - structured `seo.socialImage` data;
 - extracted vendor identifiers such as `tweetId` and TikTok `videoId`;
-- optional, validated public RUM configuration.
+- optional, validated public RUM configuration;
+- optional `capturedSelection`, which moves every runtime reader on the page to
+  that captured generation (see [captured-catalog-readers.md](captured-catalog-readers.md)).
 
 `media-page` additionally requires the canonical `assignmentMediaBaseUrl`:
 an absolute HTTP(S) directory ending in `/contents/assignments/` with a trailing
@@ -102,7 +104,9 @@ artifact.
 ## Verification
 
 `npm run build` validates and emits the artifact, copies schemas and fonts,
-and verifies the retained live-program bundle. Unit tests cover schema
+and verifies the retained live-program bundle. `headers/header-main` declares
+the generated `shell/captured-catalog` partial, which renders only for a
+document with `capturedSelection`. Unit tests cover schema
 validation, manifest alignment, explicit system-page keys and routes, static
 assets, embed data, and output parity between declarative rendering and the
 legacy local renderer for article, homepage, category, search, and link-in-bio

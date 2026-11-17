@@ -17,6 +17,21 @@ export type CronkiteCanonicalDocument =
       dek?: string;
       excerpt?: string;
       language: BCP47LanguageTag;
+      /**
+       * CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full.
+       */
+      capturedSelection?: {
+        selectionId: string;
+        catalogUrl: string;
+        context: {
+          rendererVersion: string;
+          templateVersion: string;
+          tenant: string;
+          origin: string;
+          build: string;
+        };
+        locale: "en" | "es" | "it";
+      };
       rumConfig?: {
         appMonitorId: string;
         applicationVersion: string;
@@ -306,6 +321,21 @@ export type CronkiteCanonicalDocument =
       dek?: string;
       excerpt?: string;
       language: BCP47LanguageTag1;
+      /**
+       * CMS-issued captured-catalog selection (Brokaw captured-catalog contract v1). When present, every runtime reader on the page reads this selection instead of its current source; the browser adapter validates it in full.
+       */
+      capturedSelection?: {
+        selectionId: string;
+        catalogUrl: string;
+        context: {
+          rendererVersion: string;
+          templateVersion: string;
+          tenant: string;
+          origin: string;
+          build: string;
+        };
+        locale: "en" | "es" | "it";
+      };
       rumConfig?: {
         appMonitorId: string;
         applicationVersion: string;

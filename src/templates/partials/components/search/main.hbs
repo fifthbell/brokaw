@@ -186,10 +186,10 @@
     }
 
     async function loadIndex(language) {
-      const cacheKey = `index:${language}`;
+      const cacheKey = {{#if capturedSelection}}`captured-index:${language}`{{else}}`index:${language}`{{/if}};
       if (cache.has(cacheKey)) return cache.get(cacheKey);
 
-      const manifest = await fetchJson(`${CDN_BASE}/search-manifest-${language}.json?v=${Date.now()}`);
+      {{#if capturedSelection}}const payloads = [await window.brokawCapturedCatalog.read('search', 'search')];{{else}}const manifest = await fetchJson(`${CDN_BASE}/search-manifest-${language}.json?v=${Date.now()}`);
       const fileList = [];
       if (manifest?.files?.currentMonth) fileList.push(manifest.files.currentMonth);
       if (Array.isArray(manifest?.files?.yearly)) {
@@ -207,7 +207,7 @@
             return null;
           }
         })
-      );
+      );{{/if}}
 
       const combined = [];
       let position = 0;

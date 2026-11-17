@@ -16,6 +16,7 @@ import shellDocStartStandardHbs from './templates/partials/shell/doc-start-stand
 import shellDocStart404Hbs from './templates/partials/shell/doc-start-404.hbs?raw';
 import shellRumLoaderHbs from './templates/partials/shell/rum-loader.hbs?raw';
 import shellDocEndHbs from './templates/partials/shell/doc-end.hbs?raw';
+import shellCapturedCatalogHbs from './templates/partials/shell/captured-catalog.hbs?raw';
 
 import blockRichTextHbs from './templates/partials/blocks/rich-text.hbs?raw';
 import blockHeadingHbs from './templates/partials/blocks/heading.hbs?raw';
@@ -95,6 +96,7 @@ const assets: RendererAssets = {
     'shell/doc-start-404': shellDocStart404Hbs,
     'shell/rum-loader': shellRumLoaderHbs,
     'shell/doc-end': shellDocEndHbs,
+    'shell/captured-catalog': shellCapturedCatalogHbs,
     'blocks/rich-text': blockRichTextHbs,
     'blocks/heading': blockHeadingHbs,
     'blocks/image': blockImageHbs,

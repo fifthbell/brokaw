@@ -284,7 +284,7 @@
   </div>
 </header>
 
-<script>
+{{#if capturedSelection}}{{> shell/captured-catalog}}{{/if}}<script>
   (function () { const WEATHER_URL = 'https://cdn.fifthbell.com/content/weather-current.json'; const REFRESH_MS = 60 * 60 * 1000; const PHASE_MS = 5 * 1000;
   const WEATHER_CITIES = new Set(['antofagasta', 'new york city', 'rome']);
   const barElement = document.querySelector('[data-weather-utility-bar]'); const dateElement = document.querySelector('[data-weather-date]'); const weatherElement = document.querySelector('[data-weather-current]'); const iconElement
@@ -315,9 +315,9 @@
   WEATHER_CITIES.has(String(city.name).trim().toLocaleLowerCase()) && Number.isFinite(Number(city.temp))); cities = arrangeCities(valid); if (barElement) {
   barElement.dataset.weatherSequence = cities.map((city) => city.country).join('|'); barElement.dataset.weatherCities = cities.map((city) =>
   city.name).join('|'); } phase = 0; renderWeather(); window.clearInterval(phaseTimer); if (cities.length) phaseTimer =
-  window.setInterval(() => { phase += 1; renderWeather(); }, PHASE_MS); } async function refreshWeather() { try { const response = await
+  window.setInterval(() => { phase += 1; renderWeather(); }, PHASE_MS); } async function refreshWeather() { try { {{#if capturedSelection}}const payload = await window.brokawCapturedCatalog.read('weather', 'weather');{{else}}const response = await
   fetch(`${WEATHER_URL}?v=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`Weather request failed with HTTP ${response.status}`); const
-  payload = await response.json(); window.fifthbellWeather = payload; window.dispatchEvent(new CustomEvent('fifthbell:weather', { detail:
+  payload = await response.json();{{/if}} window.fifthbellWeather = payload; window.dispatchEvent(new CustomEvent('fifthbell:weather', { detail:
   payload })); } catch (error) { console.error('Failed to refresh weather data:', error); } } window.addEventListener('fifthbell:weather', (event) =>
   setWeather(event.detail)); updateDate(); window.setInterval(updateDate, 60 * 1000); void refreshWeather(); window.setInterval(refreshWeather, REFRESH_MS); })();
 </script>
@@ -378,9 +378,9 @@
   </h3> <div class='grid grid-cols-2 gap-8 mb-10'>${topHtml}</div> <div class='space-y-6'>${rows.join('')}</div> `; } function getCategoryName(payload,
   categorySlug) { if (!categorySlug) return 'Featured Stories'; const fromPrimaryCategory = payload?.category?.name; if (fromPrimaryCategory) return
   fromPrimaryCategory; const fromCategoriesArray = (payload?.categories || []).find((category) => category?.slug === categorySlug)?.name; if
-  (fromCategoriesArray) return fromCategoriesArray; return String(categorySlug).replace(/-/g, ' '); } async function fetchPayload(categorySlug) { const response
+  (fromCategoriesArray) return fromCategoriesArray; return String(categorySlug).replace(/-/g, ' '); } async function fetchPayload(categorySlug) { {{#if capturedSelection}}return categorySlug ? window.brokawCapturedCatalog.read('category', `category:${categorySlug}`) : window.brokawCapturedCatalog.read('homepage', 'homepage');{{else}}const response
   = await fetch(getCdnUrl(categorySlug), { headers: { 'Content-Type': 'application/json' } }); if (!response.ok) throw new Error(`Failed to fetch ${categorySlug
-  || 'homepage'} data`); return response.json(); } async function loadCategoryContent(categorySlug) { const key = categorySlug || '__home__'; if (key ===
+  || 'homepage'} data`); return response.json();{{/if}} } async function loadCategoryContent(categorySlug) { const key = categorySlug || '__home__'; if (key ===
   currentCategoryKey && cache.has(key)) return; currentCategoryKey = key; if (cache.has(key)) { const cached = cache.get(key);
   renderMiniFeatured(cached.articles, cached.categoryName); return; } const requestId = ++requestVersion; showMiniFeaturedLoading(); try { const payload = await
   fetchPayload(categorySlug); if (requestId !== requestVersion || key !== currentCategoryKey) return; const articles = getArticlesFromPayload(payload); const

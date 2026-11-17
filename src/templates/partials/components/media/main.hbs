@@ -206,13 +206,13 @@
       if (loadedData) render(loadedData);
     });
 
-    fetch(assignmentMediaBaseUrl + encodeURIComponent(assignmentId) + '.json', {
+    {{#if capturedSelection}}window.brokawCapturedCatalog.read('assignment', 'assignment:' + assignmentId){{else}}fetch(assignmentMediaBaseUrl + encodeURIComponent(assignmentId) + '.json', {
       cache: 'no-store'
     })
       .then(function (response) {
         if (!response.ok) throw new Error(String(response.status));
         return response.json();
-      })
+      }){{/if}}
       .then(render)
       .catch(function () {
         setStatus('We could not load this assignment right now.');
