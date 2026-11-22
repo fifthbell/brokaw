@@ -273,6 +273,14 @@ export const cronkiteManifest = {
         inputSchema: 'dist/schemas/sitemap-index-input.schema.json',
         contentType: 'text/xml; charset=utf-8',
       },
+      // The Atom feed of the latest released stories of one language
+      // (fifthbell/cronkite#157). Its input is the CMS's list, not a canonical
+      // document. text/ is the manifest's rule for a text content type.
+      feed: {
+        template: { entry: 'src/templates/layouts/feed.hbs', partials: [] },
+        inputSchema: 'dist/schemas/feed-input.schema.json',
+        contentType: 'text/xml; charset=utf-8',
+      },
       'social-image': {
         template: { entry: 'src/templates/templates/instagram-image.hbs', partials: [] },
         inputSchema: 'dist/schemas/social-image-input.schema.json',

@@ -55,6 +55,7 @@ describe('Cronkite declarative template manifest', () => {
       'robots',
       'sitemap',
       'sitemap-index',
+      'feed',
       'social-image',
     ]);
     expect(cronkiteManifest.templateRendering.renderables['social-image']).toMatchObject({
