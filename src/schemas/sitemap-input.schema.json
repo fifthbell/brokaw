@@ -4,11 +4,11 @@
   "title": "Fifthbell sitemap input",
   "description": "One sitemap file as the CMS sends it (fifthbell/cronkite#155): the story URLs of one month, or the site's pages. At least one entry and at most 50,000 (the sitemaps.org limit); the 50 MB size limit and the single host of every loc are the producer's to keep. Each loc is an absolute https URL and each lastmod the story's real updatedAt. Keys Brokaw does not know are ignored.",
   "type": "object",
-  "required": ["layout", "status", "entries"],
+  "required": ["status", "entries"],
   "properties": {
     "id": { "type": "string" },
     "slug": { "type": "string" },
-    "layout": { "const": "sitemap" },
+    "layout": { "const": "sitemap", "description": "Optional: the publish request names the renderable. When present it must be this renderable's name. A producer whose gateway validates any document that has a layout as a canonical document leaves it out." },
     "status": { "const": "published" },
     "language": { "type": "string" },
     "contentVersion": { "type": "string" },

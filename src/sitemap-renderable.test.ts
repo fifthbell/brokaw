@@ -163,6 +163,16 @@ describe('sitemap renderables', () => {
     expect(textsOf(xml, 'priority')).toEqual(['0']);
   });
 
+  it('does not need a layout, and refuses another renderable\'s name when one is sent', () => {
+    const entry = { loc: 'https://fifthbell.com/a', lastmod: '2026-11-22' };
+    const { layout: _a, ...sitemapWithout } = sitemap([entry]);
+    const { layout: _b, ...indexWithout } = index([entry]);
+    expect(validateSitemap(sitemapWithout), JSON.stringify(validateSitemap.errors)).toBe(true);
+    expect(validateIndex(indexWithout), JSON.stringify(validateIndex.errors)).toBe(true);
+    expect(render('sitemap', sitemapWithout)).toBe(render('sitemap', sitemap([entry])));
+    expect(render('sitemap-index', indexWithout)).toBe(render('sitemap-index', index([entry])));
+  });
+
   it('is for a published document of its own layout only, and ignores keys it does not know', () => {
     const entry = { loc: 'https://fifthbell.com/a', lastmod: '2026-11-22' };
     expect(validateSitemap({ ...sitemap([entry]), status: 'draft' })).toBe(false);

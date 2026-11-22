@@ -179,7 +179,8 @@ the site's sitemap files as XML (`text/xml; charset=utf-8`) from CMS documents.
 A `sitemap` document carries `entries: [{ loc, lastmod, changefreq?, priority? }]`
 (1 to 50,000 entries, the sitemaps.org limit); a `sitemap-index` document carries
 `sitemaps: [{ loc, lastmod }]` (1 to 50,000). Both carry the common `id`, `slug`,
-`layout`, `status: "published"`, `language` and `contentVersion`. `loc` is an
+`status: "published"`, `language` and `contentVersion`; a `layout` is optional
+and, when sent, must be the renderable's own name. `loc` is an
 absolute `https` URL without whitespace or control characters (at most 2,048
 characters), `lastmod` a W3C date or date-time with a time zone, `changefreq`
 one of the protocol's seven values and `priority` a number from 0 to 1. Text is
