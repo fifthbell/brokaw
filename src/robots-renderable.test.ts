@@ -148,6 +148,13 @@ describe('robots renderable', () => {
     }
   });
 
+  it('does not need a layout, and refuses another renderable\'s name when one is sent', () => {
+    const { layout: _layout, ...withoutLayout } = fifthbell;
+    expect(validate(withoutLayout), JSON.stringify(validate.errors)).toBe(true);
+    expect(render(withoutLayout)).toBe(render(fifthbell));
+    expect(validate({ ...fifthbell, layout: 'feed' })).toBe(false);
+  });
+
   it('is for a published robots document only, and ignores keys it does not know', () => {
     expect(validate({ ...base, status: 'draft', rules: [{ userAgent: '*' }], sitemaps: [] })).toBe(false);
     expect(validate({ ...base, layout: 'sitemap', rules: [{ userAgent: '*' }], sitemaps: [] })).toBe(false);

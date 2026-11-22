@@ -155,8 +155,8 @@ as a fallback. Keys the schema does not define are ignored.
 The `robots` renderable (fifthbell/cronkite#156) writes the site's `robots.txt`
 as plain text (`text/plain; charset=utf-8`) from one CMS document:
 `rules: [{ userAgent, allow[], disallow[] }]` and `sitemaps: [absolute https URL]`
-(plus the common `id`, `slug`, `layout: "robots"`, `status: "published"`,
-`language`, `contentVersion`). One group is written per rule in the given
+(plus the common `id`, `slug`, `status: "published"`, `language` and
+`contentVersion`; a `layout` is optional and, when sent, must be `"robots"`). One group is written per rule in the given
 order, `Allow` lines before `Disallow` lines, a blank line after each group,
 then one `Sitemap:` line per URL. No value is HTML-escaped, so the input schema
 admits only single-line text without control characters (a line break could add
