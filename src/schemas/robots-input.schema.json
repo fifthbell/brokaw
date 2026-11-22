@@ -20,8 +20,8 @@
         "type": "object",
         "required": ["userAgent"],
         "anyOf": [
-          { "required": ["allow"], "properties": { "allow": { "minItems": 1 } } },
-          { "required": ["disallow"], "properties": { "disallow": { "minItems": 1 } } }
+          { "required": ["allow"], "properties": { "allow": { "type": "array", "minItems": 1 } } },
+          { "required": ["disallow"], "properties": { "disallow": { "type": "array", "minItems": 1 } } }
         ],
         "properties": {
           "userAgent": { "$ref": "#/$defs/line" },
