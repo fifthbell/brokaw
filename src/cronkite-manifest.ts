@@ -1,4 +1,3 @@
-import { searchCopyByLanguage } from './search-copy.js';
 import type { CronkiteDeclarativeTemplateManifest, SystemVariant } from './types/cronkite-manifest.generated.js';
 import { version } from './version.js';
 import { mediathekSystemPage, systemDocument, type Language } from './system-pages.js';
@@ -281,6 +280,9 @@ export const cronkiteManifest = {
         cacheControl: immutable,
       },
     },
+    // Pages Cronkite generates without a CMS publish request (the manifest
+    // contract's definition). Search is not one: the CMS publishes it as a
+    // real search-page renderable (fifthbell/brokaw#38).
     systemPages: [
       {
         renderable: '404',
@@ -290,12 +292,6 @@ export const cronkiteManifest = {
           homeLinkLabel: localizedSystemCopy[language].notFound[2],
           categoriesLabel: localizedSystemCopy[language].notFound[3],
         })),
-      },
-      {
-        renderable: 'search-page',
-        contentType: 'text/html; charset=utf-8',
-        cacheControl: 'public, max-age=0, must-revalidate',
-        variants: systemVariants('search-page', 'search', (language) => ({ searchCopy: searchCopyByLanguage[language] })),
       },
       mediathekSystemPage,
     ],
