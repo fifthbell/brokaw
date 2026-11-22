@@ -284,7 +284,9 @@ describe('public readers and the captured catalog', () => {
   it('renders every page and system variant without a selection exactly as the current sources', () => {
     const legacy = strippedRenderer();
     const documents = legacyDocuments();
-    expect(documents.length).toBe(9 * 3 + 7);
+    // 9 layouts in 3 languages, and the system variants: 404 in 3 languages
+    // and the shared Mediathek (search is not a system page, brokaw#38).
+    expect(documents.length).toBe(9 * 3 + 4);
     for (const [, document] of documents) {
       const html = render(document);
       expect(html).toBe(legacy(document));

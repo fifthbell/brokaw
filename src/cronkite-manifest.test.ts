@@ -75,15 +75,17 @@ describe('Cronkite declarative template manifest', () => {
       { language: 'it', key: 'html/it/404/index.html', route: '/it/404' },
     ]);
 
-    expect(systemPages['search-page']?.variants.map((variant) => ({
-      language: variant.document.language,
-      key: variant.key,
-      route: variant.document.slug,
-    }))).toEqual([
-      { language: 'en', key: 'html/search/index.html', route: '/search' },
-      { language: 'es', key: 'html/es/search/index.html', route: '/es/search' },
-      { language: 'it', key: 'html/it/search/index.html', route: '/it/search' },
-    ]);
+  });
+
+  // fifthbell/brokaw#38: a system page is one Cronkite generates without a
+  // CMS publish request. The CMS publishes search as a real renderable, so it
+  // is not a basement system page: no basement write ever overwrites it.
+  it('declares no search system page, and keeps the search-page renderable', () => {
+    const rendering = cronkiteManifest.templateRendering;
+    expect(rendering.systemPages.map((page) => page.renderable)).toEqual(['404', 'media-page']);
+    const keys = rendering.systemPages.flatMap((page) => page.variants.map((variant) => variant.key));
+    expect(keys.some((key) => key.includes('search'))).toBe(false);
+    expect(rendering.renderables['search-page']).toBeDefined();
   });
 
   it('declares an exact, acyclic partial graph and packaged static assets', () => {
@@ -139,11 +141,11 @@ describe('Cronkite declarative template manifest', () => {
   it('rejects an incomplete localized system page', () => {
     const manifest = structuredClone(cronkiteManifest);
     const page = manifest.templateRendering.systemPages.find(
-      (entry) => entry.renderable === 'search-page',
+      (entry) => entry.renderable === '404',
     )!;
     page.variants.splice(1);
     expect(() => assertManifestAlignment(manifest, sources())).toThrow(
-      'system page search-page languages drift',
+      'system page 404 languages drift',
     );
   });
 

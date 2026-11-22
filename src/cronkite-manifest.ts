@@ -1,4 +1,3 @@
-import { searchCopyByLanguage } from './search-copy.js';
 import type { CronkiteDeclarativeTemplateManifest, SystemVariant } from './types/cronkite-manifest.generated.js';
 import { version } from './version.js';
 import { mediathekSystemPage, systemDocument, type Language } from './system-pages.js';
@@ -94,29 +93,26 @@ const page = (layout: string, dependencies: readonly string[]) => ({
 const localizedSystemCopy = {
   en: {
     notFound: ['Page Not Found', 'The page you are looking for does not exist.', 'Go to Homepage', 'Or explore our categories:'],
-    search: ['Search', 'Search stories from Fifthbell.'],
   },
   es: {
     notFound: ['Página no encontrada', 'La página que buscas no existe.', 'Ir al inicio', 'O explora nuestras categorías:'],
-    search: ['Buscar', 'Busca noticias de Fifthbell.'],
   },
   it: {
     notFound: ['Pagina non trovata', 'La pagina che stai cercando non esiste.', 'Vai alla home page', 'Oppure esplora le nostre categorie:'],
-    search: ['Cerca', 'Cerca notizie Fifthbell.'],
   },
 } as const;
 
-const systemVariants = (
-  layout: '404' | 'search-page',
-  segment: string,
+// The 404 page in each language: the only localized system page, since the CMS
+// publishes search itself (fifthbell/brokaw#38).
+const notFoundVariants = (
   createExtra: (language: Language) => Record<string, unknown>,
 ): [SystemVariant, ...SystemVariant[]] => {
   const variants = (['en', 'es', 'it'] as const).map((language) => {
-    const localizedSegment = language === 'en' ? `/${segment}` : `/${language}/${segment}`;
-    const copy = localizedSystemCopy[language][layout === '404' ? 'notFound' : 'search'];
+    const localizedSegment = language === 'en' ? '/404' : `/${language}/404`;
+    const copy = localizedSystemCopy[language].notFound;
     return {
-      key: language === 'en' ? `html/${segment}/index.html` : `html/${language}/${segment}/index.html`,
-      document: systemDocument(layout, language, localizedSegment, copy[0], copy[1], createExtra(language)),
+      key: language === 'en' ? 'html/404/index.html' : `html/${language}/404/index.html`,
+      document: systemDocument('404', language, localizedSegment, copy[0], copy[1], createExtra(language)),
     };
   });
   return [variants[0], ...variants.slice(1)];
@@ -281,21 +277,18 @@ export const cronkiteManifest = {
         cacheControl: immutable,
       },
     },
+    // Pages Cronkite generates without a CMS publish request (the manifest
+    // contract's definition). Search is not one: the CMS publishes it as a
+    // real search-page renderable (fifthbell/brokaw#38).
     systemPages: [
       {
         renderable: '404',
         contentType: 'text/html; charset=utf-8',
         cacheControl: 'public, max-age=0, must-revalidate',
-        variants: systemVariants('404', '404', (language) => ({
+        variants: notFoundVariants((language) => ({
           homeLinkLabel: localizedSystemCopy[language].notFound[2],
           categoriesLabel: localizedSystemCopy[language].notFound[3],
         })),
-      },
-      {
-        renderable: 'search-page',
-        contentType: 'text/html; charset=utf-8',
-        cacheControl: 'public, max-age=0, must-revalidate',
-        variants: systemVariants('search-page', 'search', (language) => ({ searchCopy: searchCopyByLanguage[language] })),
       },
       mediathekSystemPage,
     ],
