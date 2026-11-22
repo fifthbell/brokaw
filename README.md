@@ -47,6 +47,8 @@ When enabled, the shared standard and 404 shells collect only performance and fi
 - `@fifthbell/brokaw/schemas/feed-renderable-input.schema.json` -> CMS-owned feed renderable input boundary
 - `@fifthbell/brokaw/schemas/redirect-input.schema.json` -> redirect page input: one active redirect intent (gaulatti/ariston#211)
 - `@fifthbell/brokaw/schemas/robots-input.schema.json` -> robots.txt input: the site's rules and sitemap URLs (fifthbell/cronkite#156)
+- `@fifthbell/brokaw/schemas/sitemap-input.schema.json` -> sitemap file input: story URLs with real lastmod (fifthbell/cronkite#155)
+- `@fifthbell/brokaw/schemas/sitemap-index-input.schema.json` -> sitemap index input: the sitemap files with their lastmod (fifthbell/cronkite#155)
 - `@fifthbell/brokaw/schemas/live-program-release-input.schema.json` -> generic live-program release input
 - `@fifthbell/brokaw/partial-deps.json` -> partial-to-layout dependency map
 

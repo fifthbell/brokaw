@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fifthbell.com/schemas/sitemap-index-input-v1.schema.json",
+  "title": "Fifthbell sitemap index input",
+  "description": "The sitemap index as the CMS sends it (fifthbell/cronkite#155): the files that list the site's URLs, each with the time it last changed. At least one and at most 4,000 files: the most that can never pass the 50 MB uncompressed limit of one file, whatever the locs hold (the sitemaps.org limit is 50,000 files). Keys Brokaw does not know are ignored.",
+  "type": "object",
+  "required": [
+    "status",
+    "sitemaps"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "layout": {
+      "const": "sitemap-index",
+      "description": "Optional: the publish request names the renderable. When present it must be this renderable's name. A producer whose gateway validates any document that has a layout as a canonical document leaves it out."
+    },
+    "status": {
+      "const": "published"
+    },
+    "language": {
+      "type": "string"
+    },
+    "contentVersion": {
+      "type": "string"
+    },
+    "sitemaps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4000,
+      "items": {
+        "type": "object",
+        "required": [
+          "loc",
+          "lastmod"
+        ],
+        "properties": {
+          "loc": {
+            "$ref": "#/$defs/url"
+          },
+          "lastmod": {
+            "$ref": "#/$defs/lastmod"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "url": {
+      "description": "An absolute https URL with no whitespace or control character, at most 2,048 characters (the sitemaps.org limit).",
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://[^\\s\\u0000-\\u001f\\u007f\\u2028\\u2029]+$"
+    },
+    "lastmod": {
+      "description": "A W3C date (YYYY-MM-DD) or date-time with a time zone.",
+      "type": "string",
+      "maxLength": 40,
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2}))?$"
+    }
+  }
+}

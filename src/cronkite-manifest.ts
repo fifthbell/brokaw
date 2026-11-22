@@ -260,6 +260,19 @@ export const cronkiteManifest = {
         inputSchema: 'dist/schemas/robots-input.schema.json',
         contentType: 'text/plain; charset=utf-8',
       },
+      // The sitemap files of the site (fifthbell/cronkite#155): one file of URLs
+      // and the index of those files. Their input is the CMS's story set, not a
+      // canonical document.
+      sitemap: {
+        template: { entry: 'src/templates/layouts/sitemap.hbs', partials: [] },
+        inputSchema: 'dist/schemas/sitemap-input.schema.json',
+        contentType: 'text/xml; charset=utf-8',
+      },
+      'sitemap-index': {
+        template: { entry: 'src/templates/layouts/sitemap-index.hbs', partials: [] },
+        inputSchema: 'dist/schemas/sitemap-index-input.schema.json',
+        contentType: 'text/xml; charset=utf-8',
+      },
       'social-image': {
         template: { entry: 'src/templates/templates/instagram-image.hbs', partials: [] },
         inputSchema: 'dist/schemas/social-image-input.schema.json',

@@ -1,0 +1,13 @@
+{{!--
+  Sitemap index (fifthbell/cronkite#155): one <sitemap> per file, in the given
+  order. Text is escaped as for the sitemap file itself.
+--}}
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{{#each sitemaps}}
+  <sitemap>
+    <loc>{{loc}}</loc>
+    <lastmod>{{lastmod}}</lastmod>
+  </sitemap>
+{{/each}}
+</sitemapindex>
