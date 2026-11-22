@@ -122,14 +122,31 @@ describe('sitemap renderables', () => {
     );
   });
 
-  it('keeps the protocol limits: 50,000 entries at most, none is not a file', () => {
+  it('caps a file at 4,000 entries, none is not a file', () => {
     const entry = { loc: 'https://fifthbell.com/a', lastmod: '2026-11-22' };
-    expect(validateSitemap(sitemap(Array.from({ length: 50000 }, () => entry)))).toBe(true);
-    expect(validateSitemap(sitemap(Array.from({ length: 50001 }, () => entry)))).toBe(false);
+    expect(validateSitemap(sitemap(Array.from({ length: 4000 }, () => entry)))).toBe(true);
+    expect(validateSitemap(sitemap(Array.from({ length: 4001 }, () => entry)))).toBe(false);
     expect(validateSitemap(sitemap([]))).toBe(false);
-    expect(validateIndex(index(Array.from({ length: 50000 }, () => entry)))).toBe(true);
-    expect(validateIndex(index(Array.from({ length: 50001 }, () => entry)))).toBe(false);
+    expect(validateIndex(index(Array.from({ length: 4000 }, () => entry)))).toBe(true);
+    expect(validateIndex(index(Array.from({ length: 4001 }, () => entry)))).toBe(false);
     expect(validateIndex(index([]))).toBe(false);
+  });
+
+  it('can never render past the 50 MB uncompressed limit: a full file of the worst-case entries stays under 50,000,000 bytes', () => {
+    // The longest loc the schema admits, made of the characters Handlebars escapes to the most bytes (6 each),
+    // with every optional field present at its longest.
+    const loc = `https://${'"'.repeat(2048 - 'https://'.length)}`;
+    const lastmod = `2026-11-22T10:20:30.${'1'.repeat(19)}Z`;
+    expect(lastmod).toHaveLength(40);
+    const entry = { loc, lastmod, changefreq: 'monthly', priority: 0.30000000000000004 };
+    const sitemapDocument = sitemap(Array.from({ length: 4000 }, () => entry));
+    expect(validateSitemap(sitemapDocument), JSON.stringify(validateSitemap.errors?.slice(0, 2))).toBe(true);
+    const sitemapBytes = Buffer.byteLength(render('sitemap', sitemapDocument));
+    expect(sitemapBytes).toBeLessThan(50_000_000);
+    expect(sitemapBytes).toBeGreaterThan(49_000_000);
+    const indexDocument = index(Array.from({ length: 4000 }, () => ({ loc, lastmod })));
+    expect(validateIndex(indexDocument), JSON.stringify(validateIndex.errors?.slice(0, 2))).toBe(true);
+    expect(Buffer.byteLength(render('sitemap-index', indexDocument))).toBeLessThan(50_000_000);
   });
 
   it('refuses a loc that is not an absolute https URL without whitespace or control characters, or is longer than 2,048', () => {

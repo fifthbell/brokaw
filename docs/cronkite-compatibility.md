@@ -177,15 +177,21 @@ what is allowed, and Googlebot ignores `Crawl-delay`). Every path rule and the
 The `sitemap` and `sitemap-index` renderables (fifthbell/cronkite#155) write
 the site's sitemap files as XML (`text/xml; charset=utf-8`) from CMS documents.
 A `sitemap` document carries `entries: [{ loc, lastmod, changefreq?, priority? }]`
-(1 to 50,000 entries, the sitemaps.org limit); a `sitemap-index` document carries
-`sitemaps: [{ loc, lastmod }]` (1 to 50,000). Both carry the common `id`, `slug`,
+(1 to 4,000 entries); a `sitemap-index` document carries
+`sitemaps: [{ loc, lastmod }]` (1 to 4,000). 4,000 is the most that can never pass
+the sitemaps.org limit of 50 MB (50,000,000 bytes) uncompressed whatever the
+entries hold: a `loc` of 2,048 characters that Handlebars escapes to 6 bytes each
+plus markup is under 12,500 bytes an entry, and 4,000 of them are under
+50,000,000 (the tests render that worst case). The protocol's 50,000 URLs are
+therefore not reachable in one file, and the producer splits a larger set across
+files. Both carry the common `id`, `slug`,
 `status: "published"`, `language` and `contentVersion`; a `layout` is optional
 and, when sent, must be the renderable's own name. `loc` is an
 absolute `https` URL without whitespace or control characters (at most 2,048
 characters), `lastmod` a W3C date or date-time with a time zone, `changefreq`
 one of the protocol's seven values and `priority` a number from 0 to 1. Text is
-escaped as XML text, so a URL with `&` stays valid. The 50 MB size limit, the
-single host of every `loc` and the split into month files belong to the
+escaped as XML text, so a URL with `&` stays valid. The single host of every
+`loc` and the split into month files belong to the
 producer, which knows the story set; a file with no entry does not validate (a
 month with no stories has its key removed, not an empty sitemap). Neither
 renderable declares a partial or a helper. Keys the schemas do not define are

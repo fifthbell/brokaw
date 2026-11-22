@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fifthbell.com/schemas/sitemap-input-v1.schema.json",
   "title": "Fifthbell sitemap input",
-  "description": "One sitemap file as the CMS sends it (fifthbell/cronkite#155): the story URLs of one month, or the site's pages. At least one entry and at most 50,000 (the sitemaps.org limit); the 50 MB size limit and the single host of every loc are the producer's to keep. Each loc is an absolute https URL and each lastmod the story's real updatedAt. Keys Brokaw does not know are ignored.",
+  "description": "One sitemap file as the CMS sends it (fifthbell/cronkite#155): the story URLs of one month, or the site's pages. At least one entry and at most 4,000: the most that can never pass the sitemaps.org 50 MB (50,000,000 bytes) uncompressed limit, whatever the entries hold (a loc of 2,048 characters that Handlebars escapes to 6 bytes each, plus markup, is under 12,500 bytes an entry, and 4,000 of them are under 50,000,000). The sitemaps.org limit of 50,000 URLs is therefore not reachable in one file: the producer splits larger sets across files, and keeps the single host of every loc. Each loc is an absolute https URL and each lastmod the story's real updatedAt. Keys Brokaw does not know are ignored.",
   "type": "object",
   "required": ["status", "entries"],
   "properties": {
@@ -15,7 +15,7 @@
     "entries": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 50000,
+      "maxItems": 4000,
       "items": {
         "type": "object",
         "required": ["loc", "lastmod"],

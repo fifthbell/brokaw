@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://fifthbell.com/schemas/sitemap-index-input-v1.schema.json",
   "title": "Fifthbell sitemap index input",
-  "description": "The sitemap index as the CMS sends it (fifthbell/cronkite#155): the files that list the site's URLs, each with the time it last changed. At least one and at most 50,000 files (the sitemaps.org limit). Keys Brokaw does not know are ignored.",
+  "description": "The sitemap index as the CMS sends it (fifthbell/cronkite#155): the files that list the site's URLs, each with the time it last changed. At least one and at most 4,000 files: the most that can never pass the 50 MB uncompressed limit of one file, whatever the locs hold (the sitemaps.org limit is 50,000 files). Keys Brokaw does not know are ignored.",
   "type": "object",
   "required": [
     "status",
@@ -31,7 +31,7 @@
     "sitemaps": {
       "type": "array",
       "minItems": 1,
-      "maxItems": 50000,
+      "maxItems": 4000,
       "items": {
         "type": "object",
         "required": [
