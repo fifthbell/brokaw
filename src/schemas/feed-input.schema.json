@@ -4,11 +4,11 @@
   "title": "Fifthbell Atom feed input",
   "description": "The latest released stories of one language as the CMS sends them (fifthbell/cronkite#157): at most 50 entries, newest first as sent. An entry's id is the story's canonical URL. summary and imageUrl are optional and never invented: an entry without them has no such element. Dates are RFC 3339 date-times with a time zone. Keys Brokaw does not know are ignored.",
   "type": "object",
-  "required": ["layout", "status", "language", "title", "homeUrl", "selfUrl", "updated", "entries"],
+  "required": ["status", "language", "title", "homeUrl", "selfUrl", "updated", "entries"],
   "properties": {
     "id": { "type": "string" },
     "slug": { "type": "string" },
-    "layout": { "const": "feed" },
+    "layout": { "const": "feed", "description": "Optional: the publish request names the renderable. When present it must be this renderable's name. A producer whose gateway validates any document that has a layout as a canonical document leaves it out." },
     "status": { "const": "published" },
     "language": { "type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Za-z0-9]{1,8})*$" },
     "contentVersion": { "type": "string" },

@@ -155,6 +155,13 @@ describe('feed renderable', () => {
     expect(validate(feed([entry(1)], { language: 'English' }))).toBe(false);
   });
 
+  it('does not need a layout, and refuses another renderable\'s name when one is sent', () => {
+    const { layout: _layout, ...withoutLayout } = feed([entry(1)]);
+    expect(validate(withoutLayout), JSON.stringify(validate.errors)).toBe(true);
+    expect(render(withoutLayout)).toBe(render(feed([entry(1)])));
+    expect(validate(feed([entry(1)], { layout: 'robots' }))).toBe(false);
+  });
+
   it('is for a published feed document only, and ignores keys it does not know', () => {
     expect(validate(feed([entry(1)], { status: 'draft' }))).toBe(false);
     expect(validate(feed([entry(1)], { layout: 'sitemap' }))).toBe(false);

@@ -202,8 +202,8 @@ latest released stories of one language as XML served as `text/xml;
 charset=utf-8` (the manifest requires a `text/` content type). Its input is one
 CMS document: `title`, `subtitle?`, `homeUrl`, `selfUrl`, `updated` and
 `entries: [{ id, title, url, published, updated, summary?, imageUrl? }]` (at
-most 50 entries), plus the common `layout: "feed"`, `status: "published"`,
-`language`, `id`, `slug` and `contentVersion`. An entry's `id` is the story's
+most 50 entries), plus the common `status: "published"`, `id`, `slug` and
+`contentVersion` (a `layout` is optional and, when sent, must be `"feed"`). An entry's `id` is the story's
 canonical URL; the feed's own `id` is its self URL. URLs are absolute `https`;
 dates are RFC 3339 date-times with a time zone. Text is escaped as XML text.
 Nothing is invented: an entry without a `summary` or an `imageUrl` has no
