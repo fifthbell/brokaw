@@ -271,6 +271,7 @@ export const cronkiteManifest = {
       'sitemap-index': {
         template: { entry: 'src/templates/layouts/sitemap-index.hbs', partials: [] },
         inputSchema: 'dist/schemas/sitemap-index-input.schema.json',
+        contentType: 'text/xml; charset=utf-8',
       },
       // The Atom feed of the latest released stories of one language
       // (fifthbell/cronkite#157). Its input is the CMS's list, not a canonical
