@@ -15,7 +15,7 @@ function assertSameOrderedValues(label: string, manifestValues: readonly string[
   }
 }
 
-export const NON_PAGE_RENDERABLES: ReadonlySet<string> = new Set(['redirect', 'social-image']);
+export const NON_PAGE_RENDERABLES: ReadonlySet<string> = new Set(['redirect', 'robots', 'social-image']);
 
 export function assertManifestAlignment(manifest: CronkiteDeclarativeTemplateManifest, sources: ManifestAlignmentSources) {
   const rendering = manifest.templateRendering;

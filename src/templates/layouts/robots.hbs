@@ -1,0 +1,21 @@
+{{!--
+  robots.txt (fifthbell/cronkite#156). Plain text, no HTML escaping: every value is
+  a single line by the input schema (no control characters), so no value can add a
+  directive. One group per rule in the given order, Allow lines before Disallow
+  lines, then one Sitemap line per URL. The input schema requires at least one
+  rule, so a document with no rules is refused instead of rendering an empty file
+  that would allow everything.
+--}}
+{{#each rules}}
+User-agent: {{{userAgent}}}
+{{#each allow}}
+Allow: {{{this}}}
+{{/each}}
+{{#each disallow}}
+Disallow: {{{this}}}
+{{/each}}
+
+{{/each}}
+{{#each sitemaps}}
+Sitemap: {{{this}}}
+{{/each}}
