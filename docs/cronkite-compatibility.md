@@ -51,7 +51,7 @@ state or deriving vendor identifiers.
 
 Owner's rule (gaulatti/ariston#217): if we don't recognize it, we ignore it.
 The packaged input schemas (`canonical-document`, `feed-renderable-input`,
-`social-image-input`, `live-program-release-input`, `redirect-input`, `robots-input`, `sitemap-input`, `sitemap-index-input`) accept members they do not
+`social-image-input`, `live-program-release-input`, `redirect-input`, `robots-input`, `sitemap-input`, `sitemap-index-input`, `feed-input`) accept members they do not
 define, and accept values this release does not know where a fallback exists:
 
 | Input | Fallback |
@@ -196,6 +196,19 @@ producer, which knows the story set; a file with no entry does not validate (a
 month with no stories has its key removed, not an empty sitemap). Neither
 renderable declares a partial or a helper. Keys the schemas do not define are
 ignored.
+
+The `feed` renderable (fifthbell/cronkite#157) writes an Atom 1.0 feed of the
+latest released stories of one language as XML served as `text/xml;
+charset=utf-8` (the manifest requires a `text/` content type). Its input is one
+CMS document: `title`, `subtitle?`, `homeUrl`, `selfUrl`, `updated` and
+`entries: [{ id, title, url, published, updated, summary?, imageUrl? }]` (at
+most 50 entries), plus the common `layout: "feed"`, `status: "published"`,
+`language`, `id`, `slug` and `contentVersion`. An entry's `id` is the story's
+canonical URL; the feed's own `id` is its self URL. URLs are absolute `https`;
+dates are RFC 3339 date-times with a time zone. Text is escaped as XML text.
+Nothing is invented: an entry without a `summary` or an `imageUrl` has no
+`summary` or enclosure link. The renderable has no partial or helper. Keys the
+schema does not define are ignored.
 
 Brokaw's legacy live-program and short-video exports remain available to their
 existing direct consumers, but they are not members of the declarative page

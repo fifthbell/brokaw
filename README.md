@@ -49,6 +49,7 @@ When enabled, the shared standard and 404 shells collect only performance and fi
 - `@fifthbell/brokaw/schemas/robots-input.schema.json` -> robots.txt input: the site's rules and sitemap URLs (fifthbell/cronkite#156)
 - `@fifthbell/brokaw/schemas/sitemap-input.schema.json` -> sitemap file input: story URLs with real lastmod (fifthbell/cronkite#155)
 - `@fifthbell/brokaw/schemas/sitemap-index-input.schema.json` -> sitemap index input: the sitemap files with their lastmod (fifthbell/cronkite#155)
+- `@fifthbell/brokaw/schemas/feed-input.schema.json` -> Atom feed input: the latest released stories of one language (fifthbell/cronkite#157)
 - `@fifthbell/brokaw/schemas/live-program-release-input.schema.json` -> generic live-program release input
 - `@fifthbell/brokaw/partial-deps.json` -> partial-to-layout dependency map
 

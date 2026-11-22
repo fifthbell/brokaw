@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fifthbell.com/schemas/feed-input-v1.schema.json",
+  "title": "Fifthbell Atom feed input",
+  "description": "The latest released stories of one language as the CMS sends them (fifthbell/cronkite#157): at most 50 entries, newest first as sent. An entry's id is the story's canonical URL. summary and imageUrl are optional and never invented: an entry without them has no such element. Dates are RFC 3339 date-times with a time zone. Keys Brokaw does not know are ignored.",
+  "type": "object",
+  "required": ["layout", "status", "language", "title", "homeUrl", "selfUrl", "updated", "entries"],
+  "properties": {
+    "id": { "type": "string" },
+    "slug": { "type": "string" },
+    "layout": { "const": "feed" },
+    "status": { "const": "published" },
+    "language": { "type": "string", "pattern": "^[a-z]{2,3}(?:-[A-Za-z0-9]{1,8})*$" },
+    "contentVersion": { "type": "string" },
+    "title": { "$ref": "#/$defs/text" },
+    "subtitle": { "$ref": "#/$defs/text" },
+    "homeUrl": { "$ref": "#/$defs/url" },
+    "selfUrl": { "$ref": "#/$defs/url" },
+    "updated": { "$ref": "#/$defs/dateTime" },
+    "entries": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "url", "published", "updated"],
+        "properties": {
+          "id": { "$ref": "#/$defs/url" },
+          "title": { "$ref": "#/$defs/text" },
+          "url": { "$ref": "#/$defs/url" },
+          "published": { "$ref": "#/$defs/dateTime" },
+          "updated": { "$ref": "#/$defs/dateTime" },
+          "summary": { "type": "string", "maxLength": 5000, "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]*$" },
+          "imageUrl": { "$ref": "#/$defs/url" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "description": "Non-empty text without control characters that XML does not allow.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]+$"
+    },
+    "url": {
+      "description": "An absolute https URL with no whitespace or control character, at most 2,048 characters.",
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://[^\\s\\u0000-\\u001f\\u007f\\u2028\\u2029]+$"
+    },
+    "dateTime": {
+      "description": "An RFC 3339 date-time with a time zone.",
+      "type": "string",
+      "maxLength": 40,
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    }
+  }
+}

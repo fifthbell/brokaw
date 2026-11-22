@@ -44,6 +44,7 @@
     "./schemas/robots-input.schema.json": "./dist/schemas/robots-input.schema.json",
     "./schemas/sitemap-index-input.schema.json": "./dist/schemas/sitemap-index-input.schema.json",
     "./schemas/sitemap-input.schema.json": "./dist/schemas/sitemap-input.schema.json",
+    "./schemas/feed-input.schema.json": "./dist/schemas/feed-input.schema.json",
     "./schemas/live-program-release-input.schema.json": "./dist/schemas/live-program-release-input.schema.json",
     "./video": "./dist/video/index.js",
     "./components/live-program": {
