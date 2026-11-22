@@ -51,7 +51,7 @@ state or deriving vendor identifiers.
 
 Owner's rule (gaulatti/ariston#217): if we don't recognize it, we ignore it.
 The packaged input schemas (`canonical-document`, `feed-renderable-input`,
-`social-image-input`, `live-program-release-input`, `redirect-input`, `robots-input`) accept members they do not
+`social-image-input`, `live-program-release-input`, `redirect-input`, `robots-input`, `sitemap-input`, `sitemap-index-input`) accept members they do not
 define, and accept values this release does not know where a fallback exists:
 
 | Input | Fallback |
@@ -173,6 +173,22 @@ data, so both are dropped; the order is `Allow` then `Disallow` (crawlers that
 follow RFC 9309 choose the longest matching rule, so the order does not change
 what is allowed, and Googlebot ignores `Crawl-delay`). Every path rule and the
 `Sitemap` line are carried over.
+
+The `sitemap` and `sitemap-index` renderables (fifthbell/cronkite#155) write
+the site's sitemap files as XML (`text/xml; charset=utf-8`) from CMS documents.
+A `sitemap` document carries `entries: [{ loc, lastmod, changefreq?, priority? }]`
+(1 to 50,000 entries, the sitemaps.org limit); a `sitemap-index` document carries
+`sitemaps: [{ loc, lastmod }]` (1 to 50,000). Both carry the common `id`, `slug`,
+`layout`, `status: "published"`, `language` and `contentVersion`. `loc` is an
+absolute `https` URL without whitespace or control characters (at most 2,048
+characters), `lastmod` a W3C date or date-time with a time zone, `changefreq`
+one of the protocol's seven values and `priority` a number from 0 to 1. Text is
+escaped as XML text, so a URL with `&` stays valid. The 50 MB size limit, the
+single host of every `loc` and the split into month files belong to the
+producer, which knows the story set; a file with no entry does not validate (a
+month with no stories has its key removed, not an empty sitemap). Neither
+renderable declares a partial or a helper. Keys the schemas do not define are
+ignored.
 
 Brokaw's legacy live-program and short-video exports remain available to their
 existing direct consumers, but they are not members of the declarative page

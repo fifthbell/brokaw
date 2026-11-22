@@ -1,0 +1,22 @@
+{{!--
+  Sitemap file (fifthbell/cronkite#155): one <url> per entry, in the given order.
+  Values are XML text: Handlebars' escaping turns & < > and quotes into character
+  references, which XML reads back as the same characters, so a URL with & in it
+  stays valid. The input schema keeps each loc an absolute https URL without
+  whitespace or control characters and each lastmod a W3C date or date-time.
+--}}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{{#each entries}}
+  <url>
+    <loc>{{loc}}</loc>
+    <lastmod>{{lastmod}}</lastmod>
+{{#if changefreq}}
+    <changefreq>{{changefreq}}</changefreq>
+{{/if}}
+{{#if priority includeZero=true}}
+    <priority>{{priority}}</priority>
+{{/if}}
+  </url>
+{{/each}}
+</urlset>

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fifthbell.com/schemas/sitemap-input-v1.schema.json",
+  "title": "Fifthbell sitemap input",
+  "description": "One sitemap file as the CMS sends it (fifthbell/cronkite#155): the story URLs of one month, or the site's pages. At least one entry and at most 50,000 (the sitemaps.org limit); the 50 MB size limit and the single host of every loc are the producer's to keep. Each loc is an absolute https URL and each lastmod the story's real updatedAt. Keys Brokaw does not know are ignored.",
+  "type": "object",
+  "required": ["layout", "status", "entries"],
+  "properties": {
+    "id": { "type": "string" },
+    "slug": { "type": "string" },
+    "layout": { "const": "sitemap" },
+    "status": { "const": "published" },
+    "language": { "type": "string" },
+    "contentVersion": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50000,
+      "items": {
+        "type": "object",
+        "required": ["loc", "lastmod"],
+        "properties": {
+          "loc": { "$ref": "#/$defs/url" },
+          "lastmod": { "$ref": "#/$defs/lastmod" },
+          "changefreq": { "enum": ["always", "hourly", "daily", "weekly", "monthly", "yearly", "never"] },
+          "priority": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "url": {
+      "description": "An absolute https URL with no whitespace or control character, at most 2,048 characters (the sitemaps.org limit).",
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://[^\\s\\u0000-\\u001f\\u007f\\u2028\\u2029]+$"
+    },
+    "lastmod": {
+      "description": "A W3C date (YYYY-MM-DD) or date-time with a time zone.",
+      "type": "string",
+      "maxLength": 40,
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}(?:T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2}))?$"
+    }
+  }
+}

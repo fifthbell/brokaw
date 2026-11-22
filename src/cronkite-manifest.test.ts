@@ -53,6 +53,8 @@ describe('Cronkite declarative template manifest', () => {
       ...Object.keys(layoutFiles),
       'redirect',
       'robots',
+      'sitemap',
+      'sitemap-index',
       'social-image',
     ]);
     expect(cronkiteManifest.templateRendering.renderables['social-image']).toMatchObject({
