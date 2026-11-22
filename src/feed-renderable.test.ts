@@ -45,6 +45,7 @@ const feed = (entries: unknown[], extra: Record<string, unknown> = {}) => ({
   language: 'en',
   contentVersion: '1',
   title: 'fifthbell',
+  author: 'fifthbell',
   homeUrl: 'https://fifthbell.com/',
   selfUrl: 'https://fifthbell.com/feed.xml',
   updated: '2026-11-22T12:07:01.310Z',
@@ -74,6 +75,9 @@ describe('feed renderable', () => {
         '  <link rel="self" type="application/atom+xml" href="https://fifthbell.com/feed.xml"/>',
         '  <id>https://fifthbell.com/feed.xml</id>',
         '  <updated>2026-11-22T12:07:01.310Z</updated>',
+        '  <author>',
+        '    <name>fifthbell</name>',
+        '  </author>',
         '  <entry>',
         '    <title>Story 1</title>',
         '    <link rel="alternate" type="text/html" href="https://fifthbell.com/world/story-1"/>',
@@ -167,13 +171,33 @@ describe('feed renderable', () => {
     expect(validate(feed([entry(1)], { layout: 'sitemap' }))).toBe(false);
     const withExtras = feed([entry(1, { author: 'x', tags: ['a'] })], { future: { a: 1 } });
     expect(validate(withExtras)).toBe(true);
-    expect(render(withExtras)).not.toContain('author');
+    expect(render(withExtras).match(/<author>/g)).toHaveLength(1);
+    expect(render(withExtras)).not.toContain('<name>x</name>');
+  });
+
+  it('is valid Atom: the feed has exactly one author, the publication, required by the schema', () => {
+    const xml = render(feed([entry(1), entry(2)], { author: 'Fifth & Bell' }));
+    expect(xml.match(/<author>/g)).toHaveLength(1);
+    expect(texts(xml, 'name')).toEqual(['Fifth & Bell']);
+    for (const author of [undefined, '', 5]) {
+      const document: Record<string, unknown> = feed([entry(1)]);
+      if (author === undefined) delete document.author;
+      else document.author = author;
+      expect(validate(document)).toBe(false);
+    }
+    expect(validate(feed([entry(1)], { author: 'a\u0001' }))).toBe(false);
+  });
+
+  it('uses the story URL as the entry id, so the id changes when the story moves', () => {
+    const moved = render(feed([entry(1, { id: 'https://fifthbell.com/sports/story-1', url: 'https://fifthbell.com/sports/story-1' })]));
+    expect(texts(moved, 'id')).toContain('https://fifthbell.com/sports/story-1');
+    expect(texts(render(feed([entry(1)])), 'id')).not.toContain('https://fifthbell.com/sports/story-1');
   });
 
   it('uses only built-in Handlebars constructs and no partial', () => {
     const source = fs.readFileSync(path.join(projectRoot, definition.template.entry), 'utf8').replace(/\{\{!--[\s\S]*?--\}\}/g, '');
     const names = [...source.matchAll(/\{\{\{?\s*[#/^]?\s*([a-zA-Z@][\w.@]*)/g)].map((match) => match[1]);
-    const allowed = new Set(['each', 'if', 'language', 'title', 'subtitle', 'homeUrl', 'selfUrl', 'updated', 'entries', 'url', 'id', 'published', 'summary', 'imageUrl']);
+    const allowed = new Set(['each', 'if', 'language', 'title', 'subtitle', 'author', 'name', 'homeUrl', 'selfUrl', 'updated', 'entries', 'url', 'id', 'published', 'summary', 'imageUrl']);
     expect([...new Set(names)].filter((item) => !allowed.has(item))).toEqual([]);
     expect(source).not.toContain('{{>');
   });

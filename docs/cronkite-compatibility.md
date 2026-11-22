@@ -200,11 +200,12 @@ ignored.
 The `feed` renderable (fifthbell/cronkite#157) writes an Atom 1.0 feed of the
 latest released stories of one language as XML served as `text/xml;
 charset=utf-8` (the manifest requires a `text/` content type). Its input is one
-CMS document: `title`, `subtitle?`, `homeUrl`, `selfUrl`, `updated` and
+CMS document: `title`, `author` (the publication's name, written as the feed's one
+`atom:author`, so the feed is valid Atom 1.0 under RFC 4287 section 4.1.1), `subtitle?`, `homeUrl`, `selfUrl`, `updated` and
 `entries: [{ id, title, url, published, updated, summary?, imageUrl? }]` (at
 most 50 entries), plus the common `status: "published"`, `id`, `slug` and
 `contentVersion` (a `layout` is optional and, when sent, must be `"feed"`). An entry's `id` is the story's
-canonical URL; the feed's own `id` is its self URL. URLs are absolute `https`;
+canonical URL, so it changes if the story moves to another URL (accepted); the feed's own `id` is its self URL. URLs are absolute `https`;
 dates are RFC 3339 date-times with a time zone. Text is escaped as XML text.
 Nothing is invented: an entry without a `summary` or an `imageUrl` has no
 `summary` or enclosure link. The renderable has no partial or helper. Keys the
