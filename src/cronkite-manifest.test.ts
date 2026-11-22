@@ -52,6 +52,7 @@ describe('Cronkite declarative template manifest', () => {
     expect(Object.keys(cronkiteManifest.templateRendering.renderables)).toEqual([
       ...Object.keys(layoutFiles),
       'redirect',
+      'robots',
       'social-image',
     ]);
     expect(cronkiteManifest.templateRendering.renderables['social-image']).toMatchObject({

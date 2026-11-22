@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fifthbell.com/schemas/robots-input-v1.schema.json",
+  "title": "Fifthbell robots.txt input",
+  "description": "The rules of one site's robots.txt as the CMS sends them (fifthbell/cronkite#156). At least one rule is required, and every rule needs at least one Allow or Disallow line: a document with none, or a group with neither, is refused, because an empty group allows everything and a missing rule set must never render as allow-all. Every value is one line of plain text with no control characters, so no value can add a directive. Keys Brokaw does not know are ignored.",
+  "type": "object",
+  "required": ["status", "rules", "sitemaps"],
+  "properties": {
+    "id": { "type": "string" },
+    "slug": { "type": "string" },
+    "layout": { "const": "robots", "description": "Optional: the publish request names the renderable. When present it must be this renderable's name. A producer whose gateway validates any document that has a layout as a canonical document leaves it out." },
+    "status": { "const": "published" },
+    "language": { "type": "string" },
+    "contentVersion": { "type": "string" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "required": ["userAgent"],
+        "anyOf": [
+          { "required": ["allow"], "properties": { "allow": { "type": "array", "minItems": 1 } } },
+          { "required": ["disallow"], "properties": { "disallow": { "type": "array", "minItems": 1 } } }
+        ],
+        "properties": {
+          "userAgent": { "$ref": "#/$defs/line" },
+          "allow": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/line" } },
+          "disallow": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/line" } }
+        }
+      }
+    },
+    "sitemaps": {
+      "type": "array",
+      "maxItems": 50,
+      "items": { "$ref": "#/$defs/sitemapUrl" }
+    }
+  },
+  "$defs": {
+    "line": {
+      "description": "One line of text: not empty, no line break and no other control character.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\u0000-\\u001f\\u007f\\u2028\\u2029]+$"
+    },
+    "sitemapUrl": {
+      "description": "An absolute https URL with no whitespace or control character.",
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://[^\\s\\u0000-\\u001f\\u007f\\u2028\\u2029]+$"
+    }
+  }
+}

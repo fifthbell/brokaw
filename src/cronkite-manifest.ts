@@ -253,6 +253,13 @@ export const cronkiteManifest = {
         inputSchema: 'dist/schemas/redirect-input.schema.json',
         contentType: 'text/html; charset=utf-8',
       },
+      // robots.txt for the site (fifthbell/cronkite#156). Its input is the CMS's
+      // rule set, not a canonical document.
+      robots: {
+        template: { entry: 'src/templates/layouts/robots.hbs', partials: [] },
+        inputSchema: 'dist/schemas/robots-input.schema.json',
+        contentType: 'text/plain; charset=utf-8',
+      },
       'social-image': {
         template: { entry: 'src/templates/templates/instagram-image.hbs', partials: [] },
         inputSchema: 'dist/schemas/social-image-input.schema.json',

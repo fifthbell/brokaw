@@ -92,6 +92,7 @@ for (const schemaName of [
   "feed-renderable-input.schema.json",
   "live-program-release-input.schema.json",
   "redirect-input.schema.json",
+  "robots-input.schema.json",
 ]) {
   const schema = await readJson(join(sourceSchemas, schemaName));
   ajv.compile(schema);

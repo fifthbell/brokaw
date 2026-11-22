@@ -51,7 +51,7 @@ state or deriving vendor identifiers.
 
 Owner's rule (gaulatti/ariston#217): if we don't recognize it, we ignore it.
 The packaged input schemas (`canonical-document`, `feed-renderable-input`,
-`social-image-input`, `live-program-release-input`, `redirect-input`) accept members they do not
+`social-image-input`, `live-program-release-input`, `redirect-input`, `robots-input`) accept members they do not
 define, and accept values this release does not know where a fallback exists:
 
 | Input | Fallback |
@@ -151,6 +151,28 @@ two segments) starting with one slash, never a URL, and each output context
 escapes it (attributes through Handlebars, the script through `jsonString`). A
 future edge 301 answers before the page is served, so the page stays correct
 as a fallback. Keys the schema does not define are ignored.
+
+The `robots` renderable (fifthbell/cronkite#156) writes the site's `robots.txt`
+as plain text (`text/plain; charset=utf-8`) from one CMS document:
+`rules: [{ userAgent, allow[], disallow[] }]` and `sitemaps: [absolute https URL]`
+(plus the common `id`, `slug`, `status: "published"`, `language` and
+`contentVersion`; a `layout` is optional and, when sent, must be `"robots"`). One group is written per rule in the given
+order, `Allow` lines before `Disallow` lines, a blank line after each group,
+then one `Sitemap:` line per URL. No value is HTML-escaped, so the input schema
+admits only single-line text without control characters (a line break could add
+a directive) and only absolute `https` sitemap URLs. At least one rule is
+required, and each rule needs at least one `Allow` or `Disallow` line: a document
+without rules, or with a group that has neither (an empty group allows
+everything), does not validate, so a missing rule set can never render as an
+allow-all file. It declares no partial and no helper.
+
+Difference from fifthbell.com's file of 2026-11-22: that file lists its
+`Disallow` lines before its `Allow` lines and carries `Crawl-delay: 1` and
+comments. The document has no field for the crawl delay and a comment is not
+data, so both are dropped; the order is `Allow` then `Disallow` (crawlers that
+follow RFC 9309 choose the longest matching rule, so the order does not change
+what is allowed, and Googlebot ignores `Crawl-delay`). Every path rule and the
+`Sitemap` line are carried over.
 
 Brokaw's legacy live-program and short-video exports remain available to their
 existing direct consumers, but they are not members of the declarative page
