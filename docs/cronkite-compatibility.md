@@ -161,8 +161,10 @@ order, `Allow` lines before `Disallow` lines, a blank line after each group,
 then one `Sitemap:` line per URL. No value is HTML-escaped, so the input schema
 admits only single-line text without control characters (a line break could add
 a directive) and only absolute `https` sitemap URLs. At least one rule is
-required: a document without rules does not validate, so a missing rule set can
-never render as an allow-all file. It declares no partial and no helper.
+required, and each rule needs at least one `Allow` or `Disallow` line: a document
+without rules, or with a group that has neither (an empty group allows
+everything), does not validate, so a missing rule set can never render as an
+allow-all file. It declares no partial and no helper.
 
 Difference from fifthbell.com's file of 2026-11-22: that file lists its
 `Disallow` lines before its `Allow` lines and carries `Crawl-delay: 1` and

@@ -48,7 +48,7 @@ describe('robots renderable', () => {
     });
   });
 
-  it("carries fifthbell.com's current rules, semantically equal and without Crawl-delay", () => {
+  it("renders fifthbell.com's current rules as this exact text, without Crawl-delay", () => {
     expect(validate(fifthbell), JSON.stringify(validate.errors)).toBe(true);
     expect(render(fifthbell)).toBe(
       [
@@ -99,10 +99,17 @@ describe('robots renderable', () => {
     );
   });
 
-  it('renders a rule with empty or missing allow and disallow as its user-agent line alone', () => {
-    const document = { ...base, rules: [{ userAgent: 'A', allow: [], disallow: [] }, { userAgent: 'B' }], sitemaps: [] };
+  it('refuses a rule group with neither an Allow nor a Disallow line, because an empty group allows everything', () => {
+    for (const rule of [{ userAgent: 'A' }, { userAgent: 'A', allow: [], disallow: [] }, { userAgent: 'A', allow: [] }, { userAgent: 'A', disallow: [] }]) {
+      expect(validate({ ...base, rules: [rule], sitemaps: [] })).toBe(false);
+    }
+    expect(validate({ ...base, rules: [{ userAgent: '*', allow: ['/'] }, { userAgent: 'B' }], sitemaps: [] })).toBe(false);
+  });
+
+  it('accepts a group with only Allow lines or only Disallow lines, and renders no line for the missing kind', () => {
+    const document = { ...base, rules: [{ userAgent: 'A', allow: ['/x'], disallow: [] }, { userAgent: 'B', disallow: ['/y'] }], sitemaps: [] };
     expect(validate(document), JSON.stringify(validate.errors)).toBe(true);
-    expect(render(document)).toBe(['User-agent: A', '', 'User-agent: B', '', ''].join('\n'));
+    expect(render(document)).toBe(['User-agent: A', 'Allow: /x', '', 'User-agent: B', 'Disallow: /y', '', ''].join('\n'));
   });
 
   it('writes one Sitemap line per URL, in order', () => {
