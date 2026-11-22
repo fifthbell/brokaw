@@ -6,6 +6,10 @@
   "verification": [
     [
       "npm",
+      "ci"
+    ],
+    [
+      "npm",
       "run",
       "typecheck"
     ],
