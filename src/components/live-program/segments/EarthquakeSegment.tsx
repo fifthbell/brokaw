@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { createLastGood } from '../source-retention.js';
 import { AlertTriangle, Clock, Layers, Link, MapPin } from 'lucide-react';
 import { FastAverageColor } from 'fast-average-color';
-import { FIFTHBELL_ASSETS } from '../assets.js';
+import { useFifthBellAssets } from '../assets.js';
 import type { Segment } from './types.js';
 import { t, type SupportedLanguage } from '../i18n.js';
 
@@ -119,7 +119,7 @@ const fac = new FastAverageColor();
 
 function EarthquakeSlide({ earthquakes, progress, language }: { earthquakes: EarthquakeData[]; progress: number; language: SupportedLanguage }) {
   const [dominantColor, setDominantColor] = useState('#7c2d12');
-  const backgroundImage = FIFTHBELL_ASSETS.images.seismograph;
+  const backgroundImage = useFifthBellAssets().images.seismograph;
 
   const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     try {

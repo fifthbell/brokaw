@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SOURCE_RETENTION_MS } from '../source-retention.js';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { FastAverageColor } from 'fast-average-color';
-import { FIFTHBELL_ASSETS } from '../assets.js';
+import { useFifthBellAssets } from '../assets.js';
 import type { Segment } from './types.js';
 import { t, type SupportedLanguage } from '../i18n.js';
 
@@ -57,7 +57,7 @@ const fac = new FastAverageColor();
 
 function MarketSlide({ progress, marketData, language }: { progress: number; marketData: MarketData[]; language: SupportedLanguage }) {
   const [dominantColor, setDominantColor] = useState('#065f46');
-  const backgroundImage = FIFTHBELL_ASSETS.images.nyse;
+  const backgroundImage = useFifthBellAssets().images.nyse;
 
   const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     try {
