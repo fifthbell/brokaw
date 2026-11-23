@@ -22,7 +22,7 @@
       "required": ["entry", "partials"],
       "properties": {
         "entry": { "$ref": "#/$defs/safePath" },
-        "partials": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        "partials": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
       }
     },
     "partial": { "$ref": "#/$defs/templateReference" },

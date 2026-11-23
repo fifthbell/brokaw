@@ -89,6 +89,23 @@ export async function verifyPackedContract({ env = process.env, log = console.lo
     ) {
       throw new Error("packed manifest has no declarative template contract");
     }
+    // Cronkite's bundle loader rejects a partials list that names one partial twice
+    // (bundle-loader.service.ts stringArray). Check the packed artifact the same way.
+    const assertUniquePartials = (owner, partials) => {
+      const seen = new Set();
+      for (const partial of partials ?? []) {
+        if (seen.has(partial)) {
+          throw new Error(`${owner} names partial ${partial} more than once`);
+        }
+        seen.add(partial);
+      }
+    };
+    for (const [name, definition] of Object.entries(rendering.renderables ?? {})) {
+      assertUniquePartials(`renderable ${name} template`, definition.template?.partials);
+    }
+    for (const [name, definition] of Object.entries(rendering.partials ?? {})) {
+      assertUniquePartials(`partial ${name}`, definition.partials);
+    }
     for (const [name, definition] of Object.entries(rendering.partials ?? {})) {
       await assertPackedFile(packageRoot, definition.entry, `partial ${name}`);
     }
