@@ -30,7 +30,7 @@
           "url": { "$ref": "#/$defs/url" },
           "published": { "$ref": "#/$defs/dateTime" },
           "updated": { "$ref": "#/$defs/dateTime" },
-          "summary": { "type": "string", "maxLength": 5000, "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]*$" },
+          "summary": { "type": "string", "maxLength": 5000, "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]*$" },
           "imageUrl": { "$ref": "#/$defs/url" }
         }
       }
@@ -42,7 +42,7 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 1000,
-      "pattern": "^[^\\u0000-\\u0008\\u000b\\u000c\\u000e-\\u001f\\u007f]+$"
+      "pattern": "^[^\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]+$"
     },
     "url": {
       "description": "An absolute https URL with no whitespace or control character, at most 2,048 characters.",
