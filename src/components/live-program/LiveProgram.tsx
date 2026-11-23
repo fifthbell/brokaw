@@ -44,15 +44,28 @@ import {
   normalizeLaunchDate,
 } from './live-program-config.js';
 
-interface LiveProgramProps {
+export interface LiveProgramProps {
   programId?: string;
   embedded?: boolean;
   sceneMetadata?: Record<string, unknown> | null;
   activeComponents?: string[];
   apiBaseUrl?: string;
+  /**
+   * The host's output gain for the program's own sound (the pipes cue), 0...1. A host that
+   * mixes several sources (Alcántara's program page) passes its program-output gain; at or
+   * below 0.0001 the audio is muted. Defaults to full volume.
+   */
+  masterGain?: number;
 }
 
-export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl }: LiveProgramProps) {
+/** Applies a host's output gain to an audio element: volume clamped to 0...1, muted at silence. */
+export function applyMasterGain(audio: Pick<HTMLAudioElement, 'volume' | 'muted'>, masterGain: number): void {
+  const gain = Number.isFinite(masterGain) ? masterGain : 1;
+  audio.volume = Math.max(0, Math.min(1, gain));
+  audio.muted = gain <= 0.0001;
+}
+
+export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl, masterGain = 1 }: LiveProgramProps) {
   const [state, setState] = useState<ProgramState | null>(null);
   const stateRef = useRef<ProgramState | null>(null);
   const snapshotRequestRef = useRef(0);
@@ -603,6 +616,20 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
     return true;
   }, [marqueeEnabled, showLogoSlide, segments.length]);
 
+  // The <audio> element mounts only once data has loaded (the dataLoaded branch below), so the
+  // preload and the host's gain wait for it; on the first render audioRef.current is null.
+  const audioInitializedRef = useRef(false);
+  useEffect(() => {
+    if (!dataLoaded || !audioRef.current || audioInitializedRef.current) return;
+    audioRef.current.load();
+    audioInitializedRef.current = true;
+  }, [dataLoaded]);
+
+  useEffect(() => {
+    if (!dataLoaded || !audioRef.current) return;
+    applyMasterGain(audioRef.current, masterGain);
+  }, [dataLoaded, masterGain]);
+
   const stageContainerStyle = embedded
     ? { width: '100%', height: '100%' }
     : { width: '1920px', height: '1080px', transform: 'scale(min(1, min(100vw / 1920, 100vh / 1080)))', transformOrigin: 'center center' };
@@ -695,3 +722,6 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
     </div>
   );
 }
+
+/** Named export for hosts that embed the program (Alcántara reads this name; gaulatti/alcantara#381). */
+export { LiveProgram };
