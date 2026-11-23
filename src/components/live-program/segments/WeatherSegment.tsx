@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Cloud, CloudRain, Sun, Wind } from 'lucide-react';
 import { FastAverageColor } from 'fast-average-color';
-import { FIFTHBELL_ASSETS } from '../assets.js';
+import { useFifthBellAssets, type FifthBellAssets } from '../assets.js';
 import type { Segment } from './types.js';
 import { t, type SupportedLanguage } from '../i18n.js';
 
@@ -64,16 +64,16 @@ function fahrenheitToCelsius(value: number): number {
   return Math.round(((value - 32) * 5) / 9);
 }
 
-function getRegionBackground(region: string): string {
+function getRegionBackground(region: string, assets: FifthBellAssets): string {
   switch (region) {
     case 'North America':
-      return FIFTHBELL_ASSETS.images.nyc;
+      return assets.images.nyc;
     case 'Europe':
-      return FIFTHBELL_ASSETS.images.berlin;
+      return assets.images.berlin;
     case 'South America':
-      return FIFTHBELL_ASSETS.images.santiago;
+      return assets.images.santiago;
     case 'Asia':
-      return FIFTHBELL_ASSETS.images.tokyo;
+      return assets.images.tokyo;
     default:
       return '';
   }
@@ -92,7 +92,7 @@ function WeatherSlide({ weatherData, progress, unit, language }: WeatherSlidePro
   const [dominantColor, setDominantColor] = useState('#1e40af');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [displayUnit, setDisplayUnit] = useState(unit);
-  const backgroundImage = getRegionBackground(weatherData.region);
+  const backgroundImage = getRegionBackground(weatherData.region, useFifthBellAssets());
   const unitLabel = displayUnit === 'fahrenheit' ? '°F' : '°C';
 
   useEffect(() => {

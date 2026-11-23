@@ -11,7 +11,7 @@ import {
   type ProgramState,
 } from './program-contract.js';
 
-import { FIFTHBELL_ASSETS } from './assets.js';
+import { DEFAULT_FIFTHBELL_ASSET_BASE, FifthBellAssetsContext, fifthBellAssets } from './assets.js';
 import { MarqueeCurtain } from './components/MarqueeCurtain.js';
 import Marquee from './components/Marquee.js';
 import { WorldClocks } from './components/WorldClocks.js';
@@ -56,6 +56,12 @@ export interface LiveProgramProps {
    * below 0.0001 the audio is muted. Defaults to full volume.
    */
   masterGain?: number;
+  /**
+   * Where the program's images and sound are served, without a trailing slash. Brokaw's own page
+   * serves them beside itself (`./fifthbell`, the default); a host on another path passes its
+   * own, e.g. Alcántara's `/fifthbell` (gaulatti/alcantara#381).
+   */
+  assetBaseUrl?: string;
 }
 
 /** Applies a host's output gain to an audio element: volume clamped to 0...1, muted at silence. */
@@ -65,7 +71,8 @@ export function applyMasterGain(audio: Pick<HTMLAudioElement, 'volume' | 'muted'
   audio.muted = gain <= 0.0001;
 }
 
-export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl, masterGain = 1 }: LiveProgramProps) {
+export default function LiveProgram({ programId = 'fifthbell', embedded = false, sceneMetadata, activeComponents, apiBaseUrl, masterGain = 1, assetBaseUrl = DEFAULT_FIFTHBELL_ASSET_BASE }: LiveProgramProps) {
+  const assets = useMemo(() => fifthBellAssets(assetBaseUrl), [assetBaseUrl]);
   const [state, setState] = useState<ProgramState | null>(null);
   const stateRef = useRef<ProgramState | null>(null);
   const snapshotRequestRef = useRef(0);
@@ -645,11 +652,11 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   );
 
   if (!dataLoaded) {
-    return embedded ? (
+    return <FifthBellAssetsContext.Provider value={assets}>{embedded ? (
       <div className='w-full h-full bg-black overflow-hidden'>{loadingStage}</div>
     ) : (
       <div className='min-h-screen bg-black flex items-center justify-center overflow-hidden'>{loadingStage}</div>
-    );
+    )}</FifthBellAssetsContext.Provider>;
   }
 
   const liveStage = (
@@ -712,14 +719,16 @@ export default function LiveProgram({ programId = 'fifthbell', embedded = false,
   );
 
   return (
+    <FifthBellAssetsContext.Provider value={assets}>
     <div className={embedded ? 'w-full h-full bg-black overflow-hidden' : 'min-h-screen bg-black flex items-center justify-center overflow-hidden'}>
       {liveStage}
       <audio ref={audioRef} preload='auto'>
-        <source src={FIFTHBELL_ASSETS.audio.pipes} type='audio/ogg' />
+        <source src={assets.audio.pipes} type='audio/ogg' />
       </audio>
 
       <style>{slideStyles}</style>
     </div>
+    </FifthBellAssetsContext.Provider>
   );
 }
 

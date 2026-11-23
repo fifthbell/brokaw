@@ -1,7 +1,7 @@
 import { BellRing } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FastAverageColor } from 'fast-average-color';
-import { FIFTHBELL_ASSETS } from '../../assets.js';
+import { useFifthBellAssets } from '../../assets.js';
 
 interface CallsignSlideProps {
   currentTime: Date;
@@ -17,7 +17,7 @@ export function CallsignSlide({ currentTime: initialTime }: CallsignSlideProps) 
   const [smallOpacity, setSmallOpacity] = useState(0);
   const [centerOpacity, setCenterOpacity] = useState(0);
   const [showTime, setShowTime] = useState(false);
-  const backgroundImage = FIFTHBELL_ASSETS.images.nyc;
+  const backgroundImage = useFifthBellAssets().images.nyc;
 
   useEffect(() => {
     setDisplayTime(initialTime);
