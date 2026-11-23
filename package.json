@@ -51,6 +51,11 @@
       "types": "./dist/components/live-program/LiveProgram.d.ts",
       "import": "./dist/components/live-program/LiveProgram.js"
     },
+    "./components/toni": {
+      "types": "./dist/components/toni/index.d.ts",
+      "import": "./dist/components/toni/index.js"
+    },
+    "./components/toni/toni.css": "./dist/components/toni/toni.css",
     "./partial-deps.json": "./src/partial-deps.json"
   },
   "scripts": {
@@ -60,7 +65,7 @@
     "generate:contract-types": "node scripts/generate-contract-types.mjs",
     "generate:captured-catalog": "node scripts/generate-captured-catalog-partial.mjs",
     "build:contract": "node scripts/build-contract.mjs",
-    "build": "npm run clean && npm run build:css && npm run build:live-program && npm run generate:contract-types && tsc -p tsconfig.build.json && node -e \"require('node:fs').cpSync('src/styles/fonts','dist/fonts',{recursive:true})\" && node scripts/verify-live-program.mjs && npm run build:contract",
+    "build": "npm run clean && npm run build:css && npm run build:live-program && npm run generate:contract-types && tsc -p tsconfig.build.json && node -e \"require('node:fs').cpSync('src/components/toni/toni.css','dist/components/toni/toni.css')\" && node -e \"require('node:fs').cpSync('src/styles/fonts','dist/fonts',{recursive:true})\" && node scripts/verify-live-program.mjs && npm run build:contract",
     "prepare:storybook": "npm run build && node scripts/prepare-storybook-metadata.mjs",
     "storybook": "npm run prepare:storybook && storybook dev -p 6006",
     "build-storybook": "npm run prepare:storybook && storybook build",
