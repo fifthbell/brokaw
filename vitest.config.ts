@@ -46,6 +46,15 @@ export default defineConfig({
           ],
         },
       },
+      {
+        extends: true,
+        test: {
+          name: 'dom',
+          // Components that run timers and effects need a DOM; the unit project stays in Node.
+          environment: 'jsdom',
+          include: ['src/**/*.dom.test.tsx'],
+        },
+      },
     ],
   },
 });
